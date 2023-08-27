@@ -1,18 +1,18 @@
 
-class QrBitBuffer {
-  buffer = [] as number[]
+export class QrBitBuffer {
+  byteBuffer = [] as number[]
   bitLength = 0;
 
 
   put(num: number, length: number) {
-    let {buffer, bitLength} = this
+    let {byteBuffer, bitLength} = this
 
     const newBitLength = bitLength + length
-    let restBits = (buffer.length << 3) - bitLength 
+    let restBits = (byteBuffer.length << 3) - bitLength 
     let bufIndex = bitLength >> 3
     const newBufferLenght = newBitLength >> 3
-    while (buffer.length <= newBufferLenght) {
-      buffer.push(0);
+    while (byteBuffer.length <= newBufferLenght) {
+      byteBuffer.push(0);
     }
     let i = 0
     if(restBits == 0){
@@ -20,7 +20,7 @@ class QrBitBuffer {
       restBits = Math.min(8, length - i)
     }
     while (i < length){
-      buffer[bufIndex] |=  (num >>> (length - i - restBits) ) & ((1 << restBits) - 1);
+      byteBuffer[bufIndex] |=  (num >>> (length - i - restBits) ) & ((1 << restBits) - 1);
       i += restBits
       bufIndex++
       restBits = Math.min(8, length - i)
@@ -31,21 +31,21 @@ class QrBitBuffer {
 
 
   getBitAt(index: number){
-    const {buffer, bitLength} = this
+    const {byteBuffer, bitLength} = this
     var bufIndex = bitLength >> 3;
-    return ( (buffer[bufIndex] >>> (7 - index | 0b111) ) & 1) == 1;
+    return ( (byteBuffer[bufIndex] >>> (7 - index | 0b111) ) & 1) == 1;
 
   }
 
   putBit(bit: boolean){
-    const {buffer, bitLength} = this
+    const {byteBuffer, bitLength} = this
     const bufIndex = bitLength >> 3
-    if (buffer.length <= bufIndex) {
-      buffer.push(0);
+    if (byteBuffer.length <= bufIndex) {
+      byteBuffer.push(0);
     }
 
     if (bit) {
-      buffer[bufIndex] |= (0x80 >>> (bitLength | 0b111) );
+      byteBuffer[bufIndex] |= (0x80 >>> (bitLength | 0b111) );
     }
     this.bitLength+=1
   }
