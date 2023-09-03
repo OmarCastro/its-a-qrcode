@@ -16,12 +16,14 @@ for (let i = 0; i < 255; i += 1) {
   LOG_TABLE[EXP_TABLE[i]] = i;
 }
 
-export function glog(n: number){
+/** @param {number} n */
+export function glog(n){
   if (n < 1) { throw Error('glog(' + n + ')') }
   return LOG_TABLE[n];
 }
 
-export function gexp(n: number){
+/** @param {number} n */
+export function gexp(n){
   while (n < 0) { n += 255; }
   while (n >= 256) { n -= 255; }
   return EXP_TABLE[n];
