@@ -11,7 +11,7 @@ export const textToBytes = (str) => encoder.encode(str)
 export const bytesToText = (bytes) => decoder.decode(bytes)
 
 /** @param {string} base64  */
-export const base64ToBytes = (base64) => Uint8Array.from(atob(base64), (m) => m.codePointAt(0))
+export const base64ToBytes = (base64) => Uint8Array.from(atob(base64), (m) => /** @type {number} */(m.codePointAt(0)))
 /** @param {Uint8Array} bytes  */
 export const bytesToBase64 = (bytes) => btoa(Array.from(bytes, (x) => String.fromCodePoint(x)).join(""))
 
@@ -127,6 +127,6 @@ function UTF8ToSJIS(data) {
     }
   }
 
-  return results;
+  return Uint8Array.from(results);
 }
 
