@@ -22,9 +22,7 @@ test('Bit buffer - Given bit buffer with all byte data filled, adding one bit wi
   const buffer2 = new QrBitBuffer()
   buffer1.put(data, 16)
   buffer2.put(data, 16)
-
   const expectedData = [0b0000_0110,0b0000_1111, 0b1000_0000]
-
   buffer1.put(1,1)
   buffer2.putBit(true)
   assert.deepEqual(Array.from(buffer1.byteBuffer), expectedData)
@@ -39,11 +37,19 @@ test('Bit buffer - Given bit buffer without all byte data filled, adding bits wi
   const data = 0b1111
   const buffer = new QrBitBuffer()
   buffer.put(data, 4)
-
   
   const num1 = 0b0110_0110_0010_1110
   buffer.put(num1, 16)
   buffer.put(num1, 16)
   assert.deepEqual(Array.from(buffer.byteBuffer), [0b1111_0110, 0b0110_0010, 0b1110_0110,0b0110_0010, 0b1110_0000])
   assert.equal(buffer.bitLength, 36)
+}); 
+
+test('Bit buffer - Given bit buffer with byte data filled, getBtitAt should get the correct bit value', () => {
+  const buffer = new QrBitBuffer()
+  const num1 = 0b0110_0110_0010_1110
+  buffer.put(num1, 16)
+
+  const result = (buffer.getBitAt(0) << 3) + (buffer.getBitAt(1)  << 2) + (buffer.getBitAt(2) << 1) + buffer.getBitAt(3) 
+  assert.strictEqual(result, 0b0110)
 }); 

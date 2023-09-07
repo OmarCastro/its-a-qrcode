@@ -44,21 +44,17 @@ export class QrBitBuffer {
   }
 
   /**
-   * 
+   * Get bit value at index, value is either 0 or 1
    * @param {number} index 
-   * @returns 
    */
   getBitAt(index){
-    const byteBuffer = this.#byteBuffer
-    const bitLength = this.#bitLength
-    var bufIndex = bitLength >> 3;
-    return ( (byteBuffer[bufIndex] >>> (7 - index | 0b111) ) & 1) == 1;
-
+    const bufIndex = index >> 3;
+    return (this.#byteBuffer[bufIndex] >>> (7 - index & 0b111) ) & 1;
   }
 
   /**
    * 
-   * @param {boolean} bit 
+   * @param {0|1|boolean} bit 
    */
   putBit(bit){
     const byteBuffer = this.#byteBuffer
