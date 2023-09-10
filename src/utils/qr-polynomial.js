@@ -3,8 +3,15 @@ import {gexp, glog} from './qr-math.js'
 
 
 class QRPolynomial {
-  private array: Uint32Array;
-  constructor(num: ArrayLike<number>, shift = 0){
+  /** @type {Uint32Array} */
+  #array;
+
+  /**
+   * 
+   * @param {ArrayLike<number>} num 
+   * @param {number} shift 
+   */
+  constructor(num, shift = 0){
     let offset = 0;
     while (offset < num.length && num[offset] == 0) {
       offset += 1;
@@ -14,20 +21,22 @@ class QRPolynomial {
     for (let i = 0; i < lengthAfterOffset; i += 1) {
       array[i] = num[i + offset];
     }
-    this.array = array
+    this.#array = array
   }
 
-  getAt(index: number){ 
-    return this.array[index];
+  /** @param {number} index */
+  getAt(index){ 
+    return this.#array[index];
   }
-
+  
   get length(){ 
-    return this.array.length;
+    return this.#array.length;
   }
 
-  multiply(other: QRPolynomial){ 
-    const {length, array} = this
-    const {length: otherLength, array: otherArray} = this
+  /** @param {QRPolynomial} other */
+  multiply(other){ 
+    const {length, #array: array} = this
+    const {length: otherLength, #array: otherArray} = this
 
     var num = new Array(length + otherLength - 1);
     
@@ -40,9 +49,13 @@ class QRPolynomial {
     return new QRPolynomial(num, 0);
   }
 
-  mod(other: QRPolynomial) {
-    const {length, array} = this
-    const {length: otherLength, array: otherArray} = this
+  /** 
+   * @param {QRPolynomial} other
+   * @returns {QRPolynomial}
+   */
+  mod(other){
+    const {length, #array: array} = this
+    const {length: otherLength, #array: otherArray} = this
 
     
     if (length - otherLength < 0) {
@@ -62,8 +75,13 @@ class QRPolynomial {
   };
 }
 
-
-export function QrPolynomial(num: number[], shift = 0) {
+/**
+ * 
+ * @param {ArrayLike<number>} num 
+ * @param {number} [shift]
+ * @returns 
+ */
+export function QrPolynomial(num, shift = 0) {
   return new QRPolynomial(num, shift)
 };
   
