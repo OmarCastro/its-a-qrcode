@@ -1,21 +1,35 @@
 import { RS_BLOCK_TABLE } from "./qr-rs-block-table.constants.js";
-import { QRErrorCorrectionLevel } from "./qr-rs-correction-level.constants.js"; 
+import { CORRECTION_LEVEL_L, CORRECTION_LEVEL_M, CORRECTION_LEVEL_Q, CORRECTION_LEVEL_H } from "./qr-rs-correction-level.constants.js"; 
 
-const qrRSBlock = (totalCount:number, dataCount:number) => ({ totalCount, dataCount })
+/**
+ * 
+ * @param {number} totalCount 
+ * @param {number} dataCount 
+ */
+const qrRSBlock = (totalCount, dataCount) => Object.freeze({ totalCount, dataCount })
 
-
+/**
+ * 
+ * @param {number} typeNumber 
+ * @param {number} errorCorrectionLevel 
+ */
 const getRsBlockTable = function(typeNumber, errorCorrectionLevel) {
     
   switch(errorCorrectionLevel) {
-  case QRErrorCorrectionLevel.L : return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 0];
-  case QRErrorCorrectionLevel.M : return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 1];
-  case QRErrorCorrectionLevel.Q : return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 2];
-  case QRErrorCorrectionLevel.H : return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 3];
+    case CORRECTION_LEVEL_L : return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 0];
+    case CORRECTION_LEVEL_M : return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 1];
+    case CORRECTION_LEVEL_Q : return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 2];
+    case CORRECTION_LEVEL_H : return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 3];
   default :
     return undefined;
   }
 };
 
+/**
+ * 
+ * @param {number} typeNumber 
+ * @param {number} errorCorrectionLevel 
+ */
 export const getRSBlocks = function(typeNumber, errorCorrectionLevel) {
     
   var rsBlock = getRsBlockTable(typeNumber, errorCorrectionLevel);
@@ -27,7 +41,7 @@ export const getRSBlocks = function(typeNumber, errorCorrectionLevel) {
 
   var length = rsBlock.length / 3;
 
-  var list = [] as ReturnType<typeof qrRSBlock>[];
+  var list = []
 
   for (var i = 0; i < length; i += 1) {
 
@@ -42,4 +56,5 @@ export const getRSBlocks = function(typeNumber, errorCorrectionLevel) {
 
   return list;
 }
+
 

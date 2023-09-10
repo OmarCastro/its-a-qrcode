@@ -1,5 +1,5 @@
 import { QrBitBuffer} from './qr-bit-buffer.js'
-import { type QrRSBlock, getRSBlocks } from './qr-rs-block.utils.js';
+import { getRSBlocks } from './qr-rs-block.utils.js';
 import { getErrorCorrectPolynomial } from './qr-util.js'; 
 import { QrPolynomial } from './qr-polynomial.js';
 import { getLengthInBits } from './qr-util.js';
@@ -8,23 +8,28 @@ import { getLengthInBits } from './qr-util.js';
 const PAD0 = 0xEC;
 const PAD1 = 0x11;
 
+/**
+ * 
+ * @param {number} typeNumber 
+ * @param {number} errorCorrectionLevel 
+ * @param {readonly Mode[]} dataList 
+ * @returns 
+ */
 export function createData(typeNumber, errorCorrectionLevel, dataList) {
   
-  var rsBlocks = getRSBlocks(typeNumber, errorCorrectionLevel);
+  const rsBlocks = getRSBlocks(typeNumber, errorCorrectionLevel);
+  const buffer = new QrBitBuffer();
 
-  var buffer = new QrBitBuffer();
-
-  for (var i = 0; i < dataList.length; i += 1) {
-    var data = dataList[i];
-    buffer.put(data.getMode(), 4);
-    buffer.put(data.getLength(), getLengthInBits(data.getMode(), typeNumber) );
+  for (const data of dataList) {
+    buffer.put(data.mode, 4);
+    buffer.put(data.length, getLengthInBits(data.mode, typeNumber) );
     data.write(buffer);
   }
 
   // calc num max data.
-  var totalDataCount = 0;
-  for (var i = 0; i < rsBlocks.length; i += 1) {
-    totalDataCount += rsBlocks[i].dataCount;
+  let totalDataCount = 0;
+  for (const {dataCount} of rsBlocks) {
+    totalDataCount += dataCount;
   }
 
   if (buffer.bitLength > totalDataCount * 8) {
@@ -42,7 +47,7 @@ export function createData(typeNumber, errorCorrectionLevel, dataList) {
 
   // padding
   while (buffer.bitLength % 8 != 0) {
-    buffer.putBit(false);
+    buffer.putBit(0);
   }
 
   // padding
@@ -62,16 +67,23 @@ export function createData(typeNumber, errorCorrectionLevel, dataList) {
   return createBytes(buffer, rsBlocks);
 };
 
-
-export function createBytes(buffer: QrBitBuffer, rsBlocks: QrRSBlock[]) {
+/**
+ * 
+ * @param {QrBitBuffer} buffer 
+ * @param {ReturnType<typeof getRSBlocks>} rsBlocks 
+ * @returns 
+ */
+export function createBytes(buffer, rsBlocks) {
   
   var offset = 0;
 
   var maxDcCount = 0;
   var maxEcCount = 0;
 
-  var dcdata = new Array(rsBlocks.length) as number[][];
-  var ecdata = new Array(rsBlocks.length) as number[][];
+  /** @type {number[][]} */
+  var dcdata = new Array(rsBlocks.length)
+  /** @type {number[][]} */
+  var ecdata = new Array(rsBlocks.length)
 
   for (var r = 0; r < rsBlocks.length; r += 1) {
 
@@ -104,7 +116,8 @@ export function createBytes(buffer: QrBitBuffer, rsBlocks: QrRSBlock[]) {
     totalCodeCount += rsBlocks[i].totalCount;
   }
 
-  var data = new Array(totalCodeCount) as number[];
+  /** @type {number[]} */
+  var data = new Array(totalCodeCount);
   var index = 0;
 
   for (var i = 0; i < maxDcCount; i += 1) {
@@ -127,3 +140,11 @@ export function createBytes(buffer: QrBitBuffer, rsBlocks: QrRSBlock[]) {
 
   return data;
 };
+
+
+/**
+ * @typedef {object} Mode
+ * @property {number} mode
+ * @property {number} length
+ * @property {(buffer: QrBitBuffer) => any} write
+ */
