@@ -1,5 +1,5 @@
-import { MODE_8BIT_BYTE } from "../utils/qr-mode.constants";
-import { textToBytes } from "../utils/text-decode-encode.util";
+import { MODE_8BIT_BYTE } from "../utils/qr-mode.constants.js";
+import { textToBytes } from "../utils/text-decode-encode.util.js";
 
 export class Qr8BitByte {
 
@@ -28,3 +28,6 @@ export class Qr8BitByte {
   }
 
 }
+
+
+Object.defineProperty(Qr8BitByte.prototype, 'mode', {enumerable: true});

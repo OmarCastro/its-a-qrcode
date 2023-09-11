@@ -7,7 +7,7 @@ import { escapeXml } from "../utils/escape-xml.util.js";
  * @param {number} opts.cellSize 
  * @param {number} opts.margin 
  * @param {string} opts.alt 
- * @param {import('../utils/qr-code.js').QrCode} opts.qrcode 
+ * @param {import('../qr-code.js').QrCode} opts.qrcode 
  */
 export function createImgTag({cellSize, margin, alt, qrcode}) {
   cellSize ||= 2;

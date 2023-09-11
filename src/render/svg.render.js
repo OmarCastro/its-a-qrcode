@@ -1,15 +1,17 @@
+import { escapeXml } from "../utils/escape-xml.util.js";
+
 /**
  * 
  * @param {object} opts 
- * @param {number} opts.cellSize 
- * @param {number} opts.margin 
- * @param {string|SvgAttr} opts.alt : ;
- * @param {string|SvgAttr} opts.title 
+ * @param {number} [opts.cellSize]
+ * @param {number} [opts.margin]
+ * @param {string|SvgAttr} [opts.alt]
+ * @param {string|SvgAttr} [opts.title]
  * @param {boolean} [opts.scalable]
- * @param {import('../utils/qr-code.js').QrCode} opts.qrcode 
+ * @param {import('../qr-code.js').QrCode} opts.qrcode 
  * @returns {string} &lt;svg> element outer HTML
  */
-function createSvgTag({cellSize, margin, alt, title, qrcode, scalable}) {
+export function createSvgTag({cellSize, margin, alt, title, qrcode, scalable}) {
     const {moduleCount} = qrcode
 
 
@@ -17,12 +19,14 @@ function createSvgTag({cellSize, margin, alt, title, qrcode, scalable}) {
     margin = (typeof margin == 'undefined')? cellSize * 4 : margin;
 
     // Compose alt property surrogate
-    alt = (typeof alt === 'string') ? {text: alt} : alt || {};
-    alt.text = alt.text || '';
-    alt.id = alt.id || 'qrcode-description';
+
+    /** @type {SvgAttr} */
+    alt = (typeof alt === 'string') ? {text: alt} : alt || {text: ''};
+    alt.text ||= '';
+    alt.id ||= 'qrcode-description';
 
     // Compose title property surrogate
-    title = (typeof title === 'string') ? {text: title} : title || {};
+    title = (typeof title === 'string') ? {text: title} : title || {text: ''};
     title.text = title.text || '';
     title.id = title.id || 'qrcode-title';
 
@@ -56,29 +60,8 @@ function createSvgTag({cellSize, margin, alt, title, qrcode, scalable}) {
 };
 
 /**
- * 
- * @param {string} s 
- * @returns 
- */
-function escapeXml(s) {
-var escaped = '';
-for (var i = 0, e = s.length; i < e; i += 1) {
-    var c = s.charAt(i);
-    switch(c) {
-    case '<': escaped += '&lt;'; break;
-    case '>': escaped += '&gt;'; break;
-    case '&': escaped += '&amp;'; break;
-    case '"': escaped += '&quot;'; break;
-    default : escaped += c; break;
-    }
-}
-return escaped;
-};
-
-
-/**
  * @typedef {object} SvgAttr
- * @property {string|null} text
- * @property {string|null} [id]
+ * @property {string} text
+ * @property {string} [id]
  */
 

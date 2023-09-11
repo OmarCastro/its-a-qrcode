@@ -2,7 +2,7 @@
  * 
  * @param {number} cellSize 
  * @param {number} margin 
- * @param {import('../utils/qr-code.js').QrCode} qrcode 
+ * @param {import('../qr-code.js').QrCode} qrcode 
  * @returns {string} &lt;table> element outer HTML
  */
 function createTableTag(cellSize, margin, qrcode) {

@@ -33,7 +33,7 @@ export function textToSjisBytes(str) {
 /** @param {string} hex  */
 export function hexToBytes(hex) {
   let bytes = [];
-  for (let c = 0; c < hex.length; c += 2){
+  for (let c = 0, e = hex.length; c < e; c += 2){
     bytes.push(parseInt(hex.substring(c, c+2), 16));
   }
   return Uint8Array.from(bytes);

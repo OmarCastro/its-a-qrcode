@@ -4,7 +4,7 @@ import {gexp, glog} from './qr-math.js'
 
 class QRPolynomial {
   /** @type {Uint32Array} */
-  #array;
+  array;
 
   /**
    * 
@@ -13,30 +13,34 @@ class QRPolynomial {
    */
   constructor(num, shift = 0){
     let offset = 0;
-    while (offset < num.length && num[offset] == 0) {
+    const numLen = num.length
+
+
+    while (offset < numLen && num[offset] == 0) {
       offset += 1;
     }
-    const lengthAfterOffset = num.length - offset 
+    const lengthAfterOffset = numLen - offset 
     const array = new Uint32Array(lengthAfterOffset + shift)
     for (let i = 0; i < lengthAfterOffset; i += 1) {
       array[i] = num[i + offset];
     }
-    this.#array = array
+
+    this.array = array
   }
 
   /** @param {number} index */
   getAt(index){ 
-    return this.#array[index];
+    return this.array[index];
   }
   
   get length(){ 
-    return this.#array.length;
+    return this.array.length;
   }
 
   /** @param {QRPolynomial} other */
   multiply(other){ 
-    const {length, #array: array} = this
-    const {length: otherLength, #array: otherArray} = this
+    const {length, array: array} = this
+    const {length: otherLength, array: otherArray} = other
 
     var num = new Array(length + otherLength - 1);
     
@@ -50,13 +54,12 @@ class QRPolynomial {
   }
 
   /** 
-   * @param {QRPolynomial} other
+   * @param {Readonly<QRPolynomial>} other
    * @returns {QRPolynomial}
    */
   mod(other){
-    const {length, #array: array} = this
-    const {length: otherLength, #array: otherArray} = this
-
+    const {length, array: array} = this
+    const {length: otherLength, array: otherArray} = other
     
     if (length - otherLength < 0) {
       return this;
@@ -66,9 +69,13 @@ class QRPolynomial {
 
     var num = Uint32Array.from(array);
 
+
     for (var i = 0; i < otherLength; i += 1) {
       num[i] ^= gexp(glog(otherArray[i] ) + ratio);
+      
     }
+
+    
 
     // recursive call
     return new QRPolynomial(num, 0).mod(other);

@@ -4,7 +4,7 @@
  * @param {object} opts 
  * @param {number} [opts.cellSize] 
  * @param {number} opts.margin 
- * @param {import('../utils/qr-code.js').QrCode} opts.qrcode 
+ * @param {import('../qr-code.js').QrCode} opts.qrcode 
  */
 _this.createASCII = function({cellSize = 1, margin, qrcode}) {
     cellSize = cellSize || 1;
@@ -53,7 +53,7 @@ _this.createASCII = function({cellSize = 1, margin, qrcode}) {
  * 
  * @param {object} opts 
  * @param {number} opts.margin 
- * @param {import('../utils/qr-code.js').QrCode} opts.qrcode 
+ * @param {import('../qr-code.js').QrCode} opts.qrcode 
  */
 var _createHalfASCII = function({margin, qrcode}) {
     var cellSize = 1;

@@ -1,6 +1,8 @@
-import { MODE_NUMBER } from "../utils/qr-mode.constants";
+import { MODE_NUMBER } from "../utils/qr-mode.constants.js";
 
 export class QrNumber {
+  /** @type {string} */
+  data
 
   /**
    * 

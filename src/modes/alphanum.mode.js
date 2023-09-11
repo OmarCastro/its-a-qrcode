@@ -1,4 +1,4 @@
-import { MODE_ALPHA_NUM } from "../utils/qr-mode.constants";
+import { MODE_ALPHA_NUM } from "../utils/qr-mode.constants.js";
 
 export class QrAlphaNum {
 

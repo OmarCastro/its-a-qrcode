@@ -7,7 +7,7 @@ import { bytesToBase64 } from "../utils/text-decode-encode.util.js";
  * @param {object} opts 
  * @param {number} opts.cellSize 
  * @param {number} opts.margin 
- * @param {import('../utils/qr-code.js').QrCode} opts.qrcode 
+ * @param {import('../qr-code.js').QrCode} opts.qrcode 
  */
 export function createDataURL({cellSize, margin, qrcode}) {
   

@@ -1,5 +1,5 @@
-import { MODE_KANJI } from "../utils/qr-mode.constants";
-import { textToSjisBytes } from "../utils/text-decode-encode.util";
+import { MODE_KANJI } from "../utils/qr-mode.constants.js";
+import { textToSjisBytes } from "../utils/text-decode-encode.util.js";
 
 export class QrKanji {
 
