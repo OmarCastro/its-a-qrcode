@@ -26,7 +26,8 @@ export class QrBitBuffer {
       restBits = Math.min(8, length)
     }
     while (i < length){
-      byteBuffer[bufIndex] |=  (num << (8 - restBits) >>> (length - i - restBits) ) & (0xff);
+      const shiftLeft = bufIndex == newBufferLenght - 1 ? (8 - restBits): 0
+      byteBuffer[bufIndex] |=  (num << shiftLeft >>> (length - i - restBits) ) & (0xff);
       i += restBits
       bufIndex++
       restBits = Math.min(8, length - i)
@@ -37,6 +38,10 @@ export class QrBitBuffer {
 
   get byteBuffer(){
     return this.#byteBuffer.slice()
+  }
+
+  toByteArray(){
+    return Uint8Array.from(this.#byteBuffer)
   }
 
   get bitLength(){

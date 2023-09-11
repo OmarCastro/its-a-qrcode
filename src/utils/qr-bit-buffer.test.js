@@ -53,3 +53,12 @@ test('Bit buffer - Given bit buffer with byte data filled, getBtitAt should get 
   const result = (buffer.getBitAt(0) << 3) + (buffer.getBitAt(1)  << 2) + (buffer.getBitAt(2) << 1) + buffer.getBitAt(3) 
   assert.strictEqual(result, 0b0110)
 }); 
+
+
+test('Bit buffer - Given bit buffer with byte data filled, adding bits that fill to 0 should fill them and apply on the next byte', () => {
+  const buffer = new QrBitBuffer()
+  buffer.put(0b0100, 4)
+  buffer.put(0b0000_1100, 8)
+
+  assert.deepEqual(Array.from(buffer.byteBuffer), [0b0100_0000, 0b1100_0000])
+}); 
