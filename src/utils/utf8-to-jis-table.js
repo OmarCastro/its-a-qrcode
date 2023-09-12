@@ -1,13 +1,16 @@
 import { base64ToHex } from "./text-decode-encode.util.js";
 import UTF8_TO_JIS_TABLE from "./utf8-to-jis-table.constants.js";
 
+/** @param {string} x  */
 const xInt = x => parseInt(x,16)
+/** @param {string} x  */
 const b64Int = x => xInt(base64ToHex(x))
 
 /**
- * @returns {Record<number, number>} iterator table
+ * @param {Record<string, string>} compressedTable 
  */
 function decompressUtf8ToJisTable(compressedTable){
+  /** @type {Record<number, number>} */
   const result = {}
   for(const [jisChar, utf8ValsStr] of Object.entries(compressedTable)) {
     const utf8Vals = utf8ValsStr.split(',')
@@ -30,6 +33,9 @@ function decompressUtf8ToJisTable(compressedTable){
   return result
 }
 
+/**
+ * @param {Record<string, string>} compressedTable 
+ */
 export const usingTable = (compressedTable) => {
   let generatedTable = null
   return {
