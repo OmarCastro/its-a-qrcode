@@ -1,0 +1,35 @@
+# Build target
+build
+
+# node_modules
+node_modules
+
+# test results
+/reports
+/test-results/
+/playwright-report/
+/playwright/.cache/
+
+# code coverage
+.nyc_output
+coverage
+
+### VisualStudioCode ###
+# VisualStudioCode settings
+.vscode
+
+# Local History for Visual Studio Code
+.history/
+
+# Built Visual Studio Code Extensions
+*.vsix
+
+# Ignore all local history of files
+.history
+.ionide
+
+# Ignore temporary files
+.tmp
+
+# smoke test generated content
+smoke-test/npm/js/index.min.js
