@@ -1,41 +1,38 @@
 import { MODE_ALPHA_NUM } from "../utils/qr-mode.constants.js";
 
-export class QrAlphaNum {
+/**
+ * Create QR code alphanum mode object
+ * 
+ * @param {string} data 
+ */
+export const QrAlphaNum = (data) => Object.freeze({
+  data: data,
+  mode: MODE_ALPHA_NUM,
+  length: data.length,
+  write: writeDataToBitBuffer.bind(null, data)
+})
 
-  /**
-   * 
-   * @param {string} data 
-   */
-  constructor(data){
-    this.data = data
+/**
+ * Writes alphanumeric data to bit buffer that will be used to generate the QR code
+ * 
+ * @param {string} data 
+ * @param {import("./../utils/qr-bit-buffer.js").QrBitBuffer} buffer
+ */
+function writeDataToBitBuffer(data, buffer){
+  
+  let i = 0;
+
+  while (i + 1 < data.length) {
+      buffer.put(
+          getCode(data.charAt(i) ) * 45 +
+          getCode(data.charAt(i + 1) ), 11);
+      i += 2;
   }
 
-  get mode(){
-    return MODE_ALPHA_NUM
+  if (i < data.length) {
+      buffer.put(getCode(data.charAt(i) ), 6);
   }
-
-  get length(){
-    return this.data.length
-  }
-
-  /** @param {import("./../utils/qr-bit-buffer.js").QrBitBuffer} buffer*/
-  write(buffer){
-    const {data} = this;
-    
-    let i = 0;
-
-    while (i + 1 < data.length) {
-        buffer.put(
-            getCode(data.charAt(i) ) * 45 +
-            getCode(data.charAt(i + 1) ), 11);
-        i += 2;
-    }
-
-    if (i < data.length) {
-        buffer.put(getCode(data.charAt(i) ), 6);
-    }
-    
-  }
+  
 }
 
 /**

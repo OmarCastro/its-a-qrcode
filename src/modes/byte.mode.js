@@ -1,33 +1,26 @@
 import { MODE_8BIT_BYTE } from "../utils/qr-mode.constants.js";
 import { textToBytes } from "../utils/text-decode-encode.util.js";
 
-export class Qr8BitByte {
+/**
+ * Create QR code byte mode object
+ * @param {string} data 
+ */
+export const Qr8BitByte = (data) => Object.freeze({
+  data: data,
+  mode: MODE_8BIT_BYTE,
+  length: data.length,
+  write: writeDataToBitBuffer.bind(null, textToBytes(data))
+})
 
-  /**
-   * 
-   * @param {string} data 
-   */
-  constructor(data){
-    this.data = data
-    this.bytes = textToBytes(data)
+
+/**
+ * Writes byte data to bit buffer that will be used to generate the QR code
+ * 
+ * @param {Uint8Array} data 
+ * @param {import("./../utils/qr-bit-buffer.js").QrBitBuffer} buffer
+ */
+function writeDataToBitBuffer(data, buffer){
+  for (const byte of data) {
+    buffer.put(byte, 8);
   }
-
-  get mode(){
-    return MODE_8BIT_BYTE
-  }
-
-  get length(){
-    return this.bytes.length
-  }
-
-  /** @param {import("./../utils/qr-bit-buffer.js").QrBitBuffer} buffer*/
-  write(buffer){
-    for (const byte of this.bytes) {
-        buffer.put(byte, 8);
-      }
-  }
-
 }
-
-
-Object.defineProperty(Qr8BitByte.prototype, 'mode', {enumerable: true});

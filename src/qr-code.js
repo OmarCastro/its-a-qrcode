@@ -21,7 +21,7 @@ export class QrCode {
   modules
   /** @type {number[] | null} */
   #dataCache
-  /** @type {(QrKanji | Qr8BitByte | QrNumber | QrAlphaNum)[] } */
+  /** @type {ReturnType<QrKanji | Qr8BitByte | QrNumber | QrAlphaNum>[] } */
   dataList
   
   /**
@@ -134,29 +134,16 @@ export class QrCode {
    * @param {'Byte'|'Numeric'|'Alphanumeric'|'Kanji'} mode 
    */
   addData(data, mode) {
-  
     mode = mode || 'Byte';
 
-    var newData = null;
-
     switch(mode) {
-    case 'Numeric' :
-      newData = new QrNumber(data);
-      break;
-    case 'Alphanumeric' :
-      newData = new QrAlphaNum(data);
-      break;
-    case 'Byte' :
-      newData = new Qr8BitByte(data);
-      break;
-    case 'Kanji' :
-      newData = new QrKanji(data);
-      break;
-    default :
-      throw 'mode:' + mode;
+      case 'Numeric' : this.dataList.push(QrNumber(data)); break;
+      case 'Alphanumeric' : this.dataList.push(QrAlphaNum(data)); break;
+      case 'Byte' : this.dataList.push(Qr8BitByte(data)); break;
+      case 'Kanji' : this.dataList.push(QrKanji(data)); break;
+      default : throw 'mode:' + mode;
     }
 
-    this.dataList.push(newData);
     this.#dataCache = null;
   };
 

@@ -1,46 +1,39 @@
 import { MODE_NUMBER } from "../utils/qr-mode.constants.js";
 
-export class QrNumber {
-  /** @type {string} */
-  data
+/**
+ * Create QR code numeric mode object
+ * 
+ * @param {string} data 
+ */
+export const QrNumber = (data) => Object.freeze({
+  data: data,
+  mode: MODE_NUMBER,
+  length: data.length,
+  write: writeDataToBitBuffer.bind(null, data)
+})
+  
 
-  /**
-   * 
-   * @param {string} data 
-   */
-  constructor(data){
-    this.data = data
+/**
+ * Writes numeric data to bit buffer that will be used to generate the QR code
+ * 
+ * @param {string} data 
+ * @param {import("./../utils/qr-bit-buffer.js").QrBitBuffer} buffer
+ */
+function writeDataToBitBuffer(data, buffer){
+  let i = 0;
+
+  while (i + 2 < data.length) {
+    buffer.put(strToNum(data.substring(i, i + 3) ), 10);
+    i += 3;
   }
 
-  get mode(){
-    return MODE_NUMBER
-  }
-
-  get length(){
-    return this.data.length
-  }
-
-  /** @param {import("./../utils/qr-bit-buffer.js").QrBitBuffer} buffer*/
-  write(buffer){
-    const {data} = this;
-    
-    let i = 0;
-
-    while (i + 2 < data.length) {
-      buffer.put(strToNum(data.substring(i, i + 3) ), 10);
-      i += 3;
+  if (i < data.length) {
+    if (data.length - i == 1) {
+      buffer.put(strToNum(data.substring(i, i + 1) ), 4);
+    } else if (data.length - i == 2) {
+      buffer.put(strToNum(data.substring(i, i + 2) ), 7);
     }
-
-    if (i < data.length) {
-      if (data.length - i == 1) {
-        buffer.put(strToNum(data.substring(i, i + 1) ), 4);
-      } else if (data.length - i == 2) {
-        buffer.put(strToNum(data.substring(i, i + 2) ), 7);
-      }
-    }
-    
-  }
-}
+  }}
 
 /**
  * 
@@ -48,8 +41,8 @@ export class QrNumber {
  * @returns 
  */
 function strToNum(s) {
-  var num = 0;
-  for (var i = 0; i < s.length; i += 1) {
+  let num = 0;
+  for (let i = 0, e = s.length; i < e; i++) {
     num = num * 10 + charToNum(s.charAt(i) );
   }
   return num;
@@ -62,7 +55,9 @@ function strToNum(s) {
  */
 function charToNum(c) {
   if ('0' <= c && c <= '9') {
-    return c.charCodeAt(0) - '0'.charCodeAt(0);
+    return c.charCodeAt(0) - zeroCharCode;
   }
   throw 'illegal char :' + c;
 };
+
+const zeroCharCode = '0'.charCodeAt(0);
