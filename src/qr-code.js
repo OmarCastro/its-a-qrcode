@@ -150,44 +150,43 @@ export class QrCode {
 
 
   make() {
-
-    const {modules, errorCorrectionLevel, dataList} = this
-
     if (this.typeNumber < 1) {
-      var typeNumber = 1;
+      this.typeNumber = getBestTypeNumber(this)
+    }
+    this.makeImpl(false, getBestMaskPattern(this) );
+  };
+}
 
-      for (; typeNumber < 40; typeNumber++) {
-        var rsBlocks = getRSBlocks(typeNumber, errorCorrectionLevel);
-        var buffer = new QrBitBuffer();
+/**
+ * 
+ * @param {QrCode} qrcode 
+ * @returns {number} type number
+ */
+function getBestTypeNumber(qrcode){
+  const {errorCorrectionLevel, dataList} = qrcode
 
-        for (var i = 0; i < dataList.length; i++) {
-          var data = dataList[i];
-          buffer.put(data.mode, 4);
-          buffer.put(data.length, QRUtil.getLengthInBits(data.mode, typeNumber) );
-          data.write(buffer);
-        }
+  for (let typeNumber = 1; typeNumber < 40; typeNumber++) {
+    var rsBlocks = getRSBlocks(typeNumber, errorCorrectionLevel);
+    var buffer = new QrBitBuffer();
 
-        var totalDataCount = 0;
-        for (var i = 0; i < rsBlocks.length; i++) {
-          totalDataCount += rsBlocks[i].dataCount;
-        }
-
-        if (buffer.bitLength <= totalDataCount * 8) {
-          break;
-        }
-      }
-
-      this.typeNumber = typeNumber;
+    for (var i = 0; i < dataList.length; i++) {
+      var data = dataList[i];
+      buffer.put(data.mode, 4);
+      buffer.put(data.length, QRUtil.getLengthInBits(data.mode, typeNumber) );
+      data.write(buffer);
     }
 
-    this.makeImpl(false, getBestMaskPattern(this) );
+    var totalDataCount = 0;
+    for (var i = 0; i < rsBlocks.length; i++) {
+      totalDataCount += rsBlocks[i].dataCount;
+    }
 
+    if (buffer.bitLength <= totalDataCount * 8) {
+      return typeNumber;
+    }
+  }
 
-
-  };
-
-
-
+  throw Error("data length too high to detect type number")
 }
 
 /**
@@ -349,8 +348,14 @@ var mapData = function(data, maskPattern, qrcode) {
  */
 export function getLostPoint(qrcode) {
 
-  var moduleCount = qrcode.moduleCount;
-
+  const {moduleCount, modules} = qrcode;
+  /**
+   * 
+   * @param {number} r 
+   * @param {number} c 
+   * @returns 
+   */
+  const isDark = (r, c) => modules[r][c]
   var lostPoint = 0;
 
   // LEVEL1
@@ -359,7 +364,7 @@ export function getLostPoint(qrcode) {
     for (var col = 0; col < moduleCount; col += 1) {
 
       var sameCount = 0;
-      var dark = qrcode.isDark(row, col);
+      var dark = isDark(row, col);
 
       for (var r = -1; r <= 1; r += 1) {
 
@@ -377,7 +382,7 @@ export function getLostPoint(qrcode) {
             continue;
           }
 
-          if (dark == qrcode.isDark(row + r, col + c) ) {
+          if (dark == isDark(row + r, col + c) ) {
             sameCount += 1;
           }
         }
@@ -394,10 +399,10 @@ export function getLostPoint(qrcode) {
   for (var row = 0; row < moduleCount - 1; row += 1) {
     for (var col = 0; col < moduleCount - 1; col += 1) {
       var count = 0;
-      if (qrcode.isDark(row, col) ) count += 1;
-      if (qrcode.isDark(row + 1, col) ) count += 1;
-      if (qrcode.isDark(row, col + 1) ) count += 1;
-      if (qrcode.isDark(row + 1, col + 1) ) count += 1;
+      if (isDark(row, col) ) count += 1;
+      if (isDark(row + 1, col) ) count += 1;
+      if (isDark(row, col + 1) ) count += 1;
+      if (isDark(row + 1, col + 1) ) count += 1;
       if (count == 0 || count == 4) {
         lostPoint += 3;
       }
@@ -408,13 +413,13 @@ export function getLostPoint(qrcode) {
 
   for (var row = 0; row < moduleCount; row += 1) {
     for (var col = 0; col < moduleCount - 6; col += 1) {
-      if (qrcode.isDark(row, col)
-          && !qrcode.isDark(row, col + 1)
-          &&  qrcode.isDark(row, col + 2)
-          &&  qrcode.isDark(row, col + 3)
-          &&  qrcode.isDark(row, col + 4)
-          && !qrcode.isDark(row, col + 5)
-          &&  qrcode.isDark(row, col + 6) ) {
+      if (isDark(row, col)
+          && !isDark(row, col + 1)
+          &&  isDark(row, col + 2)
+          &&  isDark(row, col + 3)
+          &&  isDark(row, col + 4)
+          && !isDark(row, col + 5)
+          &&  isDark(row, col + 6) ) {
         lostPoint += 40;
       }
     }
@@ -422,13 +427,13 @@ export function getLostPoint(qrcode) {
 
   for (var col = 0; col < moduleCount; col += 1) {
     for (var row = 0; row < moduleCount - 6; row += 1) {
-      if (qrcode.isDark(row, col)
-          && !qrcode.isDark(row + 1, col)
-          &&  qrcode.isDark(row + 2, col)
-          &&  qrcode.isDark(row + 3, col)
-          &&  qrcode.isDark(row + 4, col)
-          && !qrcode.isDark(row + 5, col)
-          &&  qrcode.isDark(row + 6, col) ) {
+      if (isDark(row, col)
+          && !isDark(row + 1, col)
+          &&  isDark(row + 2, col)
+          &&  isDark(row + 3, col)
+          &&  isDark(row + 4, col)
+          && !isDark(row + 5, col)
+          &&  isDark(row + 6, col) ) {
         lostPoint += 40;
       }
     }
@@ -440,7 +445,7 @@ export function getLostPoint(qrcode) {
 
   for (var col = 0; col < moduleCount; col += 1) {
     for (var row = 0; row < moduleCount; row += 1) {
-      if (qrcode.isDark(row, col) ) {
+      if (isDark(row, col) ) {
         darkCount += 1;
       }
     }
