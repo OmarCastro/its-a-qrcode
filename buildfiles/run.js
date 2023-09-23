@@ -6,11 +6,13 @@ import { resolve, basename } from 'node:path'
 import { existsSync } from 'node:fs'
 import { promisify } from 'node:util'
 import { exec, spawn } from 'node:child_process'
+
 const execPromise = promisify(exec)
 
 const projectPathURL = new URL('../', import.meta.url)
 const pathFromProject = (path) => new URL(path, projectPathURL).pathname
 process.chdir(pathFromProject('.'))
+let updateDevServer = () => {}
 
 const args = process.argv.slice(2)
 
@@ -83,6 +85,7 @@ async function execDevEnvironment () {
   for await (const change of watcher) {
     console.log(`file "${change.filename}" changed`)
     await Promise.all([execBuild(), execTests()])
+    updateDevServer()
     await execlintCode()
   }
 }
@@ -245,42 +248,51 @@ function cmdSpawn (command, options = {}) {
 }
 
 async function openDevServer () {
-  const { default: mkcert } = await import('mkcert')
-  const { default: liveServer } = await import('live-server')
 
-  const ca = await mkcert.createCA({
-    organization: 'Hello CA',
-    countryCode: 'NP',
-    state: 'Bagmati',
-    locality: 'Kathmandu',
-    validityDays: 365,
-  })
+  const { default: serve } = await import('wonton')
+  const { default: open } = await import('open')
 
-  const cert = await mkcert.createCert({
-    domains: ['127.0.0.1', 'localhost'],
-    validityDays: 365,
-    caKey: ca.key,
-    caCert: ca.cert,
-  })
+  const certFilePath = '.tmp/dev-server/cert.crt'
+  const keyFilePath = '.tmp/dev-server/cert.key'
 
-  const params = {
-    port: 8181, // Set the server port. Defaults to 8080.
-    host: '127.0.0.1', // Set the address to bind to. Defaults to 0.0.0.0 or process.env.IP.
-    open: '/build/docs', // Set root directory that's being served. Defaults to cwd.
-    watch: ['build'],
-    ignore: 'scss,my/templates', // comma-separated string for paths to ignore
-    file: 'index.html', // When set, serve this file (server root relative) for every 404 (useful for single-page applications)
-    wait: 1000, // Waits for all changes, before reloading. Defaults to 0 sec.
-    mount: [['/components', './node_modules']], // Mount a directory to a route.
-    logLevel: 2, // 0 = errors only, 1 = some, 2 = lots
-    middleware: [function (req, res, next) { next() }], // Takes an array of Connect-compatible middleware that are injected into the server middleware stack
-    https: {
-      cert: `${cert.cert}\n${ca.cert}`,
-      key: cert.key,
-    },
+  if(!existsSync(certFilePath) || !existsSync(keyFilePath)){  
+    const { default: mkcert } = await import('mkcert')
+    await mkdir_p('.tmp/dev-server')
+    const ca = await mkcert.createCA({
+      organization: 'Hello CA',
+      countryCode: 'NP',
+      state: 'Bagmati',
+      locality: 'Kathmandu',
+      validityDays: 365,
+    })
+  
+    const cert = await mkcert.createCert({
+      domains: ['127.0.0.1', 'localhost'],
+      validityDays: 365,
+      caKey: ca.key,
+      caCert: ca.cert,
+    })
+  
+    await fs.writeFile(certFilePath, `${cert.cert}\n${ca.cert}`)
+    await fs.writeFile(keyFilePath, cert.key)
   }
 
-  liveServer.start(params)
+  const host = "localhost"
+  const port = 8181
+  
+  const params = {
+    host, port,
+    fallback: "index.html",
+    live: true,
+    root: pathFromProject('.'),
+    tls: {
+      cert: certFilePath,
+      key: keyFilePath,
+    },
+  }
+  serve.start(params)
+  updateDevServer = serve.update 
+  open(`https://${host}:${port}/build/docs`)
 }
 
 function wait (ms) {
