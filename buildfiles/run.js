@@ -248,14 +248,13 @@ function cmdSpawn (command, options = {}) {
 }
 
 async function openDevServer () {
-
   const { default: serve } = await import('wonton')
   const { default: open } = await import('open')
 
   const certFilePath = '.tmp/dev-server/cert.crt'
   const keyFilePath = '.tmp/dev-server/cert.key'
 
-  if(!existsSync(certFilePath) || !existsSync(keyFilePath)){  
+  if (!existsSync(certFilePath) || !existsSync(keyFilePath)) {
     const { default: mkcert } = await import('mkcert')
     await mkdir_p('.tmp/dev-server')
     const ca = await mkcert.createCA({
@@ -265,24 +264,25 @@ async function openDevServer () {
       locality: 'Kathmandu',
       validityDays: 365,
     })
-  
+
     const cert = await mkcert.createCert({
       domains: ['127.0.0.1', 'localhost'],
       validityDays: 365,
       caKey: ca.key,
       caCert: ca.cert,
     })
-  
+
     await fs.writeFile(certFilePath, `${cert.cert}\n${ca.cert}`)
     await fs.writeFile(keyFilePath, cert.key)
   }
 
-  const host = "localhost"
+  const host = 'localhost'
   const port = 8181
-  
+
   const params = {
-    host, port,
-    fallback: "index.html",
+    host,
+    port,
+    fallback: 'index.html',
     live: true,
     root: pathFromProject('.'),
     tls: {
@@ -291,7 +291,7 @@ async function openDevServer () {
     },
   }
   serve.start(params)
-  updateDevServer = serve.update 
+  updateDevServer = serve.update
   open(`https://${host}:${port}/build/docs`)
 }
 
