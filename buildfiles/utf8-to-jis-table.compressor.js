@@ -1,6 +1,7 @@
 /* eslint-disable object-property-newline */
 import { usingTable, getUtf8ToJisTable } from '../src/utils/utf8-to-jis-table.js'
 import { hexToBase64 } from '../src/utils/text-decode-encode.util.js'
+import { ESLint } from 'eslint'
 
 import pkg from 'deep-diff'
 const { diff } = pkg
@@ -120,12 +121,17 @@ console.log(diff(getUtf8ToJisTable(), table) ? '[WARN] Code not compatible with 
 
 if (!compressionDiff) {
   const code = `export default ${JSON.stringify(tableMap, null, 2)}`
+
+  const eslint = new ESLint({ fix: true })
+  const results = await eslint.lintText(code)
+  const lintedCode = results[0].output
+
   const { writeFileSync, readFileSync } = await import('fs')
 
   const fileToWrite = new URL('../src/utils/utf8-to-jis-table.constants.js', import.meta.url)
   const currentCode = readFileSync(fileToWrite)
-  if (code !== currentCode) {
-    writeFileSync(fileToWrite, code)
+  if (lintedCode !== currentCode) {
+    writeFileSync(fileToWrite, lintedCode)
     console.log(`[INFO] written compressed table on ${fileToWrite.toString()}`)
   } else {
     console.log('[INFO] compressed table is updated')
