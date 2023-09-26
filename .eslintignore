@@ -1,0 +1,5 @@
+*.spec.js
+*.spec.ts
+*.min.js
+build
+node_modules
