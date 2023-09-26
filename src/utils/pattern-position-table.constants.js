@@ -1,4 +1,4 @@
-import { deepFreeze } from "./deep-freeze.util.js";
+import { deepFreeze } from './deep-freeze.util.js'
 
 export const PATTERN_POSITION_TABLE = deepFreeze([
   [],
@@ -40,5 +40,5 @@ export const PATTERN_POSITION_TABLE = deepFreeze([
   [6, 28, 54, 80, 106, 132, 158],
   [6, 32, 58, 84, 110, 136, 162],
   [6, 26, 54, 82, 110, 138, 166],
-  [6, 30, 58, 86, 114, 142, 170]
-]);
+  [6, 30, 58, 86, 114, 142, 170],
+])

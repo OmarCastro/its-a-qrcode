@@ -1,8 +1,7 @@
-import { deepFreeze } from "./deep-freeze.util.js";
-
+import { deepFreeze } from './deep-freeze.util.js'
 
 export const RS_BLOCK_TABLE = deepFreeze([
-  
+
   // L
   // M
   // Q
@@ -246,5 +245,5 @@ export const RS_BLOCK_TABLE = deepFreeze([
   [19, 148, 118, 6, 149, 119],
   [18, 75, 47, 31, 76, 48],
   [34, 54, 24, 34, 55, 25],
-  [20, 45, 15, 61, 46, 16]
-]);
+  [20, 45, 15, 61, 46, 16],
+])
