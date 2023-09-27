@@ -1,4 +1,4 @@
-import { gexp, glog } from './qr-math.js'
+import { gexp, glog } from './qr-math.util.js'
 
 class QRPolynomial {
   /** @type {Uint32Array} */
