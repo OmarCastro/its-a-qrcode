@@ -262,14 +262,13 @@ async function openDevServer () {
       countryCode: 'NP',
       state: 'Bagmati',
       locality: 'Kathmandu',
-      validityDays: 365,
+      validity: 365,
     })
 
     const cert = await mkcert.createCert({
       domains: ['127.0.0.1', 'localhost'],
-      validityDays: 365,
-      caKey: ca.key,
-      caCert: ca.cert,
+      validity: 365,
+      ca,
     })
 
     await fs.writeFile(certFilePath, `${cert.cert}\n${ca.cert}`)
