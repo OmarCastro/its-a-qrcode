@@ -133,7 +133,7 @@ async function execBuild () {
   const esbuild1 = esbuild.build({
     ...commonBuildParams,
     entryPoints: ['src/entrypoint/browser.js'],
-    outfile: '.tmp/build/dist/i18n.element.min.js',
+    outfile: '.tmp/build/dist/qrcode.element.min.js',
     format: 'esm',
     loader: {
       '.element.html': 'text',
@@ -169,6 +169,7 @@ async function execBuild () {
   logStage('build html')
 
   await execPromise(`${process.argv[0]} buildfiles/scripts/build-html.js index.html`)
+  await execPromise(`${process.argv[0]} buildfiles/scripts/build-html.js test-page.html`)
 
   logStage('move to final dir')
 
