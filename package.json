@@ -2,7 +2,7 @@
   "name": "its-a-qrcode",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "src/entrypoint/node.js",
   "type": "module",
   "directories": {
     "doc": "docs",
