@@ -26,9 +26,10 @@ const correctionLevelMap = {
 }
 
 /**
+ * Get error correction level from string
  *
  * @param {string} string
- * @returns
+ * @throws error on invalid correction level
  */
 export function fromString (string) {
   if (typeof string !== 'string') {
@@ -41,4 +42,19 @@ export function fromString (string) {
     throw new Error(`Unknown Error Correction Level: ${string} expected one of the following values (case insensitive): ${validKeys}`)
   }
   return result
+}
+
+/**
+ * Checks if error correction level is valid.
+ *
+ * Error corection is valid if `string` is one of the following values (case insensitive): `L`,`Low`,`M`,`Medium`,`Q`,`Quartile`,`H` and `High`
+ *
+ * @param {string} string
+ * @returns
+ */
+export function isValid (string) {
+  if (typeof string !== 'string') {
+    return false
+  }
+  return Object.hasOwn(correctionLevelMap, string.toLowerCase())
 }

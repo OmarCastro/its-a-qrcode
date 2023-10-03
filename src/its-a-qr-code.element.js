@@ -1,5 +1,6 @@
 import { QrCode } from './qr-code'
 import { createSvgTag } from '../src/render/svg.render.js'
+import { isValid } from './utils/qr-rs-correction-level.constants.js'
 
 export class QRCodeElement extends HTMLElement {
   constructor () {
@@ -10,6 +11,11 @@ export class QRCodeElement extends HTMLElement {
 
   connectedCallback () {
     applyQrCode(this)
+  }
+
+  get errorCorrectionLevel () {
+    const errorCorrectionLevelAttr = this.getAttribute('data-error-correction-level')
+    return errorCorrectionLevelAttr && isValid(errorCorrectionLevelAttr) ? errorCorrectionLevelAttr : 'Medium'
   }
 }
 
@@ -35,11 +41,10 @@ const observer = new MutationObserver((records) => {
 
 /**
  *
- * @param {HTMLElement} element
+ * @param {QRCodeElement} element
  */
 function applyQrCode (element) {
   const typeNumber = 0
-  const errorCorrectionLevel = null
 
   const { shadowRoot } = element
   if (!shadowRoot) {
@@ -51,7 +56,7 @@ function applyQrCode (element) {
     return
   }
 
-  const qr = new QrCode(typeNumber || 4, errorCorrectionLevel || 'M')
+  const qr = new QrCode(typeNumber, element.errorCorrectionLevel)
   qr.addData(textContent, 'Byte')
   qr.make()
 

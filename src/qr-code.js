@@ -24,7 +24,7 @@ export class QrCode {
 
   /**
    * @param {number} typeNumber
-   * @param { "L" | 'M' | 'Q' | 'H'} errorCorrectionLevel
+   * @param {string} errorCorrectionLevel
    */
   constructor (typeNumber, errorCorrectionLevel) {
     this.typeNumber = typeNumber
