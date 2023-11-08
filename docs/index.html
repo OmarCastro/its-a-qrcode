@@ -1,39 +1,87 @@
-<html>
+<!doctype html>
+<html lang="en">
     <head>
-        <link rel="stylesheet" href="doc.css">
-        <script defer src="doc.js"></script>
+        <title>It's i18n</title>
+        <meta name="description" content="documentation of 'it's i18n' component">
+        <meta name="keywords" content="i18n webcomponents">
+        <meta charset="UTF-8">
+        <script type="module" src="dist/qrcode.element.min.js?named=qr-code" async></script>
+        <script type="module" src="doc.js" async></script>
+
+        <meta name="viewport" content="width=device-width">
+        <link rel="stylesheet" href="doc.css" ss:inline>
     </head>
     <body>
-        <div class="qrcode">
-        <form name="qrForm">
-            <span>TypeNumber:</span>
-            <select name="t"></select>
-            <span>ErrorCorrectionLevel:</span>
-            <select name="e">
-              <option value="L">L(7%)</option>
-              <option value="M" selected>M(15%)</option>
-              <option value="Q">Q(25%)</option>
-              <option value="H">H(30%)</option>
-            </select>
-            <span>Mode:</span>
-            <select name="m">
-              <option value="Numeric">Numeric</option>
-              <option value="Alphanumeric">Alphanumeric</option>
-              <option value="Byte" selected>Byte</option>
-              <option value="Kanji">Kanji</option>
-            </select>
-            <span>Multibyte:</span>
-            <select name="mb">
-              <option value="default">None</option>
-              <option value="SJIS">SJIS</option>
-              <option value="UTF-8" selected>UTF-8</option>
-            </select>
-            <br/>
-            <textarea name="msg" rows="10" cols="40">Hello QR Code!</textarea>
-            <br/>
-            <input type="button" class="button--update" value="update"/>
-            <div id="qr"></div>
-            </form>
+        <div class="sidebar">
+
+        <div class="toc">
+            <strong>Table of contents</strong>
+
+            <ul ss:toc></ul>
+
         </div>
+    </div>
+    <div class="content">
+
+        <h1 class="no-toc">
+            It's i18n
+        </h1>
+
+        <section class="section section--badge">
+            <a href="reports/coverage/unit" aria-label="Show test code coverage information">
+                <img src="reports/coverage/unit/coverage-badge-a11y.svg"></svg>
+            </a>
+            <a href="reports/playwright-report" aria-label="Show test results">
+                <img src="reports/test-results/test-results-badge-a11y.svg" ></svg>
+            </a>
+            <a href="https://github.com/OmarCastro/its-i18n" aria-label="go to Github repository" title="go to Github repository">
+                <img src="reports/license-badge-a11y.svg" ></svg>
+            </a>
+            <a href="https://www.npmjs.com/package/its-i18n" aria-label="go to NPM package" title="go to NPM package">
+                <img src="reports/npm-version-badge-a11y.svg" ></svg>
+            </a>
+
+            <!--a href="https://github.com/OmarCastro/its-a-color-wheel" aria-label="go to Github repository" title="go to Github repository">
+                <img src="https://img.shields.io/github/v/release/OmarCastro/its-i18n?style=for-the-badge" alt="project version" height="30" width="150" ></img>
+            </a-->
+        </section>
+
+        <section class="section section--introduction">
+            <h2> Introducion </h2>
+
+
+        </section>
+
+
+        
+
+        <section class="section section--getting-started" ss:markdown>
+            ## Getting started
+            ### CDN
+
+        
+
+        </section>
+
+        <section class="section section--getting-started" ss:markdown>
+          
+
+        </section>
+        <section class="section section--js" ss:markdown>
+           
+        </section>
+        <section class="section section--examples">
+
+        <h2> Examples </h2>
+
+        <span ss:markdown>
+         
+        </span>
+
+        <h3> Hello world </h3>
+
+        <qr-code>Hello world</qr-code>
+
+        
     </body>
 </html>
