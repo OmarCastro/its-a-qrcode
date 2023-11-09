@@ -6,31 +6,30 @@ body, html {
   margin:0; padding: 0;
   height: 100%;
 }
+
 body {
-    font-family: Helvetica Neue, Helvetica, Arial;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-size: 1em;
     color:#333;
 }
 .small { font-size: 0.8rem; }
-*, *:after, *:before {
-  -webkit-box-sizing:border-box;
-      -moz-box-sizing:border-box;
+
+*, *::after, *::before {
           box-sizing:border-box;
   }
 h1 { font-size: 1.5rem; margin: 0;}
 h2 { font-size: 1rem; }
+
 pre {
     font: 0.9rem/1.4 Consolas, "Liberation Mono", Menlo, Courier, monospace;
     margin: 0;
     padding: 0;
-    -moz-tab-size: 2;
-    -o-tab-size:  2;
     tab-size: 2;
 }
 a { color:#0074D9; text-decoration:none; }
 a:hover { text-decoration:underline; }
 .strong { font-weight: bold; }
-.space-top1 { padding: 10px 0 0 0; }
+.space-top1 { padding: 10px 0 0; }
 .pad2y { padding: 20px 0; }
 .pad1y { padding: 10px 0; }
 .pad2x { padding: 0 20px; }
@@ -40,7 +39,8 @@ a:hover { text-decoration:underline; }
 .space-right2 { padding-right:20px; }
 .center { text-align:center; }
 .clearfix { display:block; }
-.clearfix:after {
+
+.clearfix::after {
   content:'';
   display:block;
   height:0;
@@ -48,14 +48,15 @@ a:hover { text-decoration:underline; }
   visibility:hidden;
   }
 .fl { float: left; }
-@media only screen and (max-width:640px) {
+
+@media only screen and (width <=640px) {
   .col3 { width:100%; max-width:100%; }
   .hide-mobile { display:none!important; }
 }
 
 .quiet {
   color: #7f7f7f;
-  color: rgba(0,0,0,0.5);
+  color: rgb(0 0 0 / 50%);
 }
 .quiet a { opacity: 0.7; }
 
@@ -70,9 +71,10 @@ a:hover { text-decoration:underline; }
 }
 
 div.path a:link, div.path a:visited { color: #333; }
+
 table.coverage {
   border-collapse: collapse;
-  margin: 10px 0 0 0;
+  margin: 10px 0 0;
   padding: 0;
 }
 
@@ -81,10 +83,12 @@ table.coverage td {
   padding: 0;
   vertical-align: top;
 }
+
 table.coverage td.line-count {
     text-align: right;
     padding: 0 5px 0 20px;
 }
+
 table.coverage td.line-coverage {
     text-align: right;
     padding-right: 10px;
@@ -96,6 +100,7 @@ table.coverage td span.cline-any {
     padding: 0 5px;
     width: 100%;
 }
+
 .missing-if-branch {
     display: inline-block;
     margin-right: 5px;
@@ -114,9 +119,11 @@ table.coverage td span.cline-any {
     background: #ccc;
     color: white;
 }
+
 .missing-if-branch .typ, .skip-if-branch .typ {
     color: inherit !important;
 }
+
 .coverage-summary {
   border-collapse: collapse;
   width: 100%;
@@ -127,58 +134,73 @@ table.coverage td span.cline-any {
 .coverage-summary tbody { border: 1px solid #bbb; }
 .coverage-summary td { border-right: 1px solid #bbb; }
 .coverage-summary td:last-child { border-right: none; }
+
 .coverage-summary th {
   text-align: left;
   font-weight: normal;
   white-space: nowrap;
 }
 .coverage-summary th.file { border-right: none !important; }
-/*.coverage-summary th.pct { }*/
+
+/* .coverage-summary th.pct { } */
 .coverage-summary th.pic,
 .coverage-summary th.abs,
 .coverage-summary td.pct,
 .coverage-summary td.abs { text-align: right; }
 .coverage-summary td.file { white-space: nowrap;  }
 .coverage-summary td.pic { min-width: 120px !important;  }
-/*.coverage-summary tfoot td { }*/
+
+/* .coverage-summary tfoot td { } */
 
 .coverage-summary .sorter {
     height: 10px;
     width: 7px;
     display: inline-block;
     margin-left: 0.5em;
-    background: url(sort-arrow-sprite.png) no-repeat scroll 0 0 transparent;
+    background: url("sort-arrow-sprite.png") no-repeat scroll 0 0 transparent;
 }
+
 .coverage-summary .sorted .sorter {
     background-position: 0 -20px;
 }
+
 .coverage-summary .sorted-desc .sorter {
     background-position: 0 -10px;
 }
 .status-line {  height: 10px; }
+
 /* yellow */
 .cbranch-no { background: yellow !important; color: #111; }
+
 /* dark red */
 .red.solid, .status-line.low, .low .cover-fill { background:#921F39 }
 .low .chart { border:1px solid #921F39 }
+
 .highlighted,
 .highlighted .cstat-no, .highlighted .fstat-no, .highlighted .cbranch-no{
   background: #921F39 !important;
 }
+
 /* medium red */
-.cstat-no, .fstat-no, .cbranch-no, .cbranch-no { background:#F6C6CE }
+.cstat-no, .fstat-no, .cbranch-no { background:#F6C6CE }
+
 /* light red */
 .low, .cline-no { background:#FCE1E5 }
+
 /* light green */
-.high, .cline-yes { background:rgb(230,245,208) }
+.high, .cline-yes { background:rgb(230 245 208) }
+
 /* medium green */
-.cstat-yes { background:rgb(161,215,106) }
+.cstat-yes { background:rgb(161 215 106) }
+
 /* dark green */
-.status-line.high, .high .cover-fill { background:rgb(77,146,33) }
-.high .chart { border:1px solid rgb(77,146,33) }
+.status-line.high, .high .cover-fill { background:rgb(77 146 33) }
+.high .chart { border:1px solid rgb(77 146 33) }
+
 /* dark yellow (gold) */
 .status-line.medium, .medium .cover-fill { background: #f9cd0b; }
 .medium .chart { border:1px solid #f9cd0b; }
+
 /* light yellow */
 .medium { background: #fff4c2; }
 
@@ -200,15 +222,19 @@ span.cline-neutral { background: #eaeaea; }
   display:inline-block;
   height: 12px;
 }
+
 .chart {
   line-height: 0;
 }
+
 .cover-empty {
     background: white;
 }
+
 .cover-full {
     border-right: none !important;
 }
+
 pre.prettyprint {
     border: none !important;
     padding: 0 !important;
@@ -223,6 +249,7 @@ pre.prettyprint {
   height: 100%;
   margin: 0 auto -48px;
 }
+
 .footer, .push {
   height: 48px;
 }
@@ -233,8 +260,9 @@ pre.prettyprint {
     color:#ddd;
     background:#222;
   }
+
   .quiet {
-    color: rgba(255,255,255,0.7);
+    color: rgb(255 255 255 / 70%);
   }
 
   .cover-empty {
@@ -245,23 +273,31 @@ pre.prettyprint {
 
   /* yellow */
   .cbranch-no { background: #550 !important; color: #ddd; }
+
   /* dark red */
   .red.solid, .status-line.low, .low .cover-fill { background:#921F39 }
   .low .chart { border:1px solid #921F39 }
+
   .highlighted,
   .highlighted .cstat-no, .highlighted .fstat-no, .highlighted .cbranch-no{
     background: #921F39 !important;
   }
+
   /* medium red */
-  .cstat-no, .fstat-no, .cbranch-no, .cbranch-no { background:#390911 }
+  .cstat-no, .fstat-no, .cbranch-no { background:#390911 }
+
   /* light red */
   .low, .cline-no { background:#921F39 }
+
   /* light green */
   .high, .cline-yes { background:#36471c }
+
   /* medium green */
   .cstat-yes { background:#526d2a }
+
   /* dark green */
   .status-line.high, .high .cover-fill { background:#1d541a }
+
   /* dark yellow (gold) */
   .status-line.medium, .medium .cover-fill { background: #755F00; }
   .medium .chart { border:1px solid #755F00; }
