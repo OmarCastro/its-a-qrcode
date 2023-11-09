@@ -1,3 +1,4 @@
+/* eslint-disable camelcase, max-lines-per-function, jsdoc/require-jsdoc, jsdoc/require-param-description */
 import { makeBadge } from 'badge-maker'
 import { readFile as fsReadFile, writeFile } from 'node:fs/promises'
 import { JSDOM } from 'jsdom'
@@ -13,6 +14,8 @@ const body = document.body
 const projectPath = new URL('../../', import.meta.url).pathname
 
 const readFile = (path) => fsReadFile(path, { encoding: 'utf8' })
+
+const BADGE_STYLE = 'for-the-badge'
 
 const colors = {
   green: '#007700',
@@ -38,22 +41,8 @@ function badgeColor (pct) {
   return 'red'
 }
 
-const applyA11yTheme = (svgContent) => {
-  body.innerHTML = svgContent
-  const svg = body.querySelector('svg')
-  if (!svg) { return svgContent }
+const svgStyle = (color) => {
   const style = document.createElement('style')
-  svg.prepend(style)
-  svg.querySelectorAll('text').forEach(el => el.removeAttribute('fill'))
-  let color = colors.red
-  svg.querySelectorAll('rect').forEach((el, index) => {
-    if (index <= 0) {
-      el.classList.add('label')
-    } else {
-      color = el.getAttribute('fill') || colors.red
-    }
-    el.removeAttribute('fill')
-  })
   style.innerHTML = `
   text { fill: #333; }
   rect.label { fill: #ccc; }
@@ -64,6 +53,25 @@ const applyA11yTheme = (svgContent) => {
     rect { fill: ${color} }
   }
   `.replaceAll(/\n+\s*/g, '')
+  return style
+}
+
+const applyA11yTheme = (svgContent) => {
+  body.innerHTML = svgContent
+  const svg = body.querySelector('svg')
+  if (!svg) { return svgContent }
+  svg.querySelectorAll('text').forEach(el => el.removeAttribute('fill'))
+  const rects = Array.from(svg.querySelectorAll('rect'))
+  rects.slice(0, 1).forEach(el => {
+    el.classList.add('label')
+    el.removeAttribute('fill')
+  })
+  let color = colors.red
+  rects.slice(1).forEach(el => {
+    color = el.getAttribute('fill') || colors.red
+    el.removeAttribute('fill')
+  })
+  svg.prepend(svgStyle(color))
 
   return svg.outerHTML
 }
@@ -74,7 +82,7 @@ async function makeBadgeForCoverages (path) {
     label: 'coverage',
     message: `${json.total.lines.pct}%`,
     color: badgeColor(json.total.lines.pct),
-    style: 'for-the-badge',
+    style: BADGE_STYLE,
   })
 
   await writeFile(`${path}/coverage-badge.svg`, svg)
@@ -92,7 +100,7 @@ async function makeBadgeForTestResult (path) {
     label: 'tests',
     message: `${passedAmount} / ${testAmount}`,
     color: passed ? '#007700' : '#aa0000',
-    style: 'for-the-badge',
+    style: BADGE_STYLE,
   })
 
   await writeFile(`${path}/test-results-badge.svg`, svg)
@@ -106,7 +114,7 @@ async function makeBadgeForLicense () {
     label: 'license',
     message: pkg.license,
     color: '#007700',
-    style: 'for-the-badge',
+    style: BADGE_STYLE,
   })
 
   await writeFile(`${projectPath}/reports/license-badge.svg`, svg)
@@ -122,7 +130,7 @@ async function makeBadgeForNPMVersion () {
     label: 'npm',
     message: version.stdout.trim(),
     color: '#007ec6',
-    style: 'for-the-badge',
+    style: BADGE_STYLE,
   })
 
   await writeFile(`${projectPath}/reports/npm-version-badge.svg`, svg)

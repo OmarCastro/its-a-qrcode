@@ -1,9 +1,13 @@
+/* eslint-disable camelcase, max-lines-per-function, jsdoc/require-jsdoc, jsdoc/require-param-description */
 import Prism from 'prismjs'
-import { globSync } from 'glob'
+import { minimatch } from 'minimatch'
 import { minify } from 'html-minifier'
 import { imageSize } from 'image-size'
 import { JSDOM } from 'jsdom'
 import { marked } from 'marked'
+import { existsSync } from 'node:fs'
+import { readdir, readFile } from 'node:fs/promises'
+import { resolve, relative } from 'node:path'
 
 const dom = new JSDOM('', {
   url: import.meta.url,
@@ -42,6 +46,7 @@ const exampleCode = (strings, ...expr) => {
   for (let i = 0; i < expr.length; i++) {
     statement += String(expr[i]).replace(/</g, '&lt')
       .replaceAll('{{elementName}}', '<span class="component-name-ref keep-markup">i18n-container</span>')
+      .replaceAll('{{elementNameEditable}}', '<span class="component-name-edit keep-markup" contenteditable="true">i18n-container</span>')
       .replace(/{{([^¦]+)¦lang}}/g, '<span contenteditable="true" class="lang-edit">$1</span>')
       .replace(/{{([^¦]+)¦lang¦([^}]+)}}/g, '<span contenteditable="true" class="lang-edit" data-bind-selector="$2">$1</span>')
       .replace(/{{([^¦]+)¦data-i18n}}/, '<span contenteditable="true" class="data-i18n-edit">$1</span>')
@@ -55,9 +60,13 @@ const exampleCode = (strings, ...expr) => {
 
 /**
  * @param {string} selector
- * @returns
+ * @returns {Element[]} element array to use array methods
  */
 const queryAll = (selector) => [...document.documentElement.querySelectorAll(selector)]
+
+const readFileImport = (file) => existsSync(`${docsOutputPath}/${file}`) ? fs.readFileSync(`${docsOutputPath}/${file}`, 'utf8') : fs.readFileSync(`${docsPath}/${file}`, 'utf8')
+
+const promises = []
 
 queryAll('script.html-example').forEach(element => {
   const pre = document.createElement('pre')
@@ -83,19 +92,25 @@ queryAll('script.js-example').forEach(element => {
   element.replaceWith(pre)
 })
 
-queryAll('code').forEach(element => {
-  Prism.highlightElement(element, false)
-})
-
 queryAll('svg[ss:include]').forEach(element => {
   const ssInclude = element.getAttribute('ss:include')
-  const svgText = fs.readFileSync(`${docsOutputPath}/${ssInclude}`, 'utf8')
+  const svgText = readFileImport(ssInclude)
   element.outerHTML = svgText
 })
 
-queryAll('[ss:markdown]').forEach(element => {
+queryAll('[ss:markdown]:not([ss:include])').forEach(element => {
   const md = dedent(element.innerHTML)
   element.innerHTML = marked(md, { mangle: false, headerIds: false })
+})
+
+queryAll('[ss:markdown][ss:include]').forEach(element => {
+  const ssInclude = element.getAttribute('ss:include')
+  const md = readFileImport(ssInclude)
+  element.innerHTML = marked(md, { mangle: false, headerIds: false })
+})
+
+queryAll('code').forEach(element => {
+  Prism.highlightElement(element, false)
 })
 
 queryAll('img[ss:size]').forEach(element => {
@@ -106,9 +121,9 @@ queryAll('img[ss:size]').forEach(element => {
   element.setAttribute('height', `${size.height}`)
 })
 
-queryAll('img[ss:badge-attrs]').forEach(element => {
+promises.push(...queryAll('img[ss:badge-attrs]').map(async (element) => {
   const imageSrc = element.getAttribute('src')
-  const svgText = fs.readFileSync(`${docsOutputPath}/${imageSrc}`, 'utf8')
+  const svgText = await readFile(`${docsOutputPath}/${imageSrc}`, 'utf8')
   const div = document.createElement('div')
   div.innerHTML = svgText
   element.removeAttribute('ss:badge-attrs')
@@ -120,7 +135,7 @@ queryAll('img[ss:badge-attrs]').forEach(element => {
 
   const title = svg.querySelector('title')?.textContent
   if (title) { element.setAttribute('title', title) }
-})
+}))
 
 queryAll('link[href][rel="stylesheet"][ss:inline]').forEach(element => {
   const href = element.getAttribute('href')
@@ -128,55 +143,67 @@ queryAll('link[href][rel="stylesheet"][ss:inline]').forEach(element => {
   element.outerHTML = `<style>${cssText}</style>`
 })
 
-queryAll('link[href][ss:repeat-glob]').forEach(element => {
+promises.push(...queryAll('link[href][ss:repeat-glob]').map(async (element) => {
   const href = element.getAttribute('href')
   if (!href) { return }
-  globSync(href, { cwd: docsOutputPath }).forEach(value => {
+  for await (const filename of getFiles(docsOutputPath)) {
+    const relativePath = relative(docsOutputPath, filename)
+    if (!minimatch(relativePath, href)) { continue }
     const link = document.createElement('link')
     for (const { name, value } of element.attributes) {
       link.setAttribute(name, value)
     }
     link.removeAttribute('ss:repeat-glob')
-    link.setAttribute('href', value)
+    link.setAttribute('href', filename)
     element.insertAdjacentElement('afterend', link)
-  })
+  }
   element.remove()
-})
+}))
+
+const tocUtils = {
+  getOrCreateId: (element) => {
+    const id = element.getAttribute('id') || element.textContent.trim().toLowerCase().replaceAll(/\s+/g, '-')
+    if (!element.hasAttribute('id')) {
+      element.setAttribute('id', id)
+    }
+    return id
+  },
+  createMenuItem: (element) => {
+    const a = document.createElement('a')
+    const li = document.createElement('li')
+    a.href = `#${element.id}`
+    a.textContent = element.textContent
+    li.append(a)
+    return li
+  },
+  getParentOL: (element, path) => {
+    while (path.length > 0) {
+      const [title, possibleParent] = path.at(-1)
+      if (title.tagName < element.tagName) {
+        const possibleParentList = possibleParent.querySelector('ol')
+        if (!possibleParentList) {
+          const ol = document.createElement('ol')
+          possibleParent.append(ol)
+          return ol
+        }
+        return possibleParentList
+      }
+      path.pop()
+    }
+    return null
+  },
+}
+
+await Promise.all(promises)
 
 queryAll('[ss:toc]').forEach(element => {
   const ol = document.createElement('ol')
   /** @type {[HTMLElement, HTMLElement][]} */
   const path = []
-  for (const element of queryAll('h1, h2, h3, h4, h5, h6')) {
-    if (element.matches('.no-toc')) {
-      continue
-    }
-    const id = element.getAttribute('id') || element.textContent.trim().toLowerCase().replaceAll(/\s+/g, '-')
-    if (!element.hasAttribute('id')) {
-      element.setAttribute('id', id)
-    }
-    const li = document.createElement('li')
-    const a = document.createElement('a')
-    a.href = `#${id}`
-    a.textContent = element.textContent
-    li.append(a)
-
-    const parent = (() => {
-      while (path.length > 0) {
-        const [title, possibleParent] = path.at(-1)
-        if (title.tagName < element.tagName) {
-          const possibleParentList = possibleParent.querySelector('ol')
-          if (!possibleParentList) {
-            const ol = document.createElement('ol')
-            possibleParent.append(ol)
-            return ol
-          }
-          return possibleParentList
-        }
-        path.pop()
-      }
-      return ol
-    })()
+  for (const element of queryAll(':is(h2, h3, h4, h5, h6):not(.no-toc), h1.yes-toc')) {
+    tocUtils.getOrCreateId(element)
+    const parent = tocUtils.getParentOL(element, path) || ol
+    const li = tocUtils.createMenuItem(element)
     parent.append(li)
     path.push([element, li])
   }
@@ -213,4 +240,17 @@ function dedent (templateStrings, ...values) {
     string += values[i] + strings[i + 1]
   }
   return string
+}
+
+async function * getFiles (dir) {
+  const dirents = await readdir(dir, { withFileTypes: true })
+
+  for (const dirent of dirents) {
+    const res = resolve(dir, dirent.name)
+    if (dirent.isDirectory()) {
+      yield * getFiles(res)
+    } else {
+      yield res
+    }
+  }
 }

@@ -1,13 +1,14 @@
 #!/usr/bin/env -S node --input-type=module
-/* eslint-disable camelcase */
+/* eslint-disable camelcase, max-lines-per-function, jsdoc/require-jsdoc, jsdoc/require-param-description */
 import process from 'node:process'
 import fs from 'node:fs/promises'
 import { resolve, basename } from 'node:path'
-import { existsSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 import { promisify } from 'node:util'
-import { exec, spawn } from 'node:child_process'
+import { exec as baseExec, execFile as baseExecFile, spawn } from 'node:child_process'
 
-const execPromise = promisify(exec)
+const exec = promisify(baseExec)
+const execFile = promisify(baseExecFile)
 
 const projectPathURL = new URL('../', import.meta.url)
 const pathFromProject = (path) => new URL(path, projectPathURL).pathname
@@ -19,9 +20,7 @@ const args = process.argv.slice(2)
 const helpTask = {
   description: 'show this help',
   cb: async () => { console.log(helpText()); process.exit(0) },
-
 }
-
 const tasks = {
   build: {
     description: 'builds the project',
@@ -35,17 +34,29 @@ const tasks = {
     description: 'builds the project',
     cb: async () => { await execTests(); process.exit(0) },
   },
+  linc: {
+    description: 'validates the code only on changed files',
+    cb: async () => { process.exit(await execlintCodeOnChanged()) },
+  },
   lint: {
     description: 'validates the code',
-    cb: async () => { await execlintCode(); process.exit(0) },
+    cb: async () => { process.exit(await execlintCode()) },
   },
   dev: {
     description: 'setup dev environment',
     cb: async () => { await execDevEnvironment(); process.exit(0) },
   },
+  'dev:open': {
+    description: 'setup dev environment and opens dev server in browser',
+    cb: async () => { await execDevEnvironment({ openBrowser: true }); process.exit(0) },
+  },
   'dev-server': {
     description: 'launch dev server',
     cb: async () => { await openDevServer(); await wait(2 ** 30) },
+  },
+  'dev-server:open': {
+    description: 'launch dev server and opens in browser',
+    cb: async () => { await openDevServer({ openBrowser: true }); await wait(2 ** 30) },
   },
   help: helpTask,
   '--help': helpTask,
@@ -72,9 +83,9 @@ async function main () {
 
 await main()
 
-async function execDevEnvironment () {
-  await openDevServer()
-  await Promise.all([execlintCode(), execTests()])
+async function execDevEnvironment ({ openBrowser = false } = {}) {
+  await openDevServer({ openBrowser })
+  await Promise.all([execlintCodeOnChanged(), execTests()])
   await execBuild()
 
   const watcher = watchDirs(
@@ -86,22 +97,27 @@ async function execDevEnvironment () {
     console.log(`file "${change.filename}" changed`)
     await Promise.all([execBuild(), execTests()])
     updateDevServer()
-    await execlintCode()
+    await execlintCodeOnChanged()
   }
 }
 
 async function execTests () {
-  await cmdSpawn('TZ=UTC npx c8 --all --include "src/**/*.{js,ts}" --exclude "src/**/*.{test,spec}.{js,ts}" --temp-directory ".tmp/coverage" --report-dir reports/.tmp/coverage/unit --reporter json-summary --reporter text --reporter html playwright test')
-  if (existsSync('reports/coverage')) {
-    await mv('reports/coverage', 'reports/coverage.bak')
+  const COVERAGE_DIR = 'reports/coverage'
+  const REPORTS_TMP_DIR = 'reports/.tmp'
+  const COVERAGE_TMP_DIR = `${REPORTS_TMP_DIR}/coverage`
+  const COVERAGE_BACKUP_DIR = 'reports/coverage.bak'
+
+  await cmdSpawn('TZ=UTC npx c8 --all --include "src/**/*.{js,ts}" --exclude "src/**/*.{test,spec}.{js,ts}" --temp-directory ".tmp/coverage" --report-dir reports/.tmp/coverage/unit --reporter json-summary --reporter text-summary --reporter html playwright test')
+  if (existsSync(COVERAGE_DIR)) {
+    await mv(COVERAGE_DIR, COVERAGE_BACKUP_DIR)
   }
-  await mv('reports/.tmp/coverage', 'reports/coverage')
-  const rmTmp = rm_rf('reports/.tmp')
-  const rmBak = rm_rf('reports/coverage.bak')
+  await mv(COVERAGE_TMP_DIR, COVERAGE_DIR)
+  const rmTmp = rm_rf(REPORTS_TMP_DIR)
+  const rmBak = rm_rf(COVERAGE_BACKUP_DIR)
 
   const badges = cmdSpawn('node buildfiles/scripts/build-badges.js')
 
-  const files = Array.from(await getFiles('reports/coverage/unit'))
+  const files = Array.from(await getFiles(`${COVERAGE_DIR}/unit`))
   const cpBase = files.filter(path => basename(path) === 'base.css').map(path => fs.cp('buildfiles/assets/coverage-report-base.css', path))
   const cpPrettify = files.filter(path => basename(path) === 'prettify.css').map(path => fs.cp('buildfiles/assets/coverage-report-prettify.css', path))
   await Promise.all([rmTmp, rmBak, badges, ...cpBase, ...cpPrettify])
@@ -168,8 +184,8 @@ async function execBuild () {
 
   logStage('build html')
 
-  await execPromise(`${process.argv[0]} buildfiles/scripts/build-html.js index.html`)
-  await execPromise(`${process.argv[0]} buildfiles/scripts/build-html.js test-page.html`)
+  await exec(`${process.argv[0]} buildfiles/scripts/build-html.js index.html`)
+  await exec(`${process.argv[0]} buildfiles/scripts/build-html.js test-page.html`)
 
   logStage('move to final dir')
 
@@ -180,12 +196,40 @@ async function execBuild () {
   logEndStage()
 }
 
+async function execlintCodeOnChanged () {
+  logStartStage('linc', 'lint using eslint')
+  const returnCodeLint = await lintCode({ onlyChanged: true }, { fix: true })
+  logStage('lint using stylelint')
+  const returnStyleLint = await lintStyles({ onlyChanged: true })
+  logStage('validating json')
+  const returnJsonLint = await validateJson({ onlyChanged: true })
+  logStage('validating yaml')
+  const returnYamlLint = await validateYaml({ onlyChanged: true })
+  let returnCodeTs = 0
+  logStage('typecheck with typescript')
+  const changedFiles = await listChangedFiles()
+  if ([...changedFiles].some(changedFile => changedFile.startsWith('src/'))) {
+    returnCodeTs = await cmdSpawn('npx tsc --noEmit -p jsconfig.json')
+  } else {
+    process.stdout.write('no files to check...')
+  }
+  logEndStage()
+  return returnCodeLint + returnCodeTs + returnStyleLint + returnJsonLint + returnYamlLint
+}
+
 async function execlintCode () {
   logStartStage('lint', 'lint using eslint')
-  await cmdSpawn('npx eslint . --fix')
+  const returnCodeLint = await lintCode({ onlyChanged: false }, { fix: true })
+  logStage('lint using stylelint')
+  const returnStyleLint = await lintStyles({ onlyChanged: false })
+  logStage('validating json')
+  const returnJsonLint = await validateJson({ onlyChanged: false })
+  logStage('validating yaml')
+  const returnYamlLint = await validateYaml({ onlyChanged: false })
   logStage('typecheck with typescript')
-  await cmdSpawn('npx tsc --noEmit -p jsconfig.json')
+  const returnCodeTs = await cmdSpawn('npx tsc --noEmit -p jsconfig.json')
   logEndStage()
+  return returnCodeLint + returnCodeTs + returnStyleLint + returnJsonLint + returnYamlLint
 }
 
 async function execGithubBuildWorkflow () {
@@ -194,13 +238,17 @@ async function execGithubBuildWorkflow () {
 }
 
 function helpText () {
-  const maxTaskLength = Math.max(...['help, --help, -h', ...Object.keys(tasks)].map(text => text.length))
+  const fromNPM = isRunningFromNPMScript()
+
+  const helpArgs = fromNPM ? 'help' : 'help, --help, -h'
+  const maxTaskLength = Math.max(...[helpArgs, ...Object.keys(tasks)].map(text => text.length))
   const tasksToShow = Object.entries(tasks).filter(([_, value]) => value !== helpTask)
-  return `Usage: run <task>
+  const usageLine = fromNPM ? 'npm run <task>' : 'run <task>'
+  return `Usage: ${usageLine}
 
 Tasks: 
   ${tasksToShow.map(([key, value]) => `${key.padEnd(maxTaskLength, ' ')}  ${value.description}`).join('\n  ')}
-  ${'help, --help, -h'.padEnd(maxTaskLength, ' ')}  ${helpTask.description}`
+  ${helpArgs.padEnd(maxTaskLength, ' ')}  ${helpTask.description}`
 }
 
 /** @param {string[]} paths  */
@@ -245,12 +293,13 @@ async function checkNodeModulesFolder () {
 
 function cmdSpawn (command, options = {}) {
   const p = spawn('/bin/sh', ['-c', command], { stdio: 'inherit', ...options })
-  return new Promise((resolve) => { p.on('exit', resolve) })
+  return new Promise((resolve) => {
+    p.on('exit', (code) => resolve(code ?? 1))
+  }).then(code => +code)
 }
 
-async function openDevServer () {
+async function openDevServer ({ openBrowser = false } = {}) {
   const { default: serve } = await import('wonton')
-  const { default: open } = await import('open')
 
   const certFilePath = '.tmp/dev-server/cert.crt'
   const keyFilePath = '.tmp/dev-server/cert.key'
@@ -282,7 +331,6 @@ async function openDevServer () {
   const params = {
     host,
     port,
-    fallback: 'index.html',
     live: true,
     root: pathFromProject('.'),
     tls: {
@@ -292,7 +340,11 @@ async function openDevServer () {
   }
   serve.start(params)
   updateDevServer = serve.update
-  open(`https://${host}:${port}/build/docs`)
+
+  if (openBrowser) {
+    const { default: open } = await import('open')
+    open(`https://${host}:${port}/build/docs`)
+  }
 }
 
 function wait (ms) {
@@ -300,6 +352,108 @@ function wait (ms) {
     setTimeout(resolve, ms)
   })
 }
+
+// Linters
+
+async function lintCode ({ onlyChanged }, options) {
+  const esLintFilePatterns = ['**/*.js']
+
+  const finalFilePatterns = onlyChanged ? await listChangedFilesMatching(...esLintFilePatterns) : esLintFilePatterns
+  if (finalFilePatterns.length <= 0) {
+    process.stdout.write('no files to lint. ')
+    return 0
+  }
+  const { ESLint } = await import('eslint')
+  const eslint = new ESLint(options)
+  const formatter = await eslint.loadFormatter()
+  const results = await eslint.lintFiles(finalFilePatterns)
+
+  if (options != null && options.fix === true) {
+    await ESLint.outputFixes(results)
+  }
+
+  const filesLinted = results.length
+  process.stdout.write(`linted ${filesLinted} files. `)
+
+  const errorCount = results.reduce((acc, result) => acc + result.errorCount, 0)
+
+  const resultLog = formatter.format(results)
+  if (resultLog) {
+    console.log('')
+    console.log(resultLog)
+  } else {
+    process.stdout.write('OK...')
+  }
+  return errorCount ? 1 : 0
+}
+
+async function lintStyles ({ onlyChanged }) {
+  const styleLintFilePatterns = ['**/*.css']
+  const finalFilePatterns = onlyChanged ? await listChangedFilesMatching(...styleLintFilePatterns) : styleLintFilePatterns
+  if (finalFilePatterns.length <= 0) {
+    process.stdout.write('no stylesheets to lint. ')
+    return 0
+  }
+  const { default: stylelint } = await import('stylelint')
+  const result = await stylelint.lint({ files: finalFilePatterns })
+  const filesLinted = result.results.length
+  process.stdout.write(`linted ${filesLinted} files. `)
+
+  const output = stylelint.formatters.string(result.results)
+  if (output) {
+    console.log('\n' + output)
+  } else {
+    process.stdout.write('OK...')
+  }
+
+  return result.errored ? 1 : 0
+}
+
+async function validateJson ({ onlyChanged }) {
+  return await validateFiles({
+    patterns: ['*.json'],
+    onlyChanged,
+    validation: async (file) => JSON.parse(await fs.readFile(file, 'utf8')),
+  })
+}
+
+async function validateYaml ({ onlyChanged }) {
+  const { load } = await import('js-yaml')
+  return await validateFiles({
+    patterns: ['*.yml', '*.yaml'],
+    onlyChanged,
+    validation: async (file) => load(await fs.readFile(file, 'utf8')),
+  })
+}
+
+async function validateFiles ({ patterns, onlyChanged, validation }) {
+  const fileList = onlyChanged ? await listChangedFilesMatching(...patterns) : await listNonIgnoredFiles({ patterns })
+  if (fileList.length <= 0) {
+    process.stdout.write('no files to lint. ')
+    return 0
+  }
+  let errorCount = 0
+  const outputLines = []
+  for (const file of fileList) {
+    try {
+      await validation(file)
+    } catch (e) {
+      errorCount++
+      outputLines.push(`error in file "${file}": ${e.message}`)
+    }
+  }
+  process.stdout.write(`validated ${fileList.length} files. `)
+  const output = outputLines.join('\n')
+  if (output) {
+    console.log('\n' + outputLines)
+  } else {
+    process.stdout.write('OK...')
+  }
+
+  return errorCount ? 1 : 0
+}
+
+// File Utils
 
 async function * getFiles (dir) {
   const dirents = await fs.readdir(dir, { withFileTypes: true })
@@ -321,4 +475,62 @@ async function * watchDirs (...dirs) {
   while (true) {
     yield new Promise(resolve => { currentResolver = resolve })
   }
+}
+
+async function execCmd (command, args) {
+  const options = {
+    cwd: process.cwd(),
+    env: process.env,
+    stdio: 'pipe',
+    encoding: 'utf-8',
+  }
+  return await execFile(command, args, options)
+}
+
+async function execGitCmd (args) {
+  return (await execCmd('git', args)).stdout.trim().toString().split('\n')
+}
+
+async function listNonIgnoredFiles ({ ignorePath = '.gitignore', patterns } = {}) {
+  const { minimatch } = await import('minimatch')
+  const { join } = await import('node:path')
+  const { statSync, readdirSync } = await import('node:fs')
+  const ignorePatterns = await getIgnorePatternsFromFile(ignorePath)
+  const ignoreMatchers = ignorePatterns.map(pattern => minimatch.filter(pattern, { matchBase: true }))
+  const listFiles = (dir) => readdirSync(dir).reduce(function (list, file) {
+    const name = join(dir, file)
+    if (file === '.git' || ignoreMatchers.some(match => match(name))) { return list }
+    const isDir = statSync(name).isDirectory()
+    return list.concat(isDir ? listFiles(name) : [name])
+  }, [])
+
+  const fileList = listFiles('.')
+  if (!patterns) { return fileList }
+  const intersection = patterns.flatMap(pattern => minimatch.match(fileList, pattern, { matchBase: true, dot: true }))
+  return [...new Set(intersection)]
+}
+
+async function getIgnorePatternsFromFile (filePath) {
+  const content = await fs.readFile(filePath, 'utf8')
+  const lines = content.split('\n').filter(line => !line.startsWith('#') && line.trim() !== '')
+  return [...new Set(lines)]
+}
+
+async function listChangedFilesMatching (...patterns) {
+  const { minimatch } = await import('minimatch')
+  const changedFiles = [...(await listChangedFiles())]
+  const intersection = patterns.flatMap(pattern => minimatch.match(changedFiles, pattern, { matchBase: true }))
+  return [...new Set(intersection)]
+}
+
+async function listChangedFiles () {
+  const mainBranchName = 'main'
+  const mergeBase = await execGitCmd(['merge-base', 'HEAD', mainBranchName])
+  const diffExec = execGitCmd(['diff', '--name-only', '--diff-filter=ACMRTUB', mergeBase])
+  const lsFilesExec = execGitCmd(['ls-files', '--others', '--exclude-standard'])
+  return new Set([...(await diffExec), ...(await lsFilesExec)].filter(filename => filename.trim().length > 0))
+}
+
+function isRunningFromNPMScript () {
+  return JSON.parse(readFileSync(pathFromProject('./package.json'))).name === process.env.npm_package_name
 }
