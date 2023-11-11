@@ -157,12 +157,6 @@ label:has(.checkbox--ui-mode:checked) + .resizable {
     --ui-mode: "desktop"
 }
 
-.example {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content:space-between;
-    align-items: stretch;
-}
 
 .example__json, .example__html, .example__view {
     flex: 1 0 25%;
