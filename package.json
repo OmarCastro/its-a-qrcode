@@ -1,6 +1,6 @@
 {
   "name": "its-a-qrcode",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "",
   "main": "src/entrypoint/node.js",
   "type": "module",
@@ -21,7 +21,7 @@
     "help": "node ./buildfiles/run.js help"
   },
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {
     "@codemirror/lang-javascript": "^6.2.1",
     "@codemirror/lang-json": "^6.0.1",
