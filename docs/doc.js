@@ -67,6 +67,12 @@ document.querySelectorAll('.example').forEach(element => {
 
   element.addEventListener('input', (event) => {
     const bindSelectorAttr = 'data-bind-selector'
+
+    if (event.target.matches('.text-edit')) {
+      const selector = event.target.getAttribute(bindSelectorAttr) || 'qr-code'
+      const node = element.querySelector(selector)
+      if (node) { node.textContent = event.target.textContent }
+    }
     if (event.target.matches('.lang-edit')) {
       const selector = event.target.getAttribute(bindSelectorAttr) || '[lang]'
       const node = element.querySelector(selector)
