@@ -23,6 +23,7 @@ export class QRCodeElement extends HTMLElement {
 const observerOptions = {
   characterData: true,
   characterDataOldValue: true,
+  childList: true,
   attributes: true,
   subtree: true,
 }
