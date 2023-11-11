@@ -10,9 +10,7 @@
         "allowImportingTsExtensions": true,
         "allowJs": true,
         "declaration": true,
-        //"emitDeclarationOnly": true,
         "declarationMap": true,
-        //"noEmit": true,
         "strict": true,
         "noImplicitThis": false,
         "esModuleInterop": true,
@@ -21,18 +19,17 @@
         "lib": [
             "DOM",
             "DOM.Iterable",
-            "ESNext",
-          ],
-        
-    
+            "ESNext"
+          ]
     },
     "include": [
-        "src"
+        "src/**/*.js",
+        "src/**/*.ts"
     ],
     "exclude": [
         "**/*.spec.ts",
         "**/*.spec.js",
         "**/*.test.ts",
-        "**/*.test.js",
+        "**/*.test.js"
     ]
 }
