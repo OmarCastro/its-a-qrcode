@@ -89,6 +89,20 @@ document.querySelectorAll('.example').forEach(element => {
       node && node.setAttribute('data-i18n--title', event.target.textContent)
     }
   })
+
+  element.addEventListener('focusin', (event) => {
+    const { target } = event
+    if (target.matches('.text-edit')) {
+      target.innerHTML = target.textContent
+    }
+  })
+
+  element.addEventListener('focusout', (event) => {
+    const { target } = event
+    if (target.matches('.text-edit')) {
+      target.textContent = target.innerHTML
+    }
+  })
 })
 
 /**
