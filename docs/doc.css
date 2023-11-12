@@ -170,7 +170,6 @@ label:has(.checkbox--ui-mode:checked) + .resizable {
 }
 
 span[contenteditable="true"] {
-    display: inline-flex;
     border: 1px solid transparent;
     position: relative;
     transition: all linear 300ms;
@@ -183,7 +182,6 @@ pre:hover code span[contenteditable="true"] {
 span[contenteditable="true"]::before {
     content: "Editable";
     position: absolute;
-    bottom: 100%;
     font-size: 0.7em;
     opacity: 0;
     visibility: hidden;
@@ -192,6 +190,7 @@ span[contenteditable="true"]::before {
     transition-duration: 0s, 300ms;
     transition-delay: 300ms, 0s;
     transition-timing-function: linear;
+    transform: translateY(-100%);
 }
 
 pre:hover code span[contenteditable="true"]::before {
