@@ -2,13 +2,13 @@ import { escapeXml } from '../utils/escape-xml.util.js'
 
 /**
  *
- * @param {object} opts
- * @param {number} [opts.cellSize]
- * @param {number} [opts.margin]
- * @param {string|SvgAttr} [opts.alt]
- * @param {string|SvgAttr} [opts.title]
- * @param {boolean} [opts.scalable]
- * @param {import('../qr-code.js').QrCode} opts.qrcode
+ * @param {object} opts - funtion parameters
+ * @param {number} [opts.cellSize] - cell size in pixels, defaults to 2
+ * @param {number} [opts.margin] - margin in pixels, defaults to {@link cellSize} * 2
+ * @param {string|SvgAttr} [opts.alt] - alt text
+ * @param {string|SvgAttr} [opts.title] - qr code title
+ * @param {boolean} [opts.scalable] - flag to make the svg scalable
+ * @param {import('../qr-code.js').QrCode} opts.qrcode - QR Code data
  * @returns {string} &lt;svg> element outer HTML
  */
 export function createSvgTag ({ cellSize, margin, alt, title, qrcode, scalable }) {
@@ -16,18 +16,8 @@ export function createSvgTag ({ cellSize, margin, alt, title, qrcode, scalable }
 
   cellSize = cellSize || 2
   margin = (typeof margin === 'undefined') ? cellSize * 4 : margin
-
-  // Compose alt property surrogate
-
-  /** @type {SvgAttr} */
-  alt = (typeof alt === 'string') ? { text: alt } : alt || { text: '' }
-  alt.text ||= ''
-  alt.id ||= 'qrcode-description'
-
-  // Compose title property surrogate
-  title = (typeof title === 'string') ? { text: title } : title || { text: '' }
-  title.text = title.text || ''
-  title.id = title.id || 'qrcode-title'
+  const altAttr = normalizeAlt(alt)
+  const titleAttr = normalizeTitle(title)
 
   const size = moduleCount * cellSize + margin * 2
   const rect = 'l' + cellSize + ',0 0,' + cellSize + ' -' + cellSize + ',0 0,-' + cellSize + 'z '
@@ -36,9 +26,9 @@ export function createSvgTag ({ cellSize, margin, alt, title, qrcode, scalable }
   qrSvg += !scalable ? ' width="' + size + 'px" height="' + size + 'px"' : ''
   qrSvg += ' viewBox="0 0 ' + size + ' ' + size + '" '
   qrSvg += ' preserveAspectRatio="xMinYMin meet"'
-  qrSvg += (title.text || alt.text) ? ' role="img" aria-labelledby="' + escapeXml([title.id, alt.id].join(' ').trim()) + '"' : '' + '>'
-  qrSvg += (title.text) ? '<title id="' + escapeXml(title.id) + '">' + escapeXml(title.text) + '</title>' : ''
-  qrSvg += (alt.text) ? '<description id="' + escapeXml(alt.id) + '">' + escapeXml(alt.text) + '</description>' : ''
+  qrSvg += a11yAttributes(titleAttr, altAttr) + '>'
+  qrSvg += (titleAttr.text) ? '<title id="' + escapeXml(titleAttr.id) + '">' + escapeXml(titleAttr.text) + '</title>' : ''
+  qrSvg += (altAttr.text) ? '<description id="' + escapeXml(altAttr.id) + '">' + escapeXml(altAttr.text) + '</description>' : ''
   qrSvg += '<rect width="100%" height="100%" fill="white" cx="0" cy="0"/>'
   qrSvg += '<path d="'
 
@@ -59,7 +49,42 @@ export function createSvgTag ({ cellSize, margin, alt, title, qrcode, scalable }
 };
 
 /**
+ * Compose alt property surrogate
+ * @param {SvgAttr} title - qr code title
+ * @param {SvgAttr} alt - qr code alt
+ * @returns {string} acessibility attributes or empty string if empty `title` and `alt`
+ */
+const a11yAttributes = (title, alt) => (title.text || alt.text) ? ' role="img" aria-labelledby="' + escapeXml([title.id, alt.id].join(' ').trim()) + '"' : ''
+
+/**
+ * Compose alt property surrogate
+ * @param {string|SvgAttr} [alt] - qr code alt
+ * @returns {NormalizedSvgAttr} normalized Title
+ */
+const normalizeAlt = (alt) => {
+  const result = (typeof alt === 'string') ? { text: alt, id: '' } : { text: '', id: '', ...alt }
+  result.id = result.id || 'qrcode-description'
+  return result
+}
+
+/**
+ * Compose title property surrogate
+ * @param {string|SvgAttr} [title] - qr code title
+ * @returns {NormalizedSvgAttr} normalized Title
+ */
+const normalizeTitle = (title) => {
+  const result = (typeof title === 'string') ? { text: title, id: '' } : { text: '', id: '', ...title }
+  result.id = result.id || 'qrcode-title'
+  return result
+}
+
+/**
  * @typedef {object} SvgAttr
  * @property {string} text
  * @property {string} [id]
  */
+
+/**
+ * @typedef {Required<SvgAttr>} NormalizedSvgAttr
+ */
+
