@@ -1,9 +1,9 @@
 <!doctype html>
 <html lang="en">
     <head>
-        <title>It's i18n</title>
-        <meta name="description" content="documentation of 'it's i18n' component">
-        <meta name="keywords" content="i18n webcomponents">
+        <title>It's a QR Code</title>
+        <meta name="description" content="documentation of 'it's a QR Code' component">
+        <meta name="keywords" content="qrcode qr webcomponents">
         <meta charset="UTF-8">
         <script type="module" src="dist/qrcode.element.min.js?named=qr-code" async></script>
         <script type="module" src="doc.js" async></script>
@@ -76,15 +76,21 @@
         <section class="section section--examples">
 
         <h2> Examples </h2>
-
-        <h3> Hello world </h3>
-
         <div class="example example--basic">
+            <h3> Hello world </h3>
             <qr-code>Hello world</qr-code>
-
             <script type="text/plain" class="html-example"><{{elementName}}>{{Hello world¦text}}</{{elementName}}></script>
         </div>
 
+        <div class="example example--url-link">
+            <h3> URL link </h3>
+
+            To create a link using a QR code just put the URL link as the component text
+
+            <qr-code>https://omarcastro.github.io/its-a-qrcode/</qr-code>
+
+            <script type="text/plain" class="html-example"><{{elementName}}>{{https://omarcastro.github.io/its-a-qrcode/¦text}}</{{elementName}}></script>
+        </div>
         
     </body>
 </html>
