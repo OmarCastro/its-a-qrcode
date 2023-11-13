@@ -16,50 +16,69 @@ export function createSvgTag ({ cellSize, margin, alt, title, qrcode, scalable }
 
   cellSize = cellSize || 2
   margin = (typeof margin === 'undefined') ? cellSize * 4 : margin
-  const altAttr = normalizeAlt(alt)
-  const titleAttr = normalizeTitle(title)
+  const altProp = normalizeAlt(alt)
+  const titleProp = normalizeTitle(title)
 
   const size = moduleCount * cellSize + margin * 2
-  const rect = 'l' + cellSize + ',0 0,' + cellSize + ' -' + cellSize + ',0 0,-' + cellSize + 'z '
 
   let qrSvg = '<svg version="1.1" xmlns="http://www.w3.org/2000/svg"'
   qrSvg += !scalable ? ' width="' + size + 'px" height="' + size + 'px"' : ''
   qrSvg += ' viewBox="0 0 ' + size + ' ' + size + '" '
   qrSvg += ' preserveAspectRatio="xMinYMin meet"'
-  qrSvg += a11yAttributes(titleAttr, altAttr) + '>'
-  qrSvg += (titleAttr.text) ? '<title id="' + escapeXml(titleAttr.id) + '">' + escapeXml(titleAttr.text) + '</title>' : ''
-  qrSvg += (altAttr.text) ? '<description id="' + escapeXml(altAttr.id) + '">' + escapeXml(altAttr.text) + '</description>' : ''
+  qrSvg += a11yAttributes(titleProp, altProp) + '>'
+  qrSvg += metadataTags(titleProp, altProp)
   qrSvg += '<rect width="100%" height="100%" fill="white" cx="0" cy="0"/>'
-  qrSvg += '<path d="'
-
-  for (let r = 0; r < moduleCount; r += 1) {
-    const mr = r * cellSize + margin
-    for (let c = 0; c < moduleCount; c += 1) {
-      if (qrcode.isDark(r, c)) {
-        const mc = c * cellSize + margin
-        qrSvg += 'M' + mc + ',' + mr + rect
-      }
-    }
-  }
-
-  qrSvg += '" stroke="transparent" fill="black"/>'
+  qrSvg += `<path d="${pathData({ cellSize, margin, qrcode })}" stroke="transparent" fill="black"/>`
   qrSvg += '</svg>'
 
   return qrSvg
 };
 
 /**
- * Compose alt property surrogate
- * @param {SvgAttr} title - qr code title
- * @param {SvgAttr} alt - qr code alt
+ * @param {object} opts - funtion parameters
+ * @param {number} opts.cellSize - cell size in pixels
+ * @param {number} opts.margin - margin in pixels
+ * @param {import('../qr-code.js').QrCode} opts.qrcode - QR Code data
+ * @returns {string} &lt;path> `d` attribute value
+ */
+function pathData ({ cellSize, margin, qrcode }) {
+  const { moduleCount } = qrcode
+
+  let d = ''
+  const rect = 'l' + cellSize + ',0 0,' + cellSize + ' -' + cellSize + ',0 0,-' + cellSize + 'z '
+
+  for (let r = 0; r < moduleCount; r += 1) {
+    const mr = r * cellSize + margin
+    for (let c = 0; c < moduleCount; c += 1) {
+      if (qrcode.isDark(r, c)) {
+        const mc = c * cellSize + margin
+        d += 'M' + mc + ',' + mr + rect
+      }
+    }
+  }
+  return d
+}
+
+/**
+ * @param {SvgProp} title - qr code title
+ * @param {SvgProp} alt - qr code alt
  * @returns {string} acessibility attributes or empty string if empty `title` and `alt`
  */
 const a11yAttributes = (title, alt) => (title.text || alt.text) ? ' role="img" aria-labelledby="' + escapeXml([title.id, alt.id].join(' ').trim()) + '"' : ''
 
 /**
- * Compose alt property surrogate
+ * @param {SvgProp} title - qr code title
+ * @param {SvgProp} alt - qr code alt
+ * @returns {string} svg tags of metadata
+ */
+
+const metadataTags = (title, alt) =>
+  ((title.text) ? '<title id="' + escapeXml(title.id) + '">' + escapeXml(title.text) + '</title>' : '') +
+  ((alt.text) ? '<description id="' + escapeXml(alt.id) + '">' + escapeXml(alt.text) + '</description>' : '')
+
+/**
  * @param {string|SvgAttr} [alt] - qr code alt
- * @returns {NormalizedSvgAttr} normalized Title
+ * @returns {SvgProp} Composed alt property surrogate
  */
 const normalizeAlt = (alt) => {
   const result = (typeof alt === 'string') ? { text: alt, id: '' } : { text: '', id: '', ...alt }
@@ -70,7 +89,7 @@ const normalizeAlt = (alt) => {
 /**
  * Compose title property surrogate
  * @param {string|SvgAttr} [title] - qr code title
- * @returns {NormalizedSvgAttr} normalized Title
+ * @returns {SvgProp} Composed title property surrogate
  */
 const normalizeTitle = (title) => {
   const result = (typeof title === 'string') ? { text: title, id: '' } : { text: '', id: '', ...title }
@@ -80,11 +99,10 @@ const normalizeTitle = (title) => {
 
 /**
  * @typedef {object} SvgAttr
- * @property {string} text
- * @property {string} [id]
+ * @property {string} text - attribute text
+ * @property {string} [id] - title tag id
  */
 
 /**
- * @typedef {Required<SvgAttr>} NormalizedSvgAttr
+ * @typedef {Required<SvgAttr>} SvgProp
  */
-
