@@ -1,15 +1,15 @@
 /**
- *
- * @param {number} cellSize
- * @param {number} margin
- * @param {import('../qr-code.js').QrCode} qrcode
+ * @param {object} opts - function parameters
+ * @param {number} [opts.cellSize] - cell size in pixels, defaults to 2
+ * @param {number} [opts.margin] - margin in pixels, defaults to {@link cellSize} * 4
+ * @param {import('../qr-code.js').QrCode} opts.qrcode - QR Code data
  * @returns {string} &lt;table> element outer HTML
  */
-export function createTableTag (cellSize, margin, qrcode) {
+export function createTableTag ({ cellSize, margin, qrcode }) {
   const { moduleCount } = qrcode
 
-  cellSize = cellSize || 2
-  margin = (typeof margin === 'undefined') ? cellSize * 4 : margin
+  cellSize ||= 2
+  margin ??= cellSize * 4
 
   let qrHtml = ''
 
