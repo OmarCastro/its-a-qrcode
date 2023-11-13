@@ -1,12 +1,11 @@
 import { escapeXml } from '../utils/escape-xml.util.js'
 
 /**
- *
- * @param {object} opts - funtion parameters
+ * @param {object} opts - function parameters
  * @param {number} [opts.cellSize] - cell size in pixels, defaults to 2
- * @param {number} [opts.margin] - margin in pixels, defaults to {@link cellSize} * 2
- * @param {string|SvgAttr} [opts.alt] - alt text
- * @param {string|SvgAttr} [opts.title] - qr code title
+ * @param {number} [opts.margin] - margin in pixels, defaults to {@link cellSize} * 4
+ * @param {string|SvgProp} [opts.alt] - image description
+ * @param {string|SvgProp} [opts.title] - image title
  * @param {boolean} [opts.scalable] - flag to make the svg scalable
  * @param {import('../qr-code.js').QrCode} opts.qrcode - QR Code data
  * @returns {string} &lt;svg> element outer HTML
@@ -14,10 +13,11 @@ import { escapeXml } from '../utils/escape-xml.util.js'
 export function createSvgTag ({ cellSize, margin, alt, title, qrcode, scalable }) {
   const { moduleCount } = qrcode
 
-  cellSize = cellSize || 2
-  margin = (typeof margin === 'undefined') ? cellSize * 4 : margin
-  const altProp = normalizeAlt(alt)
+  cellSize ||= 2
+  margin ??= cellSize * 4
+
   const titleProp = normalizeTitle(title)
+  const altProp = normalizeAlt(alt)
 
   const size = moduleCount * cellSize + margin * 2
 
@@ -26,7 +26,8 @@ export function createSvgTag ({ cellSize, margin, alt, title, qrcode, scalable }
   qrSvg += ' viewBox="0 0 ' + size + ' ' + size + '" '
   qrSvg += ' preserveAspectRatio="xMinYMin meet"'
   qrSvg += a11yAttributes(titleProp, altProp) + '>'
-  qrSvg += metadataTags(titleProp, altProp)
+  qrSvg += (titleProp.text) ? '<title id="' + escapeXml(titleProp.id) + '">' + escapeXml(titleProp.text) + '</title>' : ''
+  qrSvg += (altProp.text) ? '<description id="' + escapeXml(altProp.id) + '">' + escapeXml(altProp.text) + '</description>' : ''
   qrSvg += '<rect width="100%" height="100%" fill="white" cx="0" cy="0"/>'
   qrSvg += `<path d="${pathData({ cellSize, margin, qrcode })}" stroke="transparent" fill="black"/>`
   qrSvg += '</svg>'
@@ -60,25 +61,15 @@ function pathData ({ cellSize, margin, qrcode }) {
 }
 
 /**
- * @param {SvgProp} title - qr code title
- * @param {SvgProp} alt - qr code alt
+ * @param {Required<SvgProp>} title - qr code title
+ * @param {Required<SvgProp>} alt - qr code alt
  * @returns {string} acessibility attributes or empty string if empty `title` and `alt`
  */
 const a11yAttributes = (title, alt) => (title.text || alt.text) ? ' role="img" aria-labelledby="' + escapeXml([title.id, alt.id].join(' ').trim()) + '"' : ''
 
 /**
- * @param {SvgProp} title - qr code title
- * @param {SvgProp} alt - qr code alt
- * @returns {string} svg tags of metadata
- */
-
-const metadataTags = (title, alt) =>
-  ((title.text) ? '<title id="' + escapeXml(title.id) + '">' + escapeXml(title.text) + '</title>' : '') +
-  ((alt.text) ? '<description id="' + escapeXml(alt.id) + '">' + escapeXml(alt.text) + '</description>' : '')
-
-/**
- * @param {string|SvgAttr} [alt] - qr code alt
- * @returns {SvgProp} Composed alt property surrogate
+ * @param {string|SvgProp} [alt] - qr code alt
+ * @returns {Required<SvgProp>} Composed alt property surrogate
  */
 const normalizeAlt = (alt) => {
   const result = (typeof alt === 'string') ? { text: alt, id: '' } : { text: '', id: '', ...alt }
@@ -88,8 +79,8 @@ const normalizeAlt = (alt) => {
 
 /**
  * Compose title property surrogate
- * @param {string|SvgAttr} [title] - qr code title
- * @returns {SvgProp} Composed title property surrogate
+ * @param {string|SvgProp} [title] - qr code title
+ * @returns {Required<SvgProp>} Composed title property surrogate
  */
 const normalizeTitle = (title) => {
   const result = (typeof title === 'string') ? { text: title, id: '' } : { text: '', id: '', ...title }
@@ -98,11 +89,7 @@ const normalizeTitle = (title) => {
 }
 
 /**
- * @typedef {object} SvgAttr
+ * @typedef {object} SvgProp
  * @property {string} text - attribute text
  * @property {string} [id] - title tag id
- */
-
-/**
- * @typedef {Required<SvgAttr>} SvgProp
  */
