@@ -2,12 +2,12 @@ import { createDataURL } from './data-url.render.js'
 import { escapeXml } from '../utils/escape-xml.util.js'
 
 /**
- *
- * @param {object} opts
- * @param {number} opts.cellSize
- * @param {number} opts.margin
- * @param {string} opts.alt
- * @param {import('../qr-code.js').QrCode} opts.qrcode
+ * @param {object} opts - function parameters
+ * @param {number} [opts.cellSize] - cell size in pixels, defaults to 2
+ * @param {number} [opts.margin] - margin in pixels, defaults to {@link cellSize} * 4
+ * @param {string} [opts.alt] - image description
+ * @param {import('../qr-code.js').QrCode} opts.qrcode - QR Code data
+ * @returns {string} &lt;img> element outer HTML
  */
 export function createImgTag ({ cellSize, margin, alt, qrcode }) {
   cellSize ||= 2
