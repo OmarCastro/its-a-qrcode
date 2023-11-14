@@ -1,7 +1,7 @@
 import { PATTERN_POSITION_TABLE } from './pattern-position-table.constants.js'
 import { QrPolynomial } from './qr-polynomial.js'
 import { gexp } from './qr-math.util.js'
-import { MODE_8BIT_BYTE, MODE_ALPHA_NUM, MODE_KANJI, MODE_NUMBER } from './qr-mode.constants.js'
+import { MODE_8BIT_BYTE, MODE_ALPHA_NUM, MODE_KANJI, MODE_NUMBER } from '../modes/mode-bits.constants.js'
 
 /** @param {number} data  */
 function getBCHDigit (data) {
