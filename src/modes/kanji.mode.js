@@ -1,10 +1,10 @@
-import { MODE_KANJI } from '../utils/qr-mode.constants.js'
+import { MODE_KANJI } from './mode-bits.constants.js'
 import { textToSjisBytes } from '../utils/text-decode-encode.util.js'
 
 /**
- * Create QR code numeric mode object
- *
- * @param {string} data
+ * Create QR code Kanji mode object
+ * @param {string} data - data of mode object
+ * @returns {import('./mode-bits.constants.js').ModeObject} created mode object
  */
 export const QrKanji = (data) => {
   const bytes = textToSjisBytes(data)
@@ -18,9 +18,8 @@ export const QrKanji = (data) => {
 
 /**
  * Writes kanji data to bit buffer that will be used to generate the QR code
- *
- * @param {Uint8Array} data
- * @param {import("./../utils/qr-bit-buffer.js").QrBitBuffer} buffer
+ * @param {Uint8Array} data - QrKanji mode object data byte array
+ * @param {import("./../utils/qr-bit-buffer.js").QrBitBuffer} buffer - target bit buffer
  */
 function writeDataToBitBuffer (data, buffer) {
   let i = 0

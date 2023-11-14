@@ -1,9 +1,9 @@
-import { MODE_NUMBER } from '../utils/qr-mode.constants.js'
+import { MODE_NUMBER } from './mode-bits.constants.js'
 
 /**
  * Create QR code numeric mode object
- *
- * @param {string} data
+ * @param {string} data - data of mode object
+ * @returns {import('./mode-bits.constants.js').ModeObject} created mode object
  */
 export const QrNumber = (data) => Object.freeze({
   data,
@@ -14,9 +14,8 @@ export const QrNumber = (data) => Object.freeze({
 
 /**
  * Writes numeric data to bit buffer that will be used to generate the QR code
- *
- * @param {string} data
- * @param {import("./../utils/qr-bit-buffer.js").QrBitBuffer} buffer
+ * @param {string} data - QrNumber mode object data
+ * @param {import("./../utils/qr-bit-buffer.js").QrBitBuffer} buffer - target bit buffer
  */
 function writeDataToBitBuffer (data, buffer) {
   let i = 0
@@ -36,9 +35,8 @@ function writeDataToBitBuffer (data, buffer) {
 }
 
 /**
- *
- * @param {string} s
- * @returns
+ * @param {string} s - target string
+ * @returns {number} `s` as number
  */
 function strToNum (s) {
   let num = 0
@@ -50,8 +48,8 @@ function strToNum (s) {
 
 /**
  *
- * @param {string} c
- * @returns
+ * @param {string} c - target character
+ * @returns {number} `c` as number
  */
 function charToNum (c) {
   if (c >= '0' && c <= '9') {

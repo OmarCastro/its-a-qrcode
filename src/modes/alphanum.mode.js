@@ -1,9 +1,9 @@
-import { MODE_ALPHA_NUM } from '../utils/qr-mode.constants.js'
+import { MODE_ALPHA_NUM } from './mode-bits.constants.js'
 
 /**
- * Create QR code alphanum mode object
- *
- * @param {string} data
+ * Create QR code alphanumeric mode object
+ * @param {string} data - data of mode object
+ * @returns {import('./mode-bits.constants.js').ModeObject} created mode object
  */
 export const QrAlphaNum = (data) => Object.freeze({
   data,
@@ -14,9 +14,8 @@ export const QrAlphaNum = (data) => Object.freeze({
 
 /**
  * Writes alphanumeric data to bit buffer that will be used to generate the QR code
- *
- * @param {string} data
- * @param {import("./../utils/qr-bit-buffer.js").QrBitBuffer} buffer
+ * @param {string} data - QrAlphaNum mode object data
+ * @param {import("./../utils/qr-bit-buffer.js").QrBitBuffer} buffer - target bit buffer
  */
 function writeDataToBitBuffer (data, buffer) {
   let i = 0
@@ -35,9 +34,8 @@ function writeDataToBitBuffer (data, buffer) {
 
 /**
  * Get value for character `c`
- *
- * @param {string} c character
- * @returns
+ * @param {string} c - target character
+ * @returns {number} character code point
  */
 function getCode (c) {
   if (c >= '0' && c <= '9') {
