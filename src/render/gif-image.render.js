@@ -5,11 +5,12 @@ import { ByteArrayOutputStream } from '../utils/bite-array-output-stream'
 // ---------------------------------------------------------------------
 
 /**
-     *
-     * @param {number} width : ;
-     * @param {number} height
-     * @returns
-     */
+ *
+ * @param {number} width - image width
+ * @param {number} height - image height
+ * @returns
+ */
+// eslint-disable-next-line max-lines-per-function
 export function gifImage (width, height) {
   const _width = width
   const _height = height
@@ -18,19 +19,18 @@ export function gifImage (width, height) {
   const _this = {}
 
   /**
-       *
-       * @param {number} x
-       * @param {number} y
-       * @param {number} pixel
-       */
+   * @param {number} x - image horizontal position
+   * @param {number} y - image vertical position
+   * @param {number} pixel - pixel color
+   */
   _this.setPixel = function (x, y, pixel) {
     _data[y * _width + x] = pixel
   }
 
   /**
-       *
-       * @param {import('../utils/bite-array-output-stream').ByteArrayOutputStream} out
-       */
+   *
+   * @param {import('../utils/bite-array-output-stream').ByteArrayOutputStream} out
+   */
   _this.write = function (out) {
     // ---------------------------------
     // GIF Signature
@@ -99,9 +99,9 @@ export function gifImage (width, height) {
   }
 
   /**
-       *
-       * @param {import('../utils/bite-array-output-stream').ByteArrayOutputStream} out
-       */
+   *
+   * @param {import('../utils/bite-array-output-stream').ByteArrayOutputStream} out
+   */
   const bitOutputStream = function (out) {
     const _out = out
     let _bitLength = 0
@@ -110,10 +110,10 @@ export function gifImage (width, height) {
     const _this = {}
 
     /**
-         *
-         * @param {number} data
-         * @param {number} length
-         */
+     *
+     * @param {number} data
+     * @param {number} length
+     */
     _this.write = function (data, length) {
       if ((data >>> length) !== 0) {
         throw Error('length over')
@@ -141,10 +141,10 @@ export function gifImage (width, height) {
   }
 
   /**
-       *
-       * @param {number} lzwMinCodeSize
-       * @returns
-       */
+   *
+   * @param {number} lzwMinCodeSize
+   * @returns
+   */
   function getLZWRaster (lzwMinCodeSize) {
     const clearCode = 1 << lzwMinCodeSize
     const endCode = (1 << lzwMinCodeSize) + 1
@@ -179,8 +179,8 @@ export function gifImage (width, height) {
       } else {
         bitOut.write(table.indexOf(s), bitLength)
 
-        if (table.size() < 0xfff) {
-          if (table.size() === (1 << bitLength)) {
+        if (table.size < 0xfff) {
+          if (table.size === (1 << bitLength)) {
             bitLength += 1
           }
 
@@ -201,49 +201,37 @@ export function gifImage (width, height) {
     return byteOut.toByteArray()
   }
 
-  function lzwTable () {
-    /** @type {Record<string,number>} */
-    const _map = {}
-    let _size = 0
+  return _this
+};
 
-    const _this = {}
+/**
+ * @returns {LzwTable} created LZW table
+ */
+function lzwTable () {
+  /** @type {Record<string,number>} */
+  const _map = {}
+  let _size = 0
 
-    /**
-         *
-         * @param {string} key
-         */
-    _this.add = function (key) {
+  const _this = /**  @type {LzwTable} */ ({
+    add: (key) => {
       if (_this.contains(key)) {
         throw Error(`dup key: ${key}`)
       }
       _map[key] = _size
       _size += 1
-    }
-
-    _this.size = function () {
-      return _size
-    }
-
-    /**
-         *
-         * @param {string} key
-         * @returns
-         */
-    _this.indexOf = function (key) {
-      return _map[key]
-    }
-
-    /**
-         *
-         * @param {string} key
-         * @returns
-         */
-    _this.contains = function (key) {
-      return typeof _map[key] !== 'undefined'
-    }
-
-    return _this
-  }
+    },
+    get size () { return _size },
+    indexOf: (key) => _map[key],
+    contains:  (key) => typeof _map[key] !== 'undefined',
+  })
 
   return _this
-};
+}
+
+/**
+ * @typedef {object} LzwTable
+ * @property {(key: string) => void} add - add key to table
+ * @property {number} size - table size
+ * @property {(key: string) => number} indexOf - get index of key
+ * @property {(key: string) => boolean} contains - check if key is already in table
+ */
