@@ -4,14 +4,14 @@ import { bytesToBase64 } from '../utils/text-decode-encode.util.js'
 
 /**
  *
- * @param {object} opts
- * @param {number} opts.cellSize
- * @param {number} opts.margin
- * @param {import('../qr-code.js').QrCode} opts.qrcode
+ * @param {object} opts - function parameters
+ * @param {number} [opts.cellSize] - cell size in pixels, defaults to 2
+ * @param {number} [opts.margin] - margin in pixels, defaults to {@link cellSize} * 4
+ * @param {import('../qr-code.js').QrCode} opts.qrcode - QR Code data
+ * @returns {string} data url of qr code image
  */
-export function createDataURL ({ cellSize, margin, qrcode }) {
-  cellSize = cellSize || 2
-  margin = (typeof margin === 'undefined') ? cellSize * 4 : margin
+export function createDataURL ({ cellSize = 2, margin, qrcode }) {
+  margin ??= cellSize * 4
 
   const size = qrcode.moduleCount * cellSize + margin * 2
   const min = margin
@@ -30,10 +30,10 @@ export function createDataURL ({ cellSize, margin, qrcode }) {
 
 /**
  *
- * @param {number} width : ;
- * @param {number} height
- * @param {(x: number, y:number) => number} getPixel
- * @returns
+ * @param {number} width - image width
+ * @param {number} height - image height
+ * @param {(x: number, y:number) => number} getPixel - get pixel function
+ * @returns {string} data url of qr code image
  */
 function createDataURLAux (width, height, getPixel) {
   const gif = gifImage(width, height)
