@@ -1,4 +1,4 @@
-/* eslint-disable object-property-newline */
+/* eslint-disable */
 import { usingTable, getUtf8ToJisTable } from '../src/utils/utf8-to-jis-table.js'
 import { hexToBase64 } from '../src/utils/text-decode-encode.util.js'
 import { ESLint } from 'eslint'
