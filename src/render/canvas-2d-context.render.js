@@ -1,9 +1,9 @@
 /**
  *
- * @param {object} opts
- * @param {CanvasRenderingContext2D} opts.context
- * @param {number} [opts.cellSize]
- * @param {import('../qr-code.js').QrCode} opts.qrcode
+ * @param {object} opts - function parameters
+ * @param {CanvasRenderingContext2D} opts.context - canvas rendering context
+ * @param {number} [opts.cellSize] - cell size in pixels, defaults to 2
+ * @param {import('../qr-code.js').QrCode} opts.qrcode - QR Code data
  */
 export function renderTo2dContext ({ context, cellSize = 2, qrcode }) {
   const length = qrcode.moduleCount
