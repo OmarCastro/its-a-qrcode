@@ -1,13 +1,12 @@
 /**
  *
- * @param {object} opts
- * @param {number} [opts.cellSize]
- * @param {number} opts.margin
- * @param {import('../qr-code.js').QrCode} opts.qrcode
+ * @param {object} opts - function parameters
+ * @param {number} [opts.cellSize] - cell size in pixels, defaults to 1
+ * @param {number} [opts.margin] - margin in pixels, defaults to {@link cellSize} * 2
+ * @param {import('../qr-code.js').QrCode} opts.qrcode - QR Code data
+ * @returns {string} qr code in ASCII
  */
 export function renderASCII ({ cellSize = 1, margin, qrcode }) {
-  cellSize = cellSize || 1
-
   if (cellSize < 2) {
     return _createHalfASCII({ margin, qrcode })
   }
@@ -50,19 +49,17 @@ export function renderASCII ({ cellSize = 1, margin, qrcode }) {
 
 /**
  *
- * @param {object} opts
- * @param {number} opts.margin
- * @param {import('../qr-code.js').QrCode} opts.qrcode
+ * @param {object} opts - function parameters
+ * @param {number} [opts.margin] - margin in pixels, defaults to 2
+ * @param {import('../qr-code.js').QrCode} opts.qrcode - QR Code data
+ * @returns {string} qr code in ASCII
  */
-function _createHalfASCII ({ margin, qrcode }) {
+function _createHalfASCII ({ margin = 2, qrcode }) {
   const cellSize = 1
-  margin = (typeof margin === 'undefined') ? cellSize * 2 : margin
 
   const size = qrcode.moduleCount * cellSize + margin * 2
   const min = margin
   const max = size - margin
-
-  let y, x, r1, r2, p
 
   /** @type {Record<string, string>} */
   const blocks = {
@@ -80,27 +77,19 @@ function _createHalfASCII ({ margin, qrcode }) {
     '  ': ' ',
   }
 
+  /** @type {(x: number, y: number) => boolean} */
+  const isDarkPoint = (x, y) => min <= x && x < max && min <= y && y < max && qrcode.isDark((y - min), (x - min))
+  /** @type {(x: number, y: number) => '█'|' '} */
+  const codePoint = (x, y) => isDarkPoint(x, y) ? ' ' : '█'
+
   let ascii = ''
-  for (y = 0; y < size; y += 2) {
-    r1 = Math.floor((y - min) / cellSize)
-    r2 = Math.floor((y + 1 - min) / cellSize)
-    for (x = 0; x < size; x += 1) {
-      p = '█'
-
-      if (min <= x && x < max && min <= y && y < max && qrcode.isDark(r1, Math.floor((x - min) / cellSize))) {
-        p = ' '
-      }
-
-      if (min <= x && x < max && min <= y + 1 && y + 1 < max && qrcode.isDark(r2, Math.floor((x - min) / cellSize))) {
-        p += ' '
-      } else {
-        p += '█'
-      }
-
-      // Output 2 characters per pixel, to create full square. 1 character per pixels gives only half width of square.
-      ascii += (margin < 1 && y + 1 >= max) ? blocksLastLineNoMargin[p] : blocks[p]
+  for (let y = 0; y < size; y += 2) {
+    // used to output 2 characters per pixel, to create full square. 1 character per pixels gives only half width of square.
+    const blockToUse = (margin < 1 && y + 1 >= max) ? blocksLastLineNoMargin : blocks
+    for (let x = 0; x < size; x += 1) {
+      const p = codePoint(x, y) + codePoint(x, y + 1)
+      ascii += blockToUse[p]
     }
-
     ascii += '\n'
   }
 
