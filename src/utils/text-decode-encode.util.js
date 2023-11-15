@@ -49,6 +49,7 @@ export const sjisBytesToText = (data) => sjisDecoder.decode(data)
  * @param {Uint8Array} data
  * @returns {Uint8Array}
  */
+// eslint-disable-next-line sonarjs/cognitive-complexity -- its low level, it is meant to be complex
 function UTF8ToSJIS (data) {
   const FALLBACK_CHARACTER = 63 // '?'
   const UTF8_TO_JIS_TABLE = getUtf8ToJisTable()

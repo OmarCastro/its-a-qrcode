@@ -1,4 +1,4 @@
-/* eslint-disable */
+/* eslint-disable -- there is no need to be strict here, all this file need is to compress de table and write to `fileToWrite` */
 import { usingTable, getUtf8ToJisTable } from '../src/utils/utf8-to-jis-table.js'
 import { hexToBase64 } from '../src/utils/text-decode-encode.util.js'
 import { ESLint } from 'eslint'
