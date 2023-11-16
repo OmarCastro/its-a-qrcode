@@ -4,32 +4,58 @@ const encoder = new TextEncoder()
 const decoder = new TextDecoder()
 const sjisDecoder = new TextDecoder('sjis')
 
-/** @param {string} str  */
+/**
+ * @param {string} str - input text
+ * @returns {Uint8Array} utf8 encoded byte array
+ */
 export const textToBytes = (str) => encoder.encode(str)
-/** @param {Uint8Array} bytes  */
+
+/**
+ * @param {Uint8Array} bytes - utf8 encoded byte array
+ * @returns {string} decoded output
+ */
 export const bytesToText = (bytes) => decoder.decode(bytes)
 
-/** @param {string} base64  */
+/**
+ * @param {string} base64 - input base64 text
+ * @returns {Uint8Array} byte array
+ */
 export const base64ToBytes = (base64) => Uint8Array.from(atob(base64), (m) => /** @type {number} */(m.codePointAt(0)))
-/** @param {Uint8Array} bytes  */
+
+/**
+ * @param {Uint8Array} bytes - byte array
+ * @returns {string} base64 text
+ */
 export const bytesToBase64 = (bytes) => btoa(Array.from(bytes, (x) => String.fromCodePoint(x)).join(''))
 
-/** @param {string} str  */
+/**
+ * @param {string} str - input text
+ * @returns {string} encoded input text in base64
+ */
 export const textToBase64 = (str) => bytesToBase64(encoder.encode(str))
-/** @param {string} base64  */
+
+/**
+ * @param {string} base64 - input base64 text
+ * @returns {string} decoded input text
+ */
 export const base64ToText = (base64) => decoder.decode(base64ToBytes(base64))
 
-/** @param {string} hex  */
+/**
+ * @param {string} hex - hex string
+ * @returns {string} converted string in base64
+ */
 export const hexToBase64 = (hex) => bytesToBase64(hexToBytes(hex))
-/** @param {string} base64  */
+
+/**
+ * @param {string} base64 - input base64 text
+ * @returns {string} converted string in hexadecimal
+ */
 export const base64ToHex = (base64) => bytesToHex(base64ToBytes(base64))
 
-/** @param {string} str  */
-export function textToSjisBytes (str) {
-  return UTF8ToSJIS(textToBytes(str))
-}
-
-/** @param {string} hex  */
+/**
+ * @param {string} hex - hex string
+ * @returns {Uint8Array} byte array
+ */
 export function hexToBytes (hex) {
   const bytes = []
   for (let c = 0, e = hex.length; c < e; c += 2) {
@@ -38,16 +64,27 @@ export function hexToBytes (hex) {
   return Uint8Array.from(bytes)
 }
 
-/** @param {Uint8Array} bytes  */
+/**
+ * @param {Uint8Array} bytes - byte array
+ * @returns {string} hex string
+ */
 export const bytesToHex = (bytes) => Array.from(bytes).map(byte => ((byte + 256) & 0xff).toString(16)).join('')
 
-/** @param {Uint8Array} data  */
-export const sjisBytesToText = (data) => sjisDecoder.decode(data)
+/**
+ * @param {string} str - input text
+ * @returns {Uint8Array} SJIS encoded byte array
+ */
+export const textToSjisBytes = (str) => UTF8ToSJIS(textToBytes(str))
 
 /**
- *
- * @param {Uint8Array} data
- * @returns {Uint8Array}
+ * @param {Uint8Array} bytes - SJIS encoded byte array
+ * @returns {string} decoded output
+ */
+export const sjisBytesToText = (bytes) => sjisDecoder.decode(bytes)
+
+/**
+ * @param {Uint8Array} data - utf8 encoded byte array
+ * @returns {Uint8Array} SJIS encoded byte array
  */
 // eslint-disable-next-line sonarjs/cognitive-complexity -- its low level, it is meant to be complex
 function UTF8ToSJIS (data) {
