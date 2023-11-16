@@ -53,6 +53,9 @@ async function applyExample (exampleObject, editorElement) {
   })
 }
 
+/** @param {EventTarget} target - target element */
+const matchesTextEdit = (target) => target.matches('.text-edit')
+
 document.querySelectorAll('.example').forEach(element => {
   const exampleObj = {}
 
@@ -67,8 +70,9 @@ document.querySelectorAll('.example').forEach(element => {
 
   element.addEventListener('input', (event) => {
     const bindSelectorAttr = 'data-bind-selector'
+    const { target } = event
 
-    if (event.target.matches('.text-edit')) {
+    if (matchesTextEdit(target)) {
       const selector = event.target.getAttribute(bindSelectorAttr) || 'qr-code'
       const node = element.querySelector(selector)
       if (node) { node.textContent = event.target.textContent }
@@ -92,14 +96,14 @@ document.querySelectorAll('.example').forEach(element => {
 
   element.addEventListener('focusin', (event) => {
     const { target } = event
-    if (target.matches('.text-edit')) {
+    if (matchesTextEdit(target)) {
       target.innerHTML = target.textContent
     }
   })
 
   element.addEventListener('focusout', (event) => {
     const { target } = event
-    if (target.matches('.text-edit')) {
+    if (matchesTextEdit(target)) {
       target.textContent = target.innerHTML
     }
   })

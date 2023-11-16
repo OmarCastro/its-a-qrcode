@@ -114,14 +114,11 @@ const baseExtensions = [
 ]
 
 /**
- *
- * @param {object} param0
- * @param {string} param0.doc
- * @param {Element} param0.parent
- * @param {Parameters<typeof EditorView.updateListener.of>[0]} [param0.onChange]
- *
- *
- * @returns
+ * @param {object} params - function params
+ * @param {string} params.doc - editor content
+ * @param {Element} params.parent - element container
+ * @param {Parameters<typeof EditorView.updateListener.of>[0]} [params.onChange] - onChange listener callback
+ * @returns {EditorView} codemirror EditorView object
  */
 export function createEditorView ({ doc, parent, onChange }) {
   return new EditorView({
