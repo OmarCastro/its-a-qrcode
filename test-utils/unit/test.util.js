@@ -10,7 +10,8 @@
 
 // thee 2 lines are to prevent esbuild to bundle the await imports
 /**
- * @param {string} str
+ * @param {string} str - import path
+ * @returns {Promise<any>} import result
  */
 const importModule = (str) => import(str)
 let importStr
