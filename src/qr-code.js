@@ -15,6 +15,11 @@ export class QrCode {
   /** @type {number} */
 
   errorCorrectionLevel
+  /**
+   * module count is the amount of modules in the QR Code
+   * The module refers to the black and white dots that make up QR Code.
+   * @example moduleCount = 21 // QR code is a 21x21 matrix
+   */
   moduleCount
   modules
   /** @type {number[] | null} */
@@ -23,8 +28,8 @@ export class QrCode {
   dataList
 
   /**
-   * @param {number} typeNumber
-   * @param {string} errorCorrectionLevel
+   * @param {number} typeNumber - QR code version from 1 to 40
+   * @param {string} errorCorrectionLevel - error correction level, accepted values (case insensitive): l, low, m, medium, q, quartile, h, high
    */
   constructor (typeNumber, errorCorrectionLevel) {
     this.typeNumber = typeNumber
@@ -45,12 +50,9 @@ export class QrCode {
 
     const moduleCount = this.moduleCount
     this.modules = createModuleTable(moduleCount)
-
-    this.setupPositionProbePattern(0, 0)
-    this.setupPositionProbePattern(moduleCount - 7, 0)
-    this.setupPositionProbePattern(0, moduleCount - 7)
+    setupPositionProbePatterns(this)
     setupPositionAdjustPattern(this)
-    this.setupTimingPattern()
+    setupTimingPattern(this)
     setupTypeInfo(test, maskPattern, this)
 
     if (this.typeNumber >= 7) {
@@ -62,49 +64,6 @@ export class QrCode {
     }
 
     mapData(this.#dataCache, maskPattern, this)
-  };
-
-  /**
-   *
-   * @param {number} row
-   * @param {number} col
-   */
-  setupPositionProbePattern (row, col) {
-    const { modules, moduleCount } = this
-
-    for (let r = -1; r <= 7; r += 1) {
-      if (row + r <= -1 || moduleCount <= row + r) continue
-
-      for (let c = -1; c <= 7; c += 1) {
-        if (col + c <= -1 || moduleCount <= col + c) continue
-
-        if ((r >= 0 && r <= 6 && (c === 0 || c === 6)) ||
-            (c >= 0 && c <= 6 && (r === 0 || r === 6)) ||
-            (r >= 2 && r <= 4 && c >= 2 && c <= 4)) {
-          modules[row + r][col + c] = true
-        } else {
-          modules[row + r][col + c] = false
-        }
-      }
-    }
-  };
-
-  setupTimingPattern () {
-    const { modules, moduleCount } = this
-
-    for (let r = 8; r < moduleCount - 8; r += 1) {
-      if (modules[r][6] != null) {
-        continue
-      }
-      modules[r][6] = (r % 2 === 0)
-    }
-
-    for (let c = 8; c < moduleCount - 8; c += 1) {
-      if (modules[6][c] != null) {
-        continue
-      }
-      modules[6][c] = (c % 2 === 0)
-    }
   };
 
   /**
@@ -147,6 +106,57 @@ export class QrCode {
     this.makeImpl(false, getBestMaskPattern(this))
   };
 }
+
+/**
+ * Gets the position of position detection pattern for the QR Code and draws them
+ * @see drawPositionProbePattern to get more infomation about position detection pattern
+ * @param {QrCode} qrcode - qr code object
+ */
+function setupPositionProbePatterns (qrcode) {
+  const { moduleCount } = qrcode
+  drawPositionProbePattern(qrcode, 0, 0)
+  drawPositionProbePattern(qrcode, moduleCount - 7, 0)
+  drawPositionProbePattern(qrcode, 0, moduleCount - 7)
+};
+
+/**
+ * Draws a position detection pattern, one of three identical components of the Finder Pattern, normally on the top left, top right and bottom left
+ * They require a blank space as separators for Position Detection Patterns
+ * @example top right position detection pattern
+ *   ┌─ blank space separator
+ *   │ ┌─ (row, col)
+ *   v v
+ * ██  ██████████████
+ *     ██          ██
+ * ██  ██  ██████  ██
+ *     ██  ██████  ██
+ * ██  ██  ██████  ██
+ * ██  ██          ██
+ *     ██████████████
+ * ██                 <- blank space separator
+ *   ██   ██   ██  ██
+ * @param {QrCode} qrcode - qr code object
+ * @param {number} row - row position of the left part of the rectangle, see example
+ * @param {number} col - column position of the left part of the rectangle, see example
+ */
+function drawPositionProbePattern (qrcode, row, col) {
+  const { modules, moduleCount } = qrcode
+  const rowMin = row === 0 ? 0 : -1
+  const rowMax = row + 7 >= moduleCount ? moduleCount - row - 1 : 7
+  const colMin = col === 0 ? 0 : -1
+  const colMax = col + 7 >= moduleCount ? moduleCount - col - 1 : 7
+
+  for (let r = rowMin; r <= rowMax; r += 1) {
+    for (let c = colMin; c <= colMax; c += 1) {
+      const isDarkSpot = (
+        (r >= 0 && r <= 6 && (c === 0 || c === 6)) ||
+          (c >= 0 && c <= 6 && (r === 0 || r === 6)) ||
+          (r >= 2 && r <= 4 && c >= 2 && c <= 4)
+      )
+      modules[row + r][col + c] = isDarkSpot
+    }
+  }
+};
 
 /**
  *
@@ -216,8 +226,9 @@ function getBestMaskPattern (qrcode) {
 }
 
 /**
- *
- * @param {QrCode} qrcode
+ * Gets the position of alignment patterns for the QR Code and draws them (the small rectangles in the rectangles in the QR Code)
+ * @see paintAlignmentPattern to get more infomation about alignment patterns
+ * @param {QrCode} qrcode - qr code object
  */
 function setupPositionAdjustPattern (qrcode) {
   const { modules } = qrcode
@@ -233,23 +244,79 @@ function setupPositionAdjustPattern (qrcode) {
         continue
       }
 
-      for (let r = -2; r <= 2; r += 1) {
-        for (let c = -2; c <= 2; c += 1) {
-          if (r === -2 || r === 2 || c === -2 || c === 2 || (r === 0 && c === 0)) {
-            modules[row + r][col + c] = true
-          } else {
-            modules[row + r][col + c] = false
-          }
-        }
+      paintAlignmentPattern(qrcode, row, col)
+    }
+  }
+}
+
+/**
+ * Draws an alignment pattern.
+ *
+ * Alignment pattern is a fixed reference pattern in defined positions in a matrix symbology,
+ * which enables the decode software to resynchronise the coordinate mapping of the image modules
+ * in the event of moderate amounts of distortion of the image
+ * @example
+ * ██████████
+ * ██      ██
+ * ██  ██  ██
+ * ██      ██
+ * ██████████
+ * @param {QrCode} qrcode - qr code object
+ * @param {number} row - row position of the center of alignment pattern
+ * @param {number} col - column position of the center of alignment pattern
+ */
+function paintAlignmentPattern (qrcode, row, col) {
+  const { modules } = qrcode
+
+  for (let r = -2; r <= 2; r += 1) {
+    for (let c = -2; c <= 2; c += 1) {
+      if (r === -2 || r === 2 || c === -2 || c === 2 || (r === 0 && c === 0)) {
+        modules[row + r][col + c] = true
+      } else {
+        modules[row + r][col + c] = false
       }
     }
   }
 }
 
 /**
+ * Draw the QR code timing pattern.
  *
- * @param {boolean} test
- * @param {QrCode} qrcode
+ * A timing Pattern is an alternating sequence of dark and light modules enabling module
+ * coordinates in the symbol to be determined.
+ * @example
+ *                avoid drawing on
+ *               alignment patterns
+ * █▀▀▀▀▀█               v               █▀▀▀▀▀█
+ * █ ███ █             ▄▄▄▄▄             █ ███ █
+ * █ ▀▀▀ █ ▄ ▄ ▄ ▄ ▄ ▄ █ ▄ █ ▄ ▄ ▄ ▄ ▄ ▄ █ ▀▀▀ █
+ * ▀▀▀▀▀▀▀     ^       █▄▄▄█   ^         ▀▀▀▀▀▀▀
+ *      ▀   < timing patterns ─┘
+ *      ▀
+ *      ▀
+ * @param {QrCode} qrcode - qr code object
+ */
+function setupTimingPattern (qrcode) {
+  const { modules, moduleCount } = qrcode
+
+  for (let r = 8; r < moduleCount - 8; r += 1) {
+    if (modules[r][6] != null) {
+      continue
+    }
+    modules[r][6] = (r % 2 === 0)
+  }
+
+  for (let c = 8; c < moduleCount - 8; c += 1) {
+    if (modules[6][c] != null) {
+      continue
+    }
+    modules[6][c] = (c % 2 === 0)
+  }
+};
+
+/**
+ * @param {boolean} test - flag to determine if it is used for mask pattern evaluation
+ * @param {QrCode} qrcode - qr code object
  */
 function setupTypeNumber (test, qrcode) {
   const { typeNumber, modules, moduleCount } = qrcode
@@ -322,21 +389,40 @@ function mapData (data, maskPattern, qrcode) {
 }
 
 /**
+ * Calculates the penalty point of QR Code, used to evaluate the masking results
  *
- * @param {QrCode} qrcode
+ * After performing the masking operation with each Mask Pattern in turn, the results shall be evaluated by scoring
+ * penalty points for each occurrence of the following features. The higher the number of points, the less acceptable
+ * the result. In the table, the variables N1 to N4 represent weighted penalty scores for the undesirable features
+ * (N1 = 3, N2 = 3, N3 = 40, N4 = 10), i is the amount by which the number of adjacent modules of the same color exceeds 5
+ * and k is the rating of the deviation of the proportion of dark modules in the symbol from 50% in steps of 5%.
+ * Although the masking operation is only performed on the encoding region of the symbol excluding the Format
+ * Information, the area to be evaluated is the complete symbol
+ * @example
+ * ┌──────────────────────────────────────────────┬───────────────────────────────────────┬─────────────────────────┐
+ * │ Feature                                      │ Evaluation                            │ condition Points        │
+ * ├──────────────────────────────────────────────┼───────────────────────────────────────┼─────────────────────────┤
+ * │ Adjacent modules in row/column in same color │  No. of modules = (5 + i)             │  N1 + i                 │
+ * │                                              │                                       │                         │
+ * │ Block of modules in same color               │  Block size = m * n                   │  N2 * (m - 1) * (n - 1) │
+ * │                                              │                                       │                         │
+ * │ 1:1:3:1:1 ratio (dark:light:dark:light:dark) │                                       │  N3                     │
+ * │ pattern in row/column                        │                                       │                         │
+ * │                                              │                                       │                         │
+ * │ Proportion of dark modules in entire symbol  │  50 ± (5 * k)% to 50 ± (5 * (k + 1))% │  N4 * k                 │
+ * └──────────────────────────────────────────────┴───────────────────────────────────────┴─────────────────────────┘
+ *                         Evaluation table from ISO/IEC 18004:2000(E) International Standard
+ * @param {QrCode} qrcode - qr code object
+ * @returns {number} calculated penalty points
  */
+// eslint-disable-next-line max-lines-per-function, sonarjs/cognitive-complexity -- even it we split one function per level, we would have to use eslint-disable in them anyway
 export function getLostPoint (qrcode) {
   const { moduleCount, modules } = qrcode
-  /**
-   *
-   * @param {number} r
-   * @param {number} c
-   * @returns
-   */
+  /** @type {(r:number, c:number) => boolean} */
   const isDark = (r, c) => modules[r][c]
   let lostPoint = 0
 
-  // LEVEL1
+  // Feature 1 - Adjacent modules in row/column in same color
 
   for (let row = 0; row < moduleCount; row += 1) {
     for (let col = 0; col < moduleCount; col += 1) {
@@ -369,7 +455,7 @@ export function getLostPoint (qrcode) {
     }
   };
 
-  // LEVEL2
+  // Feature 2 - Block of modules in same color
 
   for (let row = 0; row < moduleCount - 1; row += 1) {
     for (let col = 0; col < moduleCount - 1; col += 1) {
@@ -384,7 +470,7 @@ export function getLostPoint (qrcode) {
     }
   }
 
-  // LEVEL3
+  // Feature 3 - 1:1:3:1:1 ratio (dark:light:dark:light:dark) pattern in row/column
 
   for (let row = 0; row < moduleCount; row += 1) {
     for (let col = 0; col < moduleCount - 6; col += 1) {
@@ -414,7 +500,7 @@ export function getLostPoint (qrcode) {
     }
   }
 
-  // LEVEL4
+  // Feature 4 - Proportion of dark modules in entire symbol
 
   let darkCount = 0
 
