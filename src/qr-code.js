@@ -68,9 +68,9 @@ export class QrCode {
   };
 
   /**
-   *
-   * @param {number} row
-   * @param {number} col
+   * @param {number} row - vertical position
+   * @param {number} col - horizontal position
+   * @returns {boolean} true if cell is a dark spot, false otherwise
    */
   isDark (row, col) {
     const { modules, moduleCount } = this
@@ -162,8 +162,7 @@ function drawPositionProbePattern (qrcode, row, col) {
 };
 
 /**
- *
- * @param {QrCode} qrcode
+ * @param {QrCode} qrcode - qr code object
  * @returns {number} type number
  */
 function getBestTypeNumber (qrcode) {
@@ -194,9 +193,8 @@ function getBestTypeNumber (qrcode) {
 }
 
 /**
- *
- * @param {number} moduleCount
- * @returns {boolean[][]}
+ * @param {number} moduleCount - module count of a size of the matrix
+ * @returns {boolean[][]} module table
  */
 function createModuleTable (moduleCount) {
   const modules = new Array(moduleCount)
@@ -207,9 +205,8 @@ function createModuleTable (moduleCount) {
 }
 
 /**
- *
- * @param {QrCode} qrcode
- * @returns {number}
+ * @param {QrCode} qrcode - qr code object
+ * @returns {number} - byte value of mask pattern with less penalty points
  */
 function getBestMaskPattern (qrcode) {
   let minLostPoint = 0
@@ -339,10 +336,11 @@ function setupTypeNumber (test, qrcode) {
 
 /**
  *
- * @param {number[]} data
- * @param {number} maskPattern
- * @param {QrCode} qrcode
+ * @param {number[]} data - bit data of qrcode
+ * @param {number} maskPattern - mask pattern number
+ * @param {QrCode} qrcode - qr code object
  */
+// eslint-disable-next-line sonarjs/cognitive-complexity -- it's low level and simple enough
 function mapData (data, maskPattern, qrcode) {
   const { moduleCount, modules } = qrcode
 
@@ -522,10 +520,9 @@ export function getLostPoint (qrcode) {
 };
 
 /**
- *
- * @param {boolean} test
- * @param {number} maskPattern
- * @param {QrCode} qrcode
+ * @param {boolean} test - flag to determine if it is used for mask pattern evaluation
+ * @param {number} maskPattern - mask pattern number
+ * @param {QrCode} qrcode - qr code object
  */
 function setupTypeInfo (test, maskPattern, qrcode) {
   const { errorCorrectionLevel, modules, moduleCount } = qrcode
