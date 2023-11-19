@@ -6,6 +6,7 @@ import { QrKanji } from './modes/kanji.mode.js'
 import { Qr8BitByte } from './modes/byte.mode.js'
 import { QrNumber } from './modes/number.mode.js'
 import { QrAlphaNum } from './modes/alphanum.mode.js'
+import { getBestMode } from './modes/mode-utils.util.js'
 import { QrBitBuffer } from './utils/qr-bit-buffer.js'
 
 export class QrCode {
@@ -42,8 +43,8 @@ export class QrCode {
 
   /**
    *
-   * @param {boolean} test
-   * @param {number} maskPattern
+   * @param {boolean} test - flag to determine if it is used for mask pattern evaluation
+   * @param {number} maskPattern - mask pattern to use
    */
   makeImpl (test, maskPattern) {
     this.moduleCount = this.typeNumber * 4 + 17
@@ -82,11 +83,13 @@ export class QrCode {
 
   /**
    *
-   * @param {string} data
-   * @param {'Byte'|'Numeric'|'Alphanumeric'|'Kanji'} mode
+   * @param {string} data - text data
+   * @param {'Byte'|'Numeric'|'Alphanumeric'|'Kanji'} [mode] - qr mode to use, uses best mode if absent
    */
   addData (data, mode) {
-    mode = mode || 'Byte'
+    if (!mode) {
+      getBestMode(data)
+    }
 
     switch (mode) {
       case 'Numeric' : this.dataList.push(QrNumber(data)); break
