@@ -1,13 +1,13 @@
 import { deepFreeze } from './deep-freeze.util.js'
 
 /**
- * The error coeerction block table.
+ * The error correction block table.
  *
  * There are 3 to 6 elements per version, in groups of 3. In each group, the first number indicate the number of blocks, then the total width¹, and finally the data width².
  *
- * ¹ total width - the total codewords count ( total width = data width + EC width³) of a block
- * ² data width - the data codewords count
- * ³ EC width - Error correction codeword count
+ * ¹ total width - total codewords count ( total width = data width + EC width³) of a block
+ * ² data width - data codewords count
+ * ³ EC width - Error correction codewords count
  */
 export const RS_BLOCK_TABLE = deepFreeze([
 
