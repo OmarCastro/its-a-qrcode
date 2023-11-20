@@ -1,5 +1,14 @@
 import { deepFreeze } from './deep-freeze.util.js'
 
+/**
+ * The codeword block table.
+ *
+ * There are 3 to 6 elements per version, in groups of 3. In each group, the first number indicate the number of blocks, then the total width¹, and finally the data width².
+ *
+ * ¹ total width - the total codewords capacity ( total width = data width + EC width³) of a block
+ * ² data width - the data codewords capacity
+ * ³ EC width - Error correction codeword capacity
+ */
 export const RS_BLOCK_TABLE = deepFreeze([
 
   // L
