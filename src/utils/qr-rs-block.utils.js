@@ -5,13 +5,14 @@ import { CORRECTION_LEVEL_L, CORRECTION_LEVEL_M, CORRECTION_LEVEL_Q, CORRECTION_
  *
  * @param {number} totalCount - total codewords capacity
  * @param {number} dataCount - data codewords capacity
+ * @returns {Readonly<RSBlock>} create block object
  */
 const qrRSBlock = (totalCount, dataCount) => Object.freeze({ totalCount, dataCount, ecCount: totalCount - dataCount })
 
 /**
  *
- * @param {number} typeNumber
- * @param {number} errorCorrectionLevel
+ * @param {number} typeNumber - qr code version
+ * @param {number} errorCorrectionLevel - numeric value of error Correction Level
  */
 const getRsBlockTable = function (typeNumber, errorCorrectionLevel) {
   switch (errorCorrectionLevel) {
@@ -26,8 +27,8 @@ const getRsBlockTable = function (typeNumber, errorCorrectionLevel) {
 
 /**
  *
- * @param {number} typeNumber
- * @param {number} errorCorrectionLevel
+ * @param {number} typeNumber - qr code version
+ * @param {number} errorCorrectionLevel - numeric value of error Correction Level
  */
 const calculateRSBlocks = function (typeNumber, errorCorrectionLevel) {
   const rsBlock = getRsBlockTable(typeNumber, errorCorrectionLevel)
@@ -65,8 +66,9 @@ const memoRsBlocks = /** @type {ReturnType<calculateRSBlocks>[]} */([])
 
 /**
  *
- * @param {number} typeNumber
- * @param {number} errorCorrectionLevel
+ * @param {number} typeNumber - qr code version
+ * @param {number} errorCorrectionLevel - numeric value of error Correction Level
+ * @returns {ReadonlyArray<Readonly<RSBlock>>} resulting rsblock list
  */
 export const getRSBlocks = function (typeNumber, errorCorrectionLevel) {
   if (errorCorrectionLevel < CORRECTION_LEVEL_M && errorCorrectionLevel > CORRECTION_LEVEL_Q) {
@@ -81,3 +83,10 @@ export const getRSBlocks = function (typeNumber, errorCorrectionLevel) {
   memoRsBlocks[index] = result
   return result
 }
+
+/**
+ * @typedef {object} RSBlock
+ * @property {number} totalCount - total codewords count capacity
+ * @property {number} dataCount - data codewords count capacity
+ * @property {number} ecCount - error correction codewords count capacity
+ */
