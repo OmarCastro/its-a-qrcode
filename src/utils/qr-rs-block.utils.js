@@ -3,10 +3,10 @@ import { CORRECTION_LEVEL_L, CORRECTION_LEVEL_M, CORRECTION_LEVEL_Q, CORRECTION_
 
 /**
  *
- * @param {number} totalCount
- * @param {number} dataCount
+ * @param {number} totalCount - total codewords capacity
+ * @param {number} dataCount - data codewords capacity
  */
-const qrRSBlock = (totalCount, dataCount) => Object.freeze({ totalCount, dataCount })
+const qrRSBlock = (totalCount, dataCount) => Object.freeze({ totalCount, dataCount, ecCount: totalCount - dataCount })
 
 /**
  *
@@ -29,7 +29,7 @@ const getRsBlockTable = function (typeNumber, errorCorrectionLevel) {
  * @param {number} typeNumber
  * @param {number} errorCorrectionLevel
  */
-export const getRSBlocks = function (typeNumber, errorCorrectionLevel) {
+const calculateRSBlocks = function (typeNumber, errorCorrectionLevel) {
   const rsBlock = getRsBlockTable(typeNumber, errorCorrectionLevel)
 
   if (typeof rsBlock === 'undefined') {
@@ -50,5 +50,34 @@ export const getRSBlocks = function (typeNumber, errorCorrectionLevel) {
     }
   }
 
-  return list
+  return Object.freeze(list)
+}
+
+/**
+ * used to memoize calculateRSBlocks calculations.
+ * Each time a qr code is calculated, getRSBlocks is called at least 2 times:
+ * - 1 time to calculate the best version number to generate the QR code
+ * - 1 time to generate the data
+ * This way, calculateRSBlocks is calculated only once and there is no problem returning the same object because the result is an immutable object
+ * Since the memory footprint is small, there is little disadvantage in memoizing it
+ */
+const memoRsBlocks = /** @type {ReturnType<calculateRSBlocks>[]} */([])
+
+/**
+ *
+ * @param {number} typeNumber
+ * @param {number} errorCorrectionLevel
+ */
+export const getRSBlocks = function (typeNumber, errorCorrectionLevel) {
+  if (errorCorrectionLevel < CORRECTION_LEVEL_M && errorCorrectionLevel > CORRECTION_LEVEL_Q) {
+    throw Error(`bad rs block @ typeNumber:${typeNumber}', errorCorrectionLevel: ${errorCorrectionLevel}`)
+  }
+  const index = (typeNumber - 1) * 4 + errorCorrectionLevel
+  const memo = memoRsBlocks[index]
+  if (memo) {
+    return memo
+  }
+  const result = calculateRSBlocks(typeNumber, errorCorrectionLevel)
+  memoRsBlocks[index] = result
+  return result
 }
