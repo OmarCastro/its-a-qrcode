@@ -1,4 +1,4 @@
-import { getRSBlocks } from './utils/qr-rs-block.utils.js'
+import { getECBlocks } from './utils/qr-ec-block.utils.js'
 import { fromString } from './utils/qr-rs-correction-level.constants.js'
 import { getLengthInBits, getPatternPosition, getBCHTypeInfo, getBCHTypeNumber, getMaskFunction } from './utils/qr-util.js'
 import { createData } from './utils/create-data.util.js'
@@ -167,7 +167,7 @@ function getBestTypeNumber (qrcode) {
   const { errorCorrectionLevel, dataList } = qrcode
 
   for (let typeNumber = 1; typeNumber < 40; typeNumber++) {
-    const rsBlocks = getRSBlocks(typeNumber, errorCorrectionLevel)
+    const rsBlocks = getECBlocks(typeNumber, errorCorrectionLevel)
     const buffer = new QrBitBuffer()
 
     for (let i = 0; i < dataList.length; i++) {

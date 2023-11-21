@@ -1,5 +1,5 @@
 import { QrBitBuffer } from './qr-bit-buffer.js'
-import { getRSBlocks } from './qr-rs-block.utils.js'
+import { getECBlocks } from './qr-ec-block.utils.js'
 import { getErrorCorrectPolynomial, getLengthInBits } from './qr-util.js'
 import { QrPolynomial } from './qr-polynomial.js'
 
@@ -10,11 +10,11 @@ const PAD1 = 0x11
  *
  * @param {number} typeNumber
  * @param {number} errorCorrectionLevel
- * @param {readonly Mode[]} dataList
+ * @param {readonly import ("../modes/mode-bits.constants.js").ModeObject[]} dataList
  * @returns
  */
 export function createData (typeNumber, errorCorrectionLevel, dataList) {
-  const rsBlocks = getRSBlocks(typeNumber, errorCorrectionLevel)
+  const rsBlocks = getECBlocks(typeNumber, errorCorrectionLevel)
   const buffer = new QrBitBuffer()
 
   for (const data of dataList) {
@@ -62,7 +62,7 @@ export function createData (typeNumber, errorCorrectionLevel, dataList) {
 /**
  *
  * @param {QrBitBuffer} buffer
- * @param {ReturnType<typeof getRSBlocks>} rsBlocks
+ * @param {ReturnType<typeof getECBlocks>} rsBlocks
  * @returns
  */
 export function createBytes (buffer, rsBlocks) {
@@ -71,9 +71,15 @@ export function createBytes (buffer, rsBlocks) {
   let maxDcCount = 0
   let maxEcCount = 0
 
-  /** @type {number[][]} */
+  /**
+   * Data Codewords data
+   * @type {number[][]}
+   */
   const dcdata = new Array(rsBlocks.length)
-  /** @type {number[][]} */
+  /**
+   * Error correction Codewords data
+   * @type {number[][]}
+   */
   const ecdata = new Array(rsBlocks.length)
 
   for (let r = 0; r < rsBlocks.length; r += 1) {
@@ -130,10 +136,3 @@ export function createBytes (buffer, rsBlocks) {
 
   return data
 };
-
-/**
- * @typedef {object} Mode
- * @property {number} mode
- * @property {number} length
- * @property {(buffer: QrBitBuffer) => any} write
- */

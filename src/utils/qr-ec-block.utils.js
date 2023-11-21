@@ -2,19 +2,17 @@ import { EC_BLOCK_TABLE } from './qr-ec-block-table.constants.js'
 import { CORRECTION_LEVEL_L, CORRECTION_LEVEL_M, CORRECTION_LEVEL_Q, CORRECTION_LEVEL_H } from './qr-rs-correction-level.constants.js'
 
 /**
- *
  * @param {number} totalCount - total codewords capacity
  * @param {number} dataCount - data codewords capacity
- * @returns {Readonly<RSBlock>} create block object
+ * @returns {Readonly<ECBlock>} created Error Correction block object
  */
-const qrRSBlock = (totalCount, dataCount) => Object.freeze({ totalCount, dataCount, ecCount: totalCount - dataCount })
+const ECBlock = (totalCount, dataCount) => Object.freeze({ totalCount, dataCount, ecCount: totalCount - dataCount })
 
 /**
- *
  * @param {number} typeNumber - qr code version
  * @param {number} errorCorrectionLevel - numeric value of error Correction Level
  */
-const getRsBlockTable = function (typeNumber, errorCorrectionLevel) {
+const getRawECBlockFromTable = function (typeNumber, errorCorrectionLevel) {
   switch (errorCorrectionLevel) {
     case CORRECTION_LEVEL_L : return EC_BLOCK_TABLE[(typeNumber - 1) * 4 + 0]
     case CORRECTION_LEVEL_M : return EC_BLOCK_TABLE[(typeNumber - 1) * 4 + 1]
@@ -26,12 +24,11 @@ const getRsBlockTable = function (typeNumber, errorCorrectionLevel) {
 }
 
 /**
- *
  * @param {number} typeNumber - qr code version
  * @param {number} errorCorrectionLevel - numeric value of error Correction Level
  */
-const calculateRSBlocks = function (typeNumber, errorCorrectionLevel) {
-  const rsBlock = getRsBlockTable(typeNumber, errorCorrectionLevel)
+const queryECBlocks = function (typeNumber, errorCorrectionLevel) {
+  const rsBlock = getRawECBlockFromTable(typeNumber, errorCorrectionLevel)
 
   if (typeof rsBlock === 'undefined') {
     throw Error(`bad rs block @ typeNumber:${typeNumber}', errorCorrectionLevel: ${errorCorrectionLevel}`)
@@ -47,7 +44,7 @@ const calculateRSBlocks = function (typeNumber, errorCorrectionLevel) {
     const dataCount = rsBlock[i * 3 + 2]
 
     for (let j = 0; j < count; j += 1) {
-      list.push(qrRSBlock(totalCount, dataCount))
+      list.push(ECBlock(totalCount, dataCount))
     }
   }
 
@@ -55,22 +52,22 @@ const calculateRSBlocks = function (typeNumber, errorCorrectionLevel) {
 }
 
 /**
- * used to memoize calculateRSBlocks calculations.
- * Each time a qr code is calculated, getRSBlocks is called at least 2 times:
+ * used to memoize queryECBlocks calculations.
+ * Each time a qr code is calculated, EC block is requested at least 2 times:
  * - 1 time to calculate the best version number to generate the QR code
  * - 1 time to generate the data
- * This way, calculateRSBlocks is calculated only once and there is no problem returning the same object because the result is an immutable object
+ * This way, queryECBlocks is calculated only once and there is no problem returning the same object because the result is an immutable object
  * Since the memory footprint is small, there is little disadvantage in memoizing it
  */
-const memoRsBlocks = /** @type {ReturnType<calculateRSBlocks>[]} */([])
+const memoRsBlocks = /** @type {ReturnType<queryECBlocks>[]} */([])
 
 /**
- *
+ * Gets Error Correction block based on QR Code version and error correction level
  * @param {number} typeNumber - qr code version
  * @param {number} errorCorrectionLevel - numeric value of error Correction Level
- * @returns {ReadonlyArray<Readonly<RSBlock>>} resulting rsblock list
+ * @returns {ReadonlyArray<Readonly<ECBlock>>} resulting error correction blocks
  */
-export const getRSBlocks = function (typeNumber, errorCorrectionLevel) {
+export const getECBlocks = function (typeNumber, errorCorrectionLevel) {
   if (errorCorrectionLevel < CORRECTION_LEVEL_M && errorCorrectionLevel > CORRECTION_LEVEL_Q) {
     throw Error(`bad rs block @ typeNumber:${typeNumber}', errorCorrectionLevel: ${errorCorrectionLevel}`)
   }
@@ -79,13 +76,13 @@ export const getRSBlocks = function (typeNumber, errorCorrectionLevel) {
   if (memo) {
     return memo
   }
-  const result = calculateRSBlocks(typeNumber, errorCorrectionLevel)
+  const result = queryECBlocks(typeNumber, errorCorrectionLevel)
   memoRsBlocks[index] = result
   return result
 }
 
 /**
- * @typedef {object} RSBlock
+ * @typedef {object} ECBlock - Error Correction block
  * @property {number} totalCount - total codewords count capacity
  * @property {number} dataCount - data codewords count capacity
  * @property {number} ecCount - error correction codewords count capacity
