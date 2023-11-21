@@ -87,15 +87,13 @@ export class QrCode {
    * @param {'Byte'|'Numeric'|'Alphanumeric'|'Kanji'} [mode] - qr mode to use, uses best mode if absent
    */
   addData (data, mode) {
-    if (!mode) {
-      getBestMode(data)
-    }
-
     switch (mode) {
       case 'Numeric' : this.dataList.push(QrNumber(data)); break
       case 'Alphanumeric' : this.dataList.push(QrAlphaNum(data)); break
       case 'Byte' : this.dataList.push(Qr8BitByte(data)); break
       case 'Kanji' : this.dataList.push(QrKanji(data)); break
+      case null:
+      case undefined: this.dataList.push(getBestMode(data)); break
       default : throw Error(`invalid mode "${mode}"`)
     }
 
