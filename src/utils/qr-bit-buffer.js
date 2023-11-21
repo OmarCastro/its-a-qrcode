@@ -4,9 +4,9 @@ export class QrBitBuffer {
   #bitLength = 0
 
   /**
-   *
-   * @param {number} num
-   * @param {number} length
+   * Append bit sequence to bit buffer
+   * @param {number} num - bit sequence as number
+   * @param {number} length - bit sequence length
    */
   put (num, length) {
     const byteBuffer = this.#byteBuffer
@@ -47,7 +47,8 @@ export class QrBitBuffer {
 
   /**
    * Get bit value at index, value is either 0 or 1
-   * @param {number} index
+   * @param {number} index - index position
+   * @returns {number} bit value
    */
   getBitAt (index) {
     const bufIndex = index >> 3
@@ -55,8 +56,7 @@ export class QrBitBuffer {
   }
 
   /**
-   *
-   * @param {0|1|boolean} bit
+   * @param {0|1|boolean} bit bit to put
    */
   putBit (bit) {
     const byteBuffer = this.#byteBuffer
