@@ -1,4 +1,4 @@
-import { RS_BLOCK_TABLE } from './qr-rs-block-table.constants.js'
+import { EC_BLOCK_TABLE } from './qr-ec-block-table.constants.js'
 import { CORRECTION_LEVEL_L, CORRECTION_LEVEL_M, CORRECTION_LEVEL_Q, CORRECTION_LEVEL_H } from './qr-rs-correction-level.constants.js'
 
 /**
@@ -16,10 +16,10 @@ const qrRSBlock = (totalCount, dataCount) => Object.freeze({ totalCount, dataCou
  */
 const getRsBlockTable = function (typeNumber, errorCorrectionLevel) {
   switch (errorCorrectionLevel) {
-    case CORRECTION_LEVEL_L : return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 0]
-    case CORRECTION_LEVEL_M : return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 1]
-    case CORRECTION_LEVEL_Q : return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 2]
-    case CORRECTION_LEVEL_H : return RS_BLOCK_TABLE[(typeNumber - 1) * 4 + 3]
+    case CORRECTION_LEVEL_L : return EC_BLOCK_TABLE[(typeNumber - 1) * 4 + 0]
+    case CORRECTION_LEVEL_M : return EC_BLOCK_TABLE[(typeNumber - 1) * 4 + 1]
+    case CORRECTION_LEVEL_Q : return EC_BLOCK_TABLE[(typeNumber - 1) * 4 + 2]
+    case CORRECTION_LEVEL_H : return EC_BLOCK_TABLE[(typeNumber - 1) * 4 + 3]
     default :
       return undefined
   }
