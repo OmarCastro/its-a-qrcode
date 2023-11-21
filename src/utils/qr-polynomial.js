@@ -5,9 +5,8 @@ class QRPolynomial {
   array
 
   /**
-   *
-   * @param {ArrayLike<number>} num
-   * @param {number} shift
+   * @param {ArrayLike<number>} num - polinomial value
+   * @param {number} shift - shift value
    */
   constructor (num, shift = 0) {
     let offset = 0
@@ -25,7 +24,7 @@ class QRPolynomial {
     this.array = array
   }
 
-  /** @param {number} index */
+  /** @param {number} index - value position */
   getAt (index) {
     return this.array[index]
   }
@@ -34,7 +33,10 @@ class QRPolynomial {
     return this.array.length
   }
 
-  /** @param {QRPolynomial} other */
+  /**
+   * @param {QRPolynomial} other - right side of operation
+   * @returns {QRPolynomial} multiplication result
+   */
   multiply (other) {
     const { length, array } = this
     const { length: otherLength, array: otherArray } = other
@@ -51,8 +53,8 @@ class QRPolynomial {
   }
 
   /**
-   * @param {Readonly<QRPolynomial>} other
-   * @returns {QRPolynomial}
+   * @param {Readonly<QRPolynomial>} other - right side of operation
+   * @returns {QRPolynomial} mod result
    */
   mod (other) {
     const { length, array } = this
@@ -76,10 +78,10 @@ class QRPolynomial {
 }
 
 /**
- *
- * @param {ArrayLike<number>} num
- * @param {number} [shift]
- * @returns
+ * Transforms array into a polynomial
+ * @param {ArrayLike<number>} num - polynomial values
+ * @param {number} [shift] - shift value
+ * @returns {QRPolynomial} polynomial
  */
 export function QrPolynomial (num, shift = 0) {
   return new QRPolynomial(num, shift)
