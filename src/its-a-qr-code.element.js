@@ -58,8 +58,9 @@ function applyQrCode (element) {
   }
 
   const qr = new QrCode(typeNumber, element.errorCorrectionLevel)
-  qr.addData(textContent, 'Byte')
+  qr.addData(textContent)
   qr.make()
 
-  shadowRoot.innerHTML = createSvgTag({ qrcode: qr })
+  const svg = createSvgTag({ qrcode: qr })
+  shadowRoot.innerHTML = svg
 }
