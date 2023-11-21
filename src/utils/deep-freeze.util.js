@@ -1,7 +1,7 @@
 /**
  * @template T
- * @param {DeepFrozen<T>} x
- * @returns {DeepFrozen<T>}
+ * @param {DeepFrozen<T>} x - object structure to freeze
+ * @returns {DeepFrozen<T>} - frozen object structure
  */
 export function deepFreeze (x) {
   Object.freeze(x)
