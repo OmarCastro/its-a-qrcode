@@ -41,8 +41,7 @@ const observer = new MutationObserver((records) => {
 })
 
 /**
- *
- * @param {QRCodeElement} element
+ * @param {QRCodeElement} element - target QRCodeElement component element
  */
 function applyQrCode (element) {
   const typeNumber = 0
