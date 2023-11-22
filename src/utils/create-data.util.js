@@ -1,5 +1,5 @@
 import { QrBitBuffer } from './qr-bit-buffer.js'
-import { getECBlocks } from './qr-ec-block.utils.js'
+import { ECBlocksInfo } from './qr-ec-block.utils.js'
 import { getErrorCorrectPolynomial, getLengthInBits } from './qr-util.js'
 import { QrPolynomial } from './qr-polynomial.js'
 
@@ -8,13 +8,13 @@ const PAD1 = 0x11
 
 /**
  *
- * @param {number} typeNumber
- * @param {number} errorCorrectionLevel
- * @param {readonly import ("../modes/mode-bits.constants.js").ModeObject[]} dataList
- * @returns
+ * @param {number} typeNumber - qr code version
+ * @param {number} errorCorrectionLevel - error correction level
+ * @param {readonly import ("../modes/mode-bits.constants.js").ModeObject[]} dataList - qr code raw data
+ * @returns {number[]} qr code byte data
  */
 export function createData (typeNumber, errorCorrectionLevel, dataList) {
-  const rsBlocks = getECBlocks(typeNumber, errorCorrectionLevel)
+  const blocksInfo = ECBlocksInfo(typeNumber, errorCorrectionLevel)
   const buffer = new QrBitBuffer()
 
   for (const data of dataList) {
@@ -23,11 +23,7 @@ export function createData (typeNumber, errorCorrectionLevel, dataList) {
     data.write(buffer)
   }
 
-  // calc num max data.
-  let totalDataCount = 0
-  for (const { dataCount } of rsBlocks) {
-    totalDataCount += dataCount
-  }
+  const totalDataCount = blocksInfo.totalDcCount
 
   if (buffer.bitLength > totalDataCount * 8) {
     throw Error(`code length overflow. (${buffer.bitLength} > ${totalDataCount * 8})`)
@@ -56,38 +52,57 @@ export function createData (typeNumber, errorCorrectionLevel, dataList) {
     buffer.put(PAD1, 8)
   }
 
-  return createBytes(buffer, rsBlocks)
+  return createBytes(buffer, blocksInfo)
 };
 
 /**
- *
- * @param {QrBitBuffer} buffer
- * @param {ReturnType<typeof getECBlocks>} rsBlocks
- * @returns
+ * @param {QrBitBuffer} buffer - data buffer
+ * @param {import('./qr-ec-block.utils.js').ECBlocksInfo} blocksInfo - error correction blocks info
  */
-export function createBytes (buffer, rsBlocks) {
+function createBytes (buffer, blocksInfo) {
+  const { maxDcCount, maxEcCount, blocks: ecBlocks, totalCount: totalCodeCount } = blocksInfo
+  const { ecdata, dcdata } = createCodewordsData(buffer, ecBlocks)
+
+  /** @type {number[]} */
+  const data = new Array(totalCodeCount)
+  let index = 0
+
+  for (let i = 0; i < maxDcCount; i += 1) {
+    for (let r = 0; r < ecBlocks.length; r += 1) {
+      if (i < dcdata[r].length) {
+        data[index] = dcdata[r][i]
+        index += 1
+      }
+    }
+  }
+
+  for (let i = 0; i < maxEcCount; i += 1) {
+    for (let r = 0; r < ecBlocks.length; r += 1) {
+      if (i < ecdata[r].length) {
+        data[index] = ecdata[r][i]
+        index += 1
+      }
+    }
+  }
+
+  return data
+};
+
+/**
+ * @param {QrBitBuffer} buffer - - data buffer
+ * @param {import('./qr-ec-block.utils.js').ECBlocks} ecBlocks - error correction blocks
+ */
+function createCodewordsData (buffer, ecBlocks) {
   let offset = 0
 
-  let maxDcCount = 0
-  let maxEcCount = 0
+  /** @type {number[][]} */
+  const dcdata = new Array(ecBlocks.length)
+  /** @type {number[][]} */
+  const ecdata = new Array(ecBlocks.length)
 
-  /**
-   * Data Codewords data
-   * @type {number[][]}
-   */
-  const dcdata = new Array(rsBlocks.length)
-  /**
-   * Error correction Codewords data
-   * @type {number[][]}
-   */
-  const ecdata = new Array(rsBlocks.length)
-
-  for (let r = 0; r < rsBlocks.length; r += 1) {
-    const dcCount = rsBlocks[r].dataCount
-    const ecCount = rsBlocks[r].totalCount - dcCount
-
-    maxDcCount = Math.max(maxDcCount, dcCount)
-    maxEcCount = Math.max(maxEcCount, ecCount)
+  for (let r = 0; r < ecBlocks.length; r += 1) {
+    const dcCount = ecBlocks[r].dataCount
+    const ecCount = ecBlocks[r].ecCount
 
     dcdata[r] = new Array(dcCount)
 
@@ -107,32 +122,5 @@ export function createBytes (buffer, rsBlocks) {
     }
   }
 
-  let totalCodeCount = 0
-  for (let i = 0; i < rsBlocks.length; i += 1) {
-    totalCodeCount += rsBlocks[i].totalCount
-  }
-
-  /** @type {number[]} */
-  const data = new Array(totalCodeCount)
-  let index = 0
-
-  for (let i = 0; i < maxDcCount; i += 1) {
-    for (let r = 0; r < rsBlocks.length; r += 1) {
-      if (i < dcdata[r].length) {
-        data[index] = dcdata[r][i]
-        index += 1
-      }
-    }
-  }
-
-  for (let i = 0; i < maxEcCount; i += 1) {
-    for (let r = 0; r < rsBlocks.length; r += 1) {
-      if (i < ecdata[r].length) {
-        data[index] = ecdata[r][i]
-        index += 1
-      }
-    }
-  }
-
-  return data
+  return { ecdata, dcdata }
 };
