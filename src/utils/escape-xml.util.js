@@ -1,6 +1,7 @@
 /**
- * Escapes the `xml` string
+ * Escapes XML entities characters in `xml` string
  * @param {string} xml - xml to escape
+ * @returns {string} escaped xml
  */
 export function escapeXml (xml) {
   let escaped = ''
