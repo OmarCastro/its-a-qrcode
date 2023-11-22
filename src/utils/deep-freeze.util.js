@@ -4,8 +4,18 @@
  * @returns {DeepFrozen<T>} - frozen object structure
  */
 export function deepFreeze (x) {
-  Object.freeze(x)
-  x && Object.values(x).filter(x => !Object.isFrozen(x)).forEach(deepFreeze)
+  return deepFreezeWalk(x, new Set())
+}
+
+/**
+ * Recursively deep freeze an object with circular or shallow-frozen references
+ * @param {*} x - object structure to freeze
+ * @param {Set<*>} frozen - already navigated objects
+ */
+function deepFreezeWalk (x, frozen) {
+  if (frozen.has(x)) return x
+  frozen.add(Object.freeze(x))
+  Object.values(x).forEach(x => typeof x === 'object' && deepFreezeWalk(x, frozen))
   return x
 }
 
