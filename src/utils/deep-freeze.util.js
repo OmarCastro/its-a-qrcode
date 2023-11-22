@@ -1,21 +1,13 @@
 /**
+ * Recursively deep freeze an object with circular references
+ * No shallow-frozen references expeced in the project, so no need to check for it
  * @template T
  * @param {DeepFrozen<T>} x - object structure to freeze
  * @returns {DeepFrozen<T>} - frozen object structure
  */
 export function deepFreeze (x) {
-  return deepFreezeWalk(x, new Set())
-}
-
-/**
- * Recursively deep freeze an object with circular or shallow-frozen references
- * @param {*} x - object structure to freeze
- * @param {Set<*>} frozen - already navigated objects
- */
-function deepFreezeWalk (x, frozen) {
-  if (frozen.has(x)) return x
-  frozen.add(Object.freeze(x))
-  Object.values(x).forEach(x => typeof x === 'object' && deepFreezeWalk(x, frozen))
+  Object.freeze(x)
+  x && Object.values(x).filter(x => !Object.isFrozen(x)).forEach(deepFreeze)
   return x
 }
 
