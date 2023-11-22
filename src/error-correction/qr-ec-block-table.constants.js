@@ -1,5 +1,5 @@
 /* eslint-disable no-multi-spaces -- tabular view of data present */
-import { deepFreeze } from './deep-freeze.util.js'
+import { deepFreeze } from '../utils/deep-freeze.util.js'
 
 /**
  * The error correction block table.

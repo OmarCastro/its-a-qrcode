@@ -1,5 +1,5 @@
-import { ECBlocksInfo } from './utils/qr-ec-block.utils.js'
-import { fromString } from './utils/qr-rs-correction-level.constants.js'
+import { ECBlocksInfo } from './error-correction/qr-ec-block.utils.js'
+import { fromString } from './error-correction/qr-ec-level.constants.js'
 import { getLengthInBits, getPatternPosition, getBCHTypeInfo, getBCHTypeNumber, getMaskFunction } from './utils/qr-util.js'
 import { createData } from './utils/create-data.util.js'
 import { QrKanji } from './modes/kanji.mode.js'

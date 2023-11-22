@@ -1,5 +1,5 @@
 import { QrBitBuffer } from './qr-bit-buffer.js'
-import { ECBlocksInfo } from './qr-ec-block.utils.js'
+import { ECBlocksInfo } from '../error-correction/qr-ec-block.utils.js'
 import { getErrorCorrectPolynomial, getLengthInBits } from './qr-util.js'
 import { QrPolynomial } from './qr-polynomial.js'
 
@@ -57,7 +57,7 @@ export function createData (typeNumber, errorCorrectionLevel, dataList) {
 
 /**
  * @param {QrBitBuffer} buffer - data buffer
- * @param {import('./qr-ec-block.utils.js').ECBlocksInfo} blocksInfo - error correction blocks info
+ * @param {import('../error-correction/qr-ec-block.utils.js').ECBlocksInfo} blocksInfo - error correction blocks info
  */
 function createBytes (buffer, blocksInfo) {
   const { maxDcCount, maxEcCount, blocks: ecBlocks, totalCount: totalCodeCount } = blocksInfo
@@ -90,7 +90,7 @@ function createBytes (buffer, blocksInfo) {
 
 /**
  * @param {QrBitBuffer} buffer - - data buffer
- * @param {import('./qr-ec-block.utils.js').ECBlocks} ecBlocks - error correction blocks
+ * @param {import('../error-correction/qr-ec-block.utils.js').ECBlocks} ecBlocks - error correction blocks
  */
 function createCodewordsData (buffer, ecBlocks) {
   let offset = 0

@@ -1,5 +1,5 @@
 import { EC_BLOCK_TABLE } from './qr-ec-block-table.constants.js'
-import { CORRECTION_LEVEL_L, CORRECTION_LEVEL_M, CORRECTION_LEVEL_Q, CORRECTION_LEVEL_H } from './qr-rs-correction-level.constants.js'
+import { CORRECTION_LEVEL_L, CORRECTION_LEVEL_M, CORRECTION_LEVEL_Q, CORRECTION_LEVEL_H } from './qr-ec-level.constants.js'
 
 /**
  * @param {number} totalCount - total codewords capacity
