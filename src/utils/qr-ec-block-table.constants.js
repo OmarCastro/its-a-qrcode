@@ -1,4 +1,4 @@
-/* eslint-disable no-multi-spaces */
+/* eslint-disable no-multi-spaces -- tabular view of data present */
 import { deepFreeze } from './deep-freeze.util.js'
 
 /**
