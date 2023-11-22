@@ -3,7 +3,10 @@ import { QrPolynomial } from './qr-polynomial.js'
 import { gexp } from './qr-math.util.js'
 import { MODE_8BIT_BYTE, MODE_ALPHA_NUM, MODE_KANJI, MODE_NUMBER } from '../modes/mode-bits.constants.js'
 
-/** @param {number} data  */
+/**
+ * Get BCH code digit
+ * @param {number} data - numeric data
+ */
 function getBCHDigit (data) {
   let digit = 0
   while (data !== 0) {
@@ -17,7 +20,11 @@ const G15 = 0b000010100110111
 const G18 = 0b001111100100101
 const G15_MASK = 0b101010000010010
 
-/** @param {number} data  */
+/**
+ * Get type info using Reed–Solomon error correction with Bose–Chaudhuri–Hocquenghem codes (BCH codes)
+ * @param {number} data - masked error Correction Level info
+ * @returns {number} bits of BHC code of type info
+ */
 export function getBCHTypeInfo (data) {
   let d = data << 10
   while (getBCHDigit(d) - getBCHDigit(G15) >= 0) {
@@ -26,7 +33,10 @@ export function getBCHTypeInfo (data) {
   return ((data << 10) | d) ^ G15_MASK
 };
 
-/** @param {number} data  */
+/**
+ * @param {number} data - QR code version
+ * @returns {number} bits of BHC code of QR code version
+ */
 export function getBCHTypeNumber (data) {
   let d = data << 12
   while (getBCHDigit(d) - getBCHDigit(G18) >= 0) {
@@ -35,7 +45,10 @@ export function getBCHTypeNumber (data) {
   return (data << 12) | d
 };
 
-/** @param {number} typeNumber  */
+/**
+ * @param {number} typeNumber - QR code version
+ * @returns {readonly number[]} pattern positions
+ */
 export const getPatternPosition = (typeNumber) => PATTERN_POSITION_TABLE[typeNumber - 1]
 
 /** @type {((i: number, j: number) => boolean)[]} */
@@ -50,7 +63,10 @@ const maskPatternFunctions = [
   (i, j) => ((i * j) % 3 + (i + j) % 2) % 2 === 0, // QRMaskPattern.PATTERN110
 ]
 
-/** @param {number} maskPattern  */
+/**
+ * @param {number} maskPattern - mask pattern value
+ * @returns {((i: number, j: number) => boolean)} mask pattern function
+ */
 export function getMaskFunction (maskPattern) {
   const result = maskPatternFunctions[maskPattern]
   if (!result) {
@@ -59,7 +75,10 @@ export function getMaskFunction (maskPattern) {
   return result
 };
 
-/** @param {number} errorCorrectLength  */
+/**
+ * @param {number} errorCorrectLength - error correction codeword count
+ * @returns {ReturnType<QrPolynomial>} error correction polynomial
+ */
 export function getErrorCorrectPolynomial (errorCorrectLength) {
   let polynomial = QrPolynomial([1], 0)
   for (let i = 0; i < errorCorrectLength; i += 1) {
@@ -69,9 +88,10 @@ export function getErrorCorrectPolynomial (errorCorrectLength) {
 };
 
 /**
- *
- * @param {number} mode
- * @param {number} type
+ * Get bit length to write on QR code data
+ * @param {number} mode - mode balue
+ * @param {number} type - qr version
+ * @returns {number} bit length
  */
 export function getLengthInBits (mode, type) {
   if (type >= 1 && type < 10) { // 1 - 9
