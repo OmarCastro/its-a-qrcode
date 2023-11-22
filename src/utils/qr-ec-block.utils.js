@@ -54,10 +54,10 @@ const queryECBlocks = function (typeNumber, errorCorrectionLevel) {
 /**
  * @param {number} typeNumber - qr code version
  * @param {number} errorCorrectionLevel - numeric value of error Correction Level
- * @returns {ECBlockInfo} block info
+ * @returns {ECBlocksInfo} block info
  */
-function buildECBlockInfo (typeNumber, errorCorrectionLevel) {
-  const blocks = getECBlocks(typeNumber, errorCorrectionLevel)
+function buildECBlocksInfo (typeNumber, errorCorrectionLevel) {
+  const blocks = queryECBlocks(typeNumber, errorCorrectionLevel)
   let totalCount = 0
   let totalDcCount = 0
   let totalEcCount = 0
@@ -78,47 +78,31 @@ function buildECBlockInfo (typeNumber, errorCorrectionLevel) {
 /**
  * used to memoize queryECBlocks calculations.
  * Each time a qr code is calculated, EC block is requested at least 2 times:
- * - 1 time to calculate the best version number to generate the QR code
- * - 1 time to generate the data
+ * - at least 1 time to calculate the best version number to generate the QR code, to do it, it does the following:
+ *   - calculate the total data codeword count
+ * - 1 time to generate the data, to do that is uses the following:
+ *   - calculate the total codeword count, max data and ec codewords
+ *
  * This way, queryECBlocks is calculated only once and there is no problem returning the same object because the result is an immutable object
  * Since the memory footprint is small, there is little disadvantage in memoizing it
+ *
+ * Also, by saving the calculation results in `ECBlocksInfo` there will be no need to do the same calculations again
  */
-const memoECBlocks = /** @type {ECBlocks[]} */([])
+const memoEcBlockInfo = /** @type {ECBlocksInfo[]} */([])
 
 /**
- * Gets Error Correction block based on QR Code version and error correction level
  * @param {number} typeNumber - qr code version
  * @param {number} errorCorrectionLevel - numeric value of error Correction Level
- * @returns {ECBlocks} resulting error correction blocks
+ * @returns {ECBlocksInfo} error correction blocks information
  */
-export const getECBlocks = function (typeNumber, errorCorrectionLevel) {
-  versionEcCheck(typeNumber, errorCorrectionLevel)
-  const index = (typeNumber - 1) * 4 + errorCorrectionLevel
-  const memo = memoECBlocks[index]
-  if (memo) {
-    return memo
-  }
-  const result = queryECBlocks(typeNumber, errorCorrectionLevel)
-  memoECBlocks[index] = result
-  return result
-}
-
-const memoEcBlockInfo = /** @type {ECBlockInfo[]} */([])
-
-/**
- * Gets Error Correction block based on QR Code version and error correction level
- * @param {number} typeNumber - qr code version
- * @param {number} errorCorrectionLevel - numeric value of error Correction Level
- * @returns {ECBlockInfo} resulting error correction blocks
- */
-export const getECBlockInfo = function (typeNumber, errorCorrectionLevel) {
+export function ECBlocksInfo (typeNumber, errorCorrectionLevel) {
   versionEcCheck(typeNumber, errorCorrectionLevel)
   const index = (typeNumber - 1) * 4 + errorCorrectionLevel
   const memo = memoEcBlockInfo[index]
   if (memo) {
     return memo
   }
-  const result = buildECBlockInfo(typeNumber, errorCorrectionLevel)
+  const result = buildECBlocksInfo(typeNumber, errorCorrectionLevel)
   memoEcBlockInfo[index] = result
   return result
 }
@@ -137,7 +121,7 @@ function versionEcCheck (typeNumber, errorCorrectionLevel) {
 }
 
 /**
- * @typedef {object} ECBlockInfoData
+ * @typedef {object} ECBlocksInfoData
  * @property {ECBlocks} blocks - total codewords count capacity
  * @property {number} totalCount - total codewords count
  * @property {number} totalDcCount - total data codewords count
@@ -147,7 +131,7 @@ function versionEcCheck (typeNumber, errorCorrectionLevel) {
  */
 
 /**
- * @typedef {Readonly<ECBlockInfoData>} ECBlockInfo - Error Correction blocks information
+ * @typedef {Readonly<ECBlocksInfoData>} ECBlocksInfo Error Correction blocks information
  */
 
 /**
@@ -158,9 +142,9 @@ function versionEcCheck (typeNumber, errorCorrectionLevel) {
  */
 
 /**
- * @typedef {Readonly<ECBlockData>} ECBlock - Error Correction block
+ * @typedef {Readonly<ECBlockData>} ECBlock Error Correction block
  */
 
 /**
- * @typedef {readonly ECBlock[]} ECBlocks - Error Correction blocks
+ * @typedef {readonly ECBlock[]} ECBlocks Error Correction blocks
  */
