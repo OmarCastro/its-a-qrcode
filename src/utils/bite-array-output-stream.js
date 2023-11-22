@@ -4,7 +4,7 @@ export class ByteArrayOutputStream {
 
   /**
    *
-   * @param {number} b
+   * @param {number} b - byte value
    */
   writeByte (b) {
     this.#bytes.push(b & 0xff)
@@ -12,7 +12,7 @@ export class ByteArrayOutputStream {
 
   /**
    *
-   * @param {number} i
+   * @param {number} i - 2 byte little-endian numeric value
    */
   writeShort (i) {
     this.writeByte(i)
@@ -20,10 +20,9 @@ export class ByteArrayOutputStream {
   };
 
   /**
-   *
-   * @param {ArrayLike<number>} b
-   * @param {number} [offset]
-   * @param {number} [length]
+   * @param {ArrayLike<number>} b - byte array
+   * @param {number} [offset] - starting position
+   * @param {number} [length] - array length to copy
    */
   writeBytes (b, offset = 0, length = b.length) {
     for (let i = 0; i < length; i += 1) {
@@ -33,7 +32,7 @@ export class ByteArrayOutputStream {
 
   /**
    *
-   * @param {string} str
+   * @param {string} str - charcode list
    */
   writeString (str) {
     for (let i = 0, e = str.length; i < e; i += 1) {
