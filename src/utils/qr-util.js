@@ -1,6 +1,4 @@
 import { PATTERN_POSITION_TABLE } from './pattern-position-table.constants.js'
-import { QrPolynomial } from './qr-polynomial.js'
-import { gexp } from './qr-math.util.js'
 import { MODE_8BIT_BYTE, MODE_ALPHA_NUM, MODE_KANJI, MODE_NUMBER } from '../modes/mode-bits.constants.js'
 
 /**
@@ -73,18 +71,6 @@ export function getMaskFunction (maskPattern) {
     throw Error(`bad maskPattern: ${maskPattern}`)
   }
   return result
-};
-
-/**
- * @param {number} errorCorrectLength - error correction codeword count
- * @returns {ReturnType<QrPolynomial>} error correction polynomial
- */
-export function getErrorCorrectPolynomial (errorCorrectLength) {
-  let polynomial = QrPolynomial([1], 0)
-  for (let i = 0; i < errorCorrectLength; i += 1) {
-    polynomial = polynomial.multiply(QrPolynomial([1, gexp(i)], 0))
-  }
-  return polynomial
 };
 
 /**

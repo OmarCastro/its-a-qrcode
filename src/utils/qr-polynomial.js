@@ -1,7 +1,7 @@
 import { gexp, glog } from './qr-math.util.js'
 
 class QRPolynomial {
-  /** @type {Uint32Array} */
+  /** @type {readonly number[]} */
   array
 
   /**
@@ -16,12 +16,13 @@ class QRPolynomial {
       offset += 1
     }
     const lengthAfterOffset = numLen - offset
-    const array = new Uint32Array(lengthAfterOffset + shift)
+    const array = new Array(lengthAfterOffset + shift)
     for (let i = 0; i < lengthAfterOffset; i += 1) {
       array[i] = num[i + offset]
     }
 
-    this.array = array
+    this.array = Object.freeze(array)
+    return Object.freeze(this)
   }
 
   /** @param {number} index - value position */
@@ -81,7 +82,7 @@ class QRPolynomial {
  * Transforms array into a polynomial
  * @param {ArrayLike<number>} num - polynomial values
  * @param {number} [shift] - shift value
- * @returns {QRPolynomial} polynomial
+ * @returns {Readonly<QRPolynomial>} polynomial
  */
 export function QrPolynomial (num, shift = 0) {
   return new QRPolynomial(num, shift)

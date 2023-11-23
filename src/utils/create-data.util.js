@@ -1,6 +1,7 @@
 import { QrBitBuffer } from './qr-bit-buffer.js'
 import { ECBlocksInfo } from '../error-correction/qr-ec-block.utils.js'
-import { getErrorCorrectPolynomial, getLengthInBits } from './qr-util.js'
+import { getLengthInBits } from './qr-util.js'
+import { getErrorCorrectPolynomial } from '../error-correction/ec-polynomial.js'
 import { QrPolynomial } from './qr-polynomial.js'
 
 const PAD0 = 0xEC
