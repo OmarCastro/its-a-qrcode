@@ -76,17 +76,7 @@ function buildECBlocksInfo (typeNumber, errorCorrectionLevel) {
 }
 
 /**
- * used to memoize queryECBlocks calculations.
- * Each time a qr code is calculated, EC block is requested at least 2 times:
- * - at least 1 time to calculate the best version number to generate the QR code, to do it, it does the following:
- *   - calculate the total data codeword count
- * - 1 time to generate the data, to do that is uses the following:
- *   - calculate the total codeword count, max data and ec codewords
- *
- * This way, queryECBlocks is calculated only once and there is no problem returning the same object because the result is an immutable object
- * Since the memory footprint is small, there is little disadvantage in memoizing it
- *
- * Also, by saving the calculation results in `ECBlocksInfo` there will be no need to do the same calculations again
+ * The idea was to pre-calculate everything on the EC block table, but it is better to memoize to reduce JS hydration
  */
 const memoEcBlockInfo = /** @type {ECBlocksInfo[]} */([])
 
