@@ -1,5 +1,5 @@
 import { EC_BLOCK_TABLE } from './qr-ec-block-table.constants.js'
-import { CORRECTION_LEVEL_L, CORRECTION_LEVEL_M, CORRECTION_LEVEL_Q, CORRECTION_LEVEL_H } from './qr-ec-level.constants.js'
+import { CORRECTION_LEVEL_M, CORRECTION_LEVEL_Q } from './qr-ec-level.constants.js'
 
 /**
  * @param {number} totalCount - total codewords capacity
@@ -12,36 +12,18 @@ const ECBlock = (totalCount, dataCount) => Object.freeze({ totalCount, dataCount
  * @param {number} typeNumber - qr code version
  * @param {number} errorCorrectionLevel - numeric value of error Correction Level
  */
-const getRawECBlockFromTable = function (typeNumber, errorCorrectionLevel) {
-  switch (errorCorrectionLevel) {
-    case CORRECTION_LEVEL_L : return EC_BLOCK_TABLE[(typeNumber - 1) * 4 + 0]
-    case CORRECTION_LEVEL_M : return EC_BLOCK_TABLE[(typeNumber - 1) * 4 + 1]
-    case CORRECTION_LEVEL_Q : return EC_BLOCK_TABLE[(typeNumber - 1) * 4 + 2]
-    case CORRECTION_LEVEL_H : return EC_BLOCK_TABLE[(typeNumber - 1) * 4 + 3]
-    default :
-      return undefined
-  }
-}
-
-/**
- * @param {number} typeNumber - qr code version
- * @param {number} errorCorrectionLevel - numeric value of error Correction Level
- */
 const queryECBlocks = function (typeNumber, errorCorrectionLevel) {
-  const rsBlock = getRawECBlockFromTable(typeNumber, errorCorrectionLevel)
+  const index = (typeNumber - 1) * 4 + errorCorrectionLevel
+  const rawEcBlock = EC_BLOCK_TABLE[index]
 
-  if (typeof rsBlock === 'undefined') {
-    throw Error(`bad rs block @ typeNumber:${typeNumber}', errorCorrectionLevel: ${errorCorrectionLevel}`)
-  }
-
-  const length = rsBlock.length / 3
+  const length = rawEcBlock.length / 3
 
   const list = []
 
   for (let i = 0; i < length; i += 1) {
-    const count = rsBlock[i * 3 + 0]
-    const totalCount = rsBlock[i * 3 + 1]
-    const dataCount = rsBlock[i * 3 + 2]
+    const count = rawEcBlock[i * 3 + 0]
+    const totalCount = rawEcBlock[i * 3 + 1]
+    const dataCount = rawEcBlock[i * 3 + 2]
 
     for (let j = 0; j < count; j += 1) {
       list.push(ECBlock(totalCount, dataCount))
