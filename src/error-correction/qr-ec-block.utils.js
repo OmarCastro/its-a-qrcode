@@ -85,8 +85,12 @@ export function ECBlocksInfo (typeNumber, errorCorrectionLevel) {
  */
 function versionEcCheck (typeNumber, errorCorrectionLevel) {
   if (
-    (errorCorrectionLevel < CORRECTION_LEVEL_M && errorCorrectionLevel > CORRECTION_LEVEL_Q) ||
-    (typeNumber < 1 && typeNumber > 40)
+    typeof errorCorrectionLevel !== 'number' ||
+    typeof typeNumber !== 'number' ||
+    errorCorrectionLevel < CORRECTION_LEVEL_M ||
+    errorCorrectionLevel > CORRECTION_LEVEL_Q ||
+    typeNumber < 1 ||
+    typeNumber > 40
   ) {
     throw Error(`bad rs block @ typeNumber:${typeNumber}', errorCorrectionLevel: ${errorCorrectionLevel}`)
   }
