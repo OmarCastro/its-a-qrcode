@@ -1,6 +1,6 @@
 import { test } from '../../test-utils/unit/test.util.js'
 import { ECBlocksInfo } from './qr-ec-block.utils.js'
-import { fromString } from './qr-ec-level.constants.js'
+import { fromString } from './ec-level.js'
 /**
  * Error Correction characteristics for QR Code
  */

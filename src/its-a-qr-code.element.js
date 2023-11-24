@@ -1,6 +1,6 @@
 import { QrCode } from './qr-code'
 import { createSvgTag } from '../src/render/svg.render.js'
-import { isValid } from './error-correction/qr-ec-level.constants.js'
+import { isValid } from './error-correction/ec-level.js'
 
 export class QRCodeElement extends HTMLElement {
   constructor () {
