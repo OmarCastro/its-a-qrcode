@@ -1,4 +1,4 @@
-import { gifImage } from './gif-image.render'
+import { gifImage } from './gif-image.render.js'
 import { ByteArrayOutputStream } from '../utils/bite-array-output-stream.js'
 import { bytesToBase64 } from '../utils/text-decode-encode.util.js'
 
