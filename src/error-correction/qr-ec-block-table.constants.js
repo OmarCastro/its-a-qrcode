@@ -1,11 +1,6 @@
 /* eslint-disable no-multi-spaces -- tabular view of data present */
 import { deepFreeze } from '../utils/deep-freeze.util.js'
 
-export const CORRECTION_LEVEL_L = 1
-export const CORRECTION_LEVEL_M = 0
-export const CORRECTION_LEVEL_Q = 3
-export const CORRECTION_LEVEL_H = 2
-
 /**
  * The error correction block table.
  *
