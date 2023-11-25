@@ -1,4 +1,4 @@
-import { createDataURL } from './data-url.render.js'
+import { createDataURL } from './data-url-canvas.render.js'
 import { escapeXml } from '../utils/escape-xml.util.js'
 
 /**
