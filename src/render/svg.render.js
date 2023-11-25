@@ -23,8 +23,7 @@ export function createSvgTag ({ cellSize, margin, alt, title, qrcode, scalable }
 
   let qrSvg = '<svg version="1.1" xmlns="http://www.w3.org/2000/svg"'
   qrSvg += !scalable ? ' width="' + size + 'px" height="' + size + 'px"' : ''
-  qrSvg += ' viewBox="0 0 ' + size + ' ' + size + '" '
-  qrSvg += ' preserveAspectRatio="xMinYMin meet"'
+  qrSvg += ' viewBox="0 0 ' + size + ' ' + size + '" preserveAspectRatio="xMinYMin meet"'
   qrSvg += a11yAttributes(titleProp, altProp) + '>'
   qrSvg += (titleProp.text) ? '<title id="' + escapeXml(titleProp.id) + '">' + escapeXml(titleProp.text) + '</title>' : ''
   qrSvg += (altProp.text) ? '<description id="' + escapeXml(altProp.id) + '">' + escapeXml(altProp.text) + '</description>' : ''
