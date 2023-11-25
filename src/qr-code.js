@@ -1,5 +1,5 @@
 import { ECBlocksInfo } from './error-correction/qr-ec-block.utils.js'
-import { fromString } from './error-correction/ec-level.js'
+import { fromString, CORRECTION_LEVEL_M } from './error-correction/ec-level.js'
 import { getLengthInBits, getPatternPosition, getBCHTypeInfo, getBCHTypeNumber, getMaskFunction } from './utils/qr-util.js'
 import { createData } from './utils/create-data.util.js'
 import { QrKanji } from './modes/kanji.mode.js'
@@ -33,8 +33,8 @@ export class QrCode {
    * @param {string} errorCorrectionLevel - error correction level, accepted values (case insensitive): l, low, m, medium, q, quartile, h, high
    */
   constructor (typeNumber, errorCorrectionLevel) {
-    this.typeNumber = typeNumber
-    this.errorCorrectionLevel = fromString(errorCorrectionLevel).bit
+    this.typeNumber = typeNumber ?? 0
+    this.errorCorrectionLevel = errorCorrectionLevel ? fromString(errorCorrectionLevel).bit : CORRECTION_LEVEL_M
     this.moduleCount = 0
     this.modules = createModuleTable(this.moduleCount)
     this.#dataCache = null
