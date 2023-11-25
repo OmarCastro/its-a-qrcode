@@ -33,6 +33,7 @@ if ('Deno' in globalThis || globalThis.window == null) {
   globalThis.cancelAnimationFrame = windowObj.cancelAnimationFrame
   globalThis.requestIdleCallback = windowObj.requestIdleCallback
   globalThis.cancelIdleCallback = windowObj.cancelIdleCallback
+  globalThis.document = windowObj.document
   domResetFunction = () => {
     const { documentElement } = windowObj.document
     documentElement.innerHTML = '<head></head><body></body>'
