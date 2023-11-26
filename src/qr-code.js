@@ -32,7 +32,7 @@ export class QrCode {
    * @param {number} typeNumber - QR code version from 1 to 40
    * @param {string} errorCorrectionLevel - error correction level, accepted values (case insensitive): l, low, m, medium, q, quartile, h, high
    */
-  constructor (typeNumber, errorCorrectionLevel) {
+  constructor (typeNumber = 0, errorCorrectionLevel = '') {
     this.typeNumber = typeNumber ?? 0
     this.errorCorrectionLevel = errorCorrectionLevel ? fromString(errorCorrectionLevel).bit : CORRECTION_LEVEL_M
     this.moduleCount = 0
