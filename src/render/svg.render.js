@@ -52,7 +52,7 @@ function pathData ({ cellSize, margin, qrcode, paintDarkColor }) {
   const { moduleCount } = qrcode
 
   let d = ''
-  const rect = 'l' + cellSize + ',0 0,' + cellSize + ' -' + cellSize + ',0 0,-' + cellSize + 'z '
+  const rect = `h${cellSize}v${cellSize}h-${cellSize}z`
 
   for (let r = 0; r < moduleCount; r += 1) {
     const mr = r * cellSize + margin
