@@ -1,5 +1,6 @@
 import { QrCode } from './qr-code'
-import { createSvgTag } from '../src/render/svg.render.js'
+import { createImgTag } from './render/img-tag.render'
+import { createSvgTag } from './render/svg.render.js'
 import { isValid } from './error-correction/ec-level.js'
 
 export class QRCodeElement extends HTMLElement {
@@ -60,6 +61,38 @@ function applyQrCode (element) {
   qr.addData(textContent)
   qr.make()
 
-  const svg = createSvgTag({ qrcode: qr })
-  shadowRoot.innerHTML = svg
+  const renderMode = getComputedStyle(element).getPropertyValue('--qrcode-render')
+  if (renderMode && renderMode.trim().toLowerCase() === 'svg') {
+    const svg = createSvgTag({ qrcode: qr })
+    shadowRoot.innerHTML = svg
+    return
+  }
+
+  const oldImgElement = shadowRoot.querySelector('img')
+  if (oldImgElement && updateImgElement(oldImgElement, qr)) {
+    return
+  }
+
+  const imgHtml = createImgTag({ qrcode: qr })
+  shadowRoot.innerHTML = imgHtml
+}
+
+/**
+ * Updates the image element, replacing the element with another &lt;img> will make the browser flash and re-render twice,
+ * one for the updated HTML without the previous image, as it is loading, and another time with the loaded image, this
+ * will make it update once without flash
+ * @param {HTMLImageElement} imageElement - target &lt;img> element
+ * @param {QrCode} qrcode new QR Code information
+ * @returns {boolean} true if updated correctly, false if something failed. If false, applyQrCode() will fallback to replace the &lt;img>
+ */
+function updateImgElement (imageElement, qrcode) {
+  const imgHtml = createImgTag({ qrcode })
+  const imgDom = new DOMParser().parseFromString(imgHtml, 'text/html').querySelector('img')
+  if (!imgDom) {
+    return false
+  }
+  imageElement.src = imgDom.src
+  imageElement.width = imgDom.width
+  imageElement.height = imgDom.height
+  return true
 }
