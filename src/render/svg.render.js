@@ -8,9 +8,11 @@ import { escapeXml } from '../utils/escape-xml.util.js'
  * @param {string|SvgProp} [opts.title] - image title
  * @param {boolean} [opts.scalable] - flag to make the svg scalable
  * @param {import('../qr-code.js').QrCode} opts.qrcode - QR Code data
+ * @param {string} [opts.darkColor] - dark color of QRCode image defaults to black
+ * @param {string} [opts.brightColor] - bright color of QRCode image defaults to white
  * @returns {string} &lt;svg> element outer HTML
  */
-export function createSvgTag ({ cellSize, margin, alt, title, qrcode, scalable }) {
+export function createSvgTag ({ cellSize, margin, alt, title, qrcode, scalable, darkColor = 'black', brightColor = 'white' }) {
   const { moduleCount } = qrcode
 
   cellSize ||= 2
@@ -19,7 +21,8 @@ export function createSvgTag ({ cellSize, margin, alt, title, qrcode, scalable }
   const titleProp = normalizeTitle(title)
   const altProp = normalizeAlt(alt)
 
-  const size = moduleCount * cellSize + margin * 2
+  const paintSize = moduleCount * cellSize
+  const size = paintSize + margin * 2
 
   let qrSvg = '<svg version="1.1" xmlns="http://www.w3.org/2000/svg"'
   qrSvg += !scalable ? ' width="' + size + 'px" height="' + size + 'px"' : ''
@@ -27,9 +30,11 @@ export function createSvgTag ({ cellSize, margin, alt, title, qrcode, scalable }
   qrSvg += a11yAttributes(titleProp, altProp) + '>'
   qrSvg += (titleProp.text) ? '<title id="' + escapeXml(titleProp.id) + '">' + escapeXml(titleProp.text) + '</title>' : ''
   qrSvg += (altProp.text) ? '<description id="' + escapeXml(altProp.id) + '">' + escapeXml(altProp.text) + '</description>' : ''
-  qrSvg += '<rect width="100%" height="100%" fill="white" cx="0" cy="0"/>'
-  qrSvg += `<path d="${pathData({ cellSize, margin, qrcode })}" stroke="transparent" fill="black"/>`
-  qrSvg += '</svg>'
+  qrSvg += `<g stroke="none" fill="${brightColor}">`
+  qrSvg += `<path d="M0,0h${size}v${size}h-${size}zM${margin},${margin}v${paintSize}h${paintSize}v-${paintSize}z"/>`
+  qrSvg += `<path d="${pathData({ cellSize, margin, qrcode, paintDarkColor: false })}"/>`
+  qrSvg += `<path d="${pathData({ cellSize, margin, qrcode, paintDarkColor: true })}" fill="${darkColor}"/>`
+  qrSvg += '</g></svg>'
 
   return qrSvg
 };
@@ -39,9 +44,10 @@ export function createSvgTag ({ cellSize, margin, alt, title, qrcode, scalable }
  * @param {number} opts.cellSize - cell size in pixels
  * @param {number} opts.margin - margin in pixels
  * @param {import('../qr-code.js').QrCode} opts.qrcode - QR Code data
+ * @param {boolean} opts.paintDarkColor - flag paint dark or bright color
  * @returns {string} &lt;path> `d` attribute value
  */
-function pathData ({ cellSize, margin, qrcode }) {
+function pathData ({ cellSize, margin, qrcode, paintDarkColor }) {
   const { moduleCount } = qrcode
 
   let d = ''
@@ -50,9 +56,9 @@ function pathData ({ cellSize, margin, qrcode }) {
   for (let r = 0; r < moduleCount; r += 1) {
     const mr = r * cellSize + margin
     for (let c = 0; c < moduleCount; c += 1) {
-      if (qrcode.isDark(r, c)) {
+      if (qrcode.isDark(r, c) === paintDarkColor) {
         const mc = c * cellSize + margin
-        d += 'M' + mc + ',' + mr + rect
+        d += `M${mc},${mr}${rect}`
       }
     }
   }
