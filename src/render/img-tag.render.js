@@ -7,12 +7,14 @@ import { escapeXml } from '../utils/escape-xml.util.js'
  * @param {number} [opts.margin] - margin in pixels, defaults to {@link cellSize} * 4
  * @param {string} [opts.alt] - image description
  * @param {import('../qr-code.js').QrCode} opts.qrcode - QR Code data
+ * @param {string} [opts.darkColor] - dark color of QRCode image defaults to black
+ * @param {string} [opts.brightColor] - bright color of QRCode image defaults to white
  * @returns {string} &lt;img> element outer HTML
  */
-export function createImgTag ({ cellSize, margin, alt, qrcode }) {
+export function createImgTag ({ cellSize, margin, alt, qrcode, darkColor = 'black', brightColor = 'white' }) {
   cellSize ||= 2
   margin ??= cellSize * 4
   const size = qrcode.moduleCount * cellSize + margin * 2
   const altAttr = alt ? ` alt="${escapeXml(alt)}"` : ''
-  return `<img src="${createDataURL({ cellSize, margin, qrcode })}" width="${size}" height="${size}"${altAttr}/>`
+  return `<img src="${createDataURL({ cellSize, margin, qrcode, darkColor, brightColor })}" width="${size}" height="${size}"${altAttr}/>`
 };

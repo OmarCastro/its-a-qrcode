@@ -61,19 +61,24 @@ function applyQrCode (element) {
   qr.addData(textContent)
   qr.make()
 
+  const darkColor = getComputedStyle(element).getPropertyValue('--qrcode-dark-color') || 'black'
+  const brightColor = getComputedStyle(element).getPropertyValue('--qrcode-bright-color') || 'white'
+
   const renderMode = getComputedStyle(element).getPropertyValue('--qrcode-render')
   if (renderMode && renderMode.trim().toLowerCase() === 'svg') {
-    const svg = createSvgTag({ qrcode: qr })
+    const svg = createSvgTag({ qrcode: qr, darkColor, brightColor })
     shadowRoot.innerHTML = svg
     return
   }
 
+  const imgHtml = createImgTag({ qrcode: qr, darkColor, brightColor })
   const oldImgElement = shadowRoot.querySelector('img')
-  if (oldImgElement && updateImgElement(oldImgElement, qr)) {
-    return
+  if (oldImgElement) {
+    const updated = updateImgElement(oldImgElement, imgHtml)
+    if (updated) {
+      return
+    }
   }
-
-  const imgHtml = createImgTag({ qrcode: qr })
   shadowRoot.innerHTML = imgHtml
 }
 
@@ -82,11 +87,10 @@ function applyQrCode (element) {
  * one for the updated HTML without the previous image, as it is loading, and another time with the loaded image, this
  * will make it update once without flash
  * @param {HTMLImageElement} imageElement - target &lt;img> element
- * @param {QrCode} qrcode new QR Code information
+ * @param {string} imgHtml img rendered with {@link createImgTag}
  * @returns {boolean} true if updated correctly, false if something failed. If false, applyQrCode() will fallback to replace the &lt;img>
  */
-function updateImgElement (imageElement, qrcode) {
-  const imgHtml = createImgTag({ qrcode })
+function updateImgElement (imageElement, imgHtml) {
   const imgDom = new DOMParser().parseFromString(imgHtml, 'text/html').querySelector('img')
   if (!imgDom) {
     return false
