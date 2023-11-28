@@ -10,9 +10,11 @@
 export function renderTo2dContext ({ context, cellSize = 2, qrcode, darkColor = 'black', brightColor = 'white' }) {
   const length = qrcode.moduleCount
   for (let row = 0; row < length; row++) {
+    const ypos = row * cellSize
     for (let col = 0; col < length; col++) {
       context.fillStyle = qrcode.isDark(row, col) ? darkColor : brightColor
-      context.fillRect(row * cellSize, col * cellSize, cellSize, cellSize)
+      const xpos = col * cellSize
+      context.fillRect(xpos, ypos, cellSize, cellSize)
     }
   }
 }
