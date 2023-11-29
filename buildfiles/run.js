@@ -5,9 +5,8 @@ import fs from 'node:fs/promises'
 import { resolve, basename } from 'node:path'
 import { existsSync, readFileSync } from 'node:fs'
 import { promisify } from 'node:util'
-import { exec as baseExec, execFile as baseExecFile, spawn } from 'node:child_process'
+import { execFile as baseExecFile, spawn } from 'node:child_process'
 
-const exec = promisify(baseExec)
 const execFile = promisify(baseExecFile)
 
 const projectPathURL = new URL('../', import.meta.url)
@@ -184,8 +183,8 @@ async function execBuild () {
 
   logStage('build html')
 
-  await exec(`${process.argv[0]} buildfiles/scripts/build-html.js index.html`)
-  await exec(`${process.argv[0]} buildfiles/scripts/build-html.js test-page.html`)
+  await cmdSpawn(`${process.argv[0]} buildfiles/scripts/build-html.js index.html`)
+  await cmdSpawn(`${process.argv[0]} buildfiles/scripts/build-html.js test-page.html`)
 
   logStage('move to final dir')
 
