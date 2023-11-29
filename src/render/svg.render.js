@@ -54,11 +54,11 @@ function pathData ({ cellSize, margin, qrcode, paintDarkColor }) {
   let d = ''
   const rect = `h${cellSize}v${cellSize}h-${cellSize}z`
 
-  for (let r = 0; r < moduleCount; r += 1) {
-    const mr = r * cellSize + margin
-    for (let c = 0; c < moduleCount; c += 1) {
-      if (qrcode.isDark(r, c) === paintDarkColor) {
-        const mc = c * cellSize + margin
+  for (let row = 0; row < moduleCount; row += 1) {
+    const mr = row * cellSize + margin
+    for (let col = 0; col < moduleCount; col += 1) {
+      if (qrcode.isDark(row, col) === paintDarkColor) {
+        const mc = col * cellSize + margin
         d += `M${mc},${mr}${rect}`
       }
     }
