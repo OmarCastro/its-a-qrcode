@@ -101,6 +101,8 @@ queryAll('svg[ss:include]').forEach(element => {
 
 queryAll('[ss:markdown]:not([ss:include])').forEach(element => {
   const md = dedent(element.innerHTML)
+    .replaceAll('\n&gt;', '\n>') // for blockquotes, innerHTML escapes ">" chars
+  console.error(md)
   element.innerHTML = marked(md, { mangle: false, headerIds: false })
 })
 
