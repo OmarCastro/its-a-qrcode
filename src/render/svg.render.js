@@ -9,10 +9,10 @@ import { escapeXml } from '../utils/escape-xml.util.js'
  * @param {boolean} [opts.scalable] - flag to make the svg scalable
  * @param {import('../qr-code.js').QrCode} opts.qrcode - QR Code data
  * @param {string} [opts.darkColor] - dark color of QRCode image defaults to black
- * @param {string} [opts.brightColor] - bright color of QRCode image defaults to white
+ * @param {string} [opts.lightColor] - light color of QRCode image defaults to white
  * @returns {string} &lt;svg> element outer HTML
  */
-export function createSvgTag ({ cellSize, margin, alt, title, qrcode, scalable, darkColor = 'black', brightColor = 'white' }) {
+export function createSvgTag ({ cellSize, margin, alt, title, qrcode, scalable, darkColor = 'black', lightColor = 'white' }) {
   const { moduleCount } = qrcode
 
   cellSize ||= 2
@@ -31,7 +31,7 @@ export function createSvgTag ({ cellSize, margin, alt, title, qrcode, scalable, 
   qrSvg += a11yAttributes(titleProp, altProp) + '>'
   qrSvg += (titleProp.text) ? '<title id="' + escapeXml(titleProp.id) + '">' + escapeXml(titleProp.text) + '</title>' : ''
   qrSvg += (altProp.text) ? '<description id="' + escapeXml(altProp.id) + '">' + escapeXml(altProp.text) + '</description>' : ''
-  qrSvg += `<g stroke="none" fill="${brightColor}">`
+  qrSvg += `<g stroke="none" fill="${lightColor}">`
   qrSvg += `<path d="M0,0h${size}v${size}h-${size}zM${margin},${margin}v${paintSize}h${paintSize}v-${paintSize}z"/>`
   qrSvg += `<path d="${pathData({ cellSize, margin, qrcode, paintDarkColor: false })}"/>`
   qrSvg += `<path d="${pathData({ cellSize, margin, qrcode, paintDarkColor: true })}" fill="${darkColor}"/>`

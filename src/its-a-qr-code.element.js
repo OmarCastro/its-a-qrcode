@@ -62,16 +62,16 @@ function applyQrCode (element) {
   qr.make()
 
   const darkColor = getComputedStyle(element).getPropertyValue('--qrcode-dark-color') || 'black'
-  const brightColor = getComputedStyle(element).getPropertyValue('--qrcode-bright-color') || 'white'
+  const lightColor = getComputedStyle(element).getPropertyValue('--qrcode-light-color') || 'white'
 
   const renderMode = getComputedStyle(element).getPropertyValue('--qrcode-render')
   if (renderMode && renderMode.trim().toLowerCase() === 'svg') {
-    const svg = createSvgTag({ qrcode: qr, darkColor, brightColor })
+    const svg = createSvgTag({ qrcode: qr, darkColor, lightColor })
     shadowRoot.innerHTML = svg
     return
   }
 
-  const imgHtml = createImgTag({ qrcode: qr, darkColor, brightColor })
+  const imgHtml = createImgTag({ qrcode: qr, darkColor, lightColor })
   const oldImgElement = shadowRoot.querySelector('img')
   if (oldImgElement) {
     const updated = updateImgElement(oldImgElement, imgHtml)
