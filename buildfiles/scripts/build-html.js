@@ -142,7 +142,7 @@ promises.push(...queryAll('img[ss:badge-attrs]').map(async (element) => {
 
 queryAll('link[href][rel="stylesheet"][ss:inline]').forEach(element => {
   const href = element.getAttribute('href')
-  const cssText = fs.readFileSync(`${docsOutputPath}/${href}`, 'utf8')
+  const cssText = readFileImport(href)
   element.outerHTML = `<style>${cssText}</style>`
 })
 
