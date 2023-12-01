@@ -10,6 +10,7 @@
 
         <meta name="viewport" content="width=device-width">
         <link rel="stylesheet" href="doc.css" ss:inline>
+        <link rel="stylesheet" href="doc-qrcode.css" ss:inline>
     </head>
     <body>
         <div class="sidebar">
@@ -121,6 +122,13 @@
             <qr-code>tel:+12125551212</qr-code>
 
             <script type="text/plain" class="html-example"><{{elementName}}>{{tel:+12125551212¦text}}</{{elementName}}></script>
+        </div>
+
+        <div class="example example--color" ss:markdown>
+            ### Color
+
+            <qr-code class="example--color__qr">mailto:someone@yoursite.com</qr-code>
+            <script type="text/plain" class="html-example"><{{elementName}}>{{mailto:someone@yoursite.com¦text}}</{{elementName}}></script>
         </div>
 
 

@@ -1,0 +1,4 @@
+.example--color__qr {
+    --qrcode-dark-color: darkblue;
+    --qrcode-light-color: pink;
+}
