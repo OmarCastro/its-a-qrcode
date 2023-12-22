@@ -18,6 +18,8 @@
     "dev:open": "node ./buildfiles/run.js dev:open",
     "dev-server": "node ./buildfiles/run.js dev-server",
     "dev-server:open": "node ./buildfiles/run.js dev-server:open",
+    "release:prepare": "node ./buildfiles/run.js release:prepare",
+    "release:clean": "node ./buildfiles/run.js release:clean",
     "help": "node ./buildfiles/run.js help"
   },
   "author": "",
