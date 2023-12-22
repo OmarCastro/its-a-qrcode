@@ -1,25 +1,46 @@
 #!/usr/bin/env -S node --input-type=module
 /* eslint-disable camelcase, max-lines-per-function, jsdoc/require-jsdoc, jsdoc/require-param-description */
+/*
+This file is purposely large to easily move the code to multiple projects, its build code, not production.
+To help navigate this file is divided by sections:
+@section 1 init
+@section 2 tasks
+@section 3 jobs
+@section 4 utils
+@section 5 Dev Server
+@section 6 linters
+@section 7 minifiers
+@section 8 exec utilities
+@section 9 filesystem utilities
+@section 10 npm utilities
+@section 11 badge utilities
+@section 12 module graph utilities
+@section 13 build tools plugins
+*/
 import process from 'node:process'
-import fs from 'node:fs/promises'
-import { resolve, basename } from 'node:path'
+import fs, { readFile as fsReadFile, writeFile } from 'node:fs/promises'
+import { resolve, basename, dirname, relative } from 'node:path'
 import { existsSync, readFileSync } from 'node:fs'
 import { promisify } from 'node:util'
-import { execFile as baseExecFile, spawn } from 'node:child_process'
-
+import { execFile as baseExecFile, exec as baseExec, spawn } from 'node:child_process'
+const exec = promisify(baseExec)
 const execFile = promisify(baseExecFile)
+const readFile = (path) => fsReadFile(path, { encoding: 'utf8' })
+
+// @section 1 init
 
 const projectPathURL = new URL('../', import.meta.url)
 const pathFromProject = (path) => new URL(path, projectPathURL).pathname
 process.chdir(pathFromProject('.'))
 let updateDevServer = () => {}
 
-const args = process.argv.slice(2)
+// @section 2 tasks
 
 const helpTask = {
   description: 'show this help',
   cb: async () => { console.log(helpText()); process.exit(0) },
 }
+
 const tasks = {
   build: {
     description: 'builds the project',
@@ -33,13 +54,9 @@ const tasks = {
     description: 'builds the project',
     cb: async () => { await execTests(); process.exit(0) },
   },
-  linc: {
-    description: 'validates the code only on changed files',
-    cb: async () => { process.exit(await execlintCodeOnChanged()) },
-  },
   lint: {
     description: 'validates the code',
-    cb: async () => { process.exit(await execlintCode()) },
+    cb: async () => { await execlintCode(); process.exit(0) },
   },
   dev: {
     description: 'setup dev environment',
@@ -57,12 +74,25 @@ const tasks = {
     description: 'launch dev server and opens in browser',
     cb: async () => { await openDevServer({ openBrowser: true }); await wait(2 ** 30) },
   },
+  'test-server': {
+    description: 'launch test server, used when running tests',
+    cb: async () => { await openTestServer(); await wait(2 ** 30) },
+  },
+  'release:prepare': {
+    description: 'builds the project and prepares it for release',
+    cb: async () => { await prepareRelease(); process.exit(0) },
+  },
+  'release:clean': {
+    description: 'clean release preparation',
+    cb: async () => { await cleanRelease(); process.exit(0) },
+  },
   help: helpTask,
   '--help': helpTask,
   '-h': helpTask,
 }
 
 async function main () {
+  const args = process.argv.slice(2)
   if (args.length <= 0) {
     console.log(helpText())
     return process.exit(0)
@@ -81,6 +111,8 @@ async function main () {
 }
 
 await main()
+
+// @section 3 jobs
 
 async function execDevEnvironment ({ openBrowser = false } = {}) {
   await openDevServer({ openBrowser })
@@ -106,60 +138,112 @@ async function execTests () {
   const COVERAGE_TMP_DIR = `${REPORTS_TMP_DIR}/coverage`
   const COVERAGE_BACKUP_DIR = 'reports/coverage.bak'
 
-  await cmdSpawn('TZ=UTC npx c8 --all --include "src/**/*.{js,ts}" --exclude "src/**/*.{test,spec}.{js,ts}" --temp-directory ".tmp/coverage" --report-dir reports/.tmp/coverage/unit --reporter json-summary --reporter text-summary --reporter html playwright test')
+  logStartStage('test', 'run tests')
+
+  await cmdSpawn('TZ=UTC npx c8 --all --include "src/**/*.{js,ts}" --exclude "src/**/*.{test,spec}.{js,ts}" --temp-directory ".tmp/coverage" --report-dir reports/.tmp/coverage/unit --reporter json-summary --reporter json --reporter lcov playwright test')
+
+  await rm_rf('reports/.tmp/coverage/final')
+  await mkdir_p('reports/.tmp/coverage/final')
+  await cp_R('.tmp/coverage', 'reports/.tmp/coverage/final/tmp')
+  if (existsSync('reports/.tmp/coverage/ui/tmp')) {
+    await cp_R('reports/.tmp/coverage/ui/tmp', 'reports/.tmp/coverage/final/tmp')
+
+    await cmdSpawn('TZ=UTC npx c8 --report-dir reports/.tmp/coverage/ui report -r lcov -r json-summary --include build/docs/dist/color-wheel.element.min.js')
+    logStage('merge coverage reports')
+  }
+  await cmdSpawn("TZ=UTC npx c8 --report-dir reports/.tmp/coverage/final report -r lcov -r json-summary --include 'src/*.ts' --include 'src/*.js' --include 'build/docs/dist/color-wheel.element.min.js'")
+
   if (existsSync(COVERAGE_DIR)) {
+    await rm_rf(COVERAGE_BACKUP_DIR)
     await mv(COVERAGE_DIR, COVERAGE_BACKUP_DIR)
   }
   await mv(COVERAGE_TMP_DIR, COVERAGE_DIR)
   const rmTmp = rm_rf(REPORTS_TMP_DIR)
   const rmBak = rm_rf(COVERAGE_BACKUP_DIR)
 
-  const badges = cmdSpawn('node buildfiles/scripts/build-badges.js')
+  logStage('build badges')
 
-  const files = Array.from(await getFiles(`${COVERAGE_DIR}/unit`))
+  const badges = [
+    makeBadgeForCoverages(pathFromProject('reports/coverage/unit')),
+    // makeBadgeForCoverages(pathFromProject('reports/coverage/ui')),
+    makeBadgeForCoverages(pathFromProject('reports/coverage/final')),
+    makeBadgeForTestResult(pathFromProject('reports/test-results')),
+    makeBadgeForLicense(pathFromProject('reports')),
+    makeBadgeForNPMVersion(pathFromProject('reports')),
+  ]
+
+  logStage('fix report styles')
+  const files = await getFilesAsArray('reports/coverage/final')
   const cpBase = files.filter(path => basename(path) === 'base.css').map(path => fs.cp('buildfiles/assets/coverage-report-base.css', path))
   const cpPrettify = files.filter(path => basename(path) === 'prettify.css').map(path => fs.cp('buildfiles/assets/coverage-report-prettify.css', path))
-  await Promise.all([rmTmp, rmBak, badges, ...cpBase, ...cpPrettify])
+  await Promise.all([rmTmp, rmBak, ...badges, ...cpBase, ...cpPrettify])
 
   await rm_rf('build/docs/reports')
   await mkdir_p('build/docs')
   await cp_R('reports', 'build/docs/reports')
+  logEndStage()
 }
 
-async function execBuild () {
-  logStartStage('build', 'clean tmp dir')
-
-  await rm_rf('.tmp/build')
-  await mkdir_p('.tmp/build/dist', '.tmp/build/docs')
-
-  logStage('bundle')
+async function buildTest () {
+  logStartStage('build:test', 'bundle')
 
   const esbuild = await import('esbuild')
 
   const commonBuildParams = {
     target: ['es2022'],
     bundle: true,
-    minify: true,
-    sourcemap: true,
+    minify: false,
+    sourcemap: false,
     absWorkingDir: pathFromProject('.'),
     logLevel: 'info',
   }
 
-  const esbuild1 = esbuild.build({
+  const buildPath = 'build'
+  const esmDistPath = `${buildPath}/dist/esm`
+  const minDistPath = `${buildPath}/dist`
+  const docsPath = `${buildPath}/docs`
+  const docsDistPath = `${docsPath}/dist`
+  const docsEsmDistPath = `${docsPath}/dist/esm`
+
+  await buildESM(esmDistPath)
+  await buildESM(docsEsmDistPath)
+
+  /**
+   * Builds minified files mapped from ESM, as it is most likely used in production.
+   */
+  const buildDistFromEsm = esbuild.build({
     ...commonBuildParams,
-    entryPoints: ['src/entrypoint/browser.js'],
-    outfile: '.tmp/build/dist/qrcode.element.min.js',
+    entryPoints: [`${esmDistPath}/entrypoint/browser.js`],
+    outfile: `${minDistPath}/qrcode.element.min.js`,
     format: 'esm',
-    loader: {
-      '.element.html': 'text',
-      '.element.css': 'text',
-    },
+    sourcemap: true,
+    minify: true,
   })
 
-  const esbuild2 = esbuild.build({
+  /**
+   * Builds minified files mapped from the original source code.
+   * This will the correct mapping to the original code path. With
+   * it the test code coverage will be correct when merging unit tests
+   * and UI tests.
+   */
+  const buildDocsDist = esbuild.build({
+    ...commonBuildParams,
+    entryPoints: ['src/entrypoint/browser.js'],
+    outfile: `${docsDistPath}/qrcode.element.min.js`,
+    format: 'esm',
+    sourcemap: true,
+    metafile: true,
+    minify: true,
+    plugins: [await getESbuildPlugin()],
+  })
+
+  /**
+   * Builds documentation specific JS code
+   */
+  const buildDocsJS = esbuild.build({
     ...commonBuildParams,
     entryPoints: ['docs/doc.js'],
-    outdir: '.tmp/build/docs',
+    outdir: docsPath,
     splitting: true,
     chunkNames: 'chunk/[name].[hash]',
     format: 'esm',
@@ -169,30 +253,98 @@ async function execBuild () {
     },
   })
 
-  const esbuild3 = esbuild.build({
+  /**
+   * Builds documentation styles
+   */
+  const buildDocsStyles = esbuild.build({
     ...commonBuildParams,
     entryPoints: ['docs/doc.css'],
-    outfile: '.tmp/build/docs/doc.css',
+    outfile: `${docsPath}/doc.css`,
   })
 
-  await Promise.all([esbuild1, esbuild2, esbuild3])
+  await Promise.all([buildDistFromEsm, buildDocsDist, buildDocsJS, buildDocsStyles])
 
-  logStage('copy reports')
+  const metafile = (await buildDocsDist).metafile
+  await mkdir_p('reports')
+  await writeFile('reports/module-graph.json', JSON.stringify(metafile, null, 2))
+  const svg = await createModuleGraphSvg(metafile)
+  await writeFile('reports/module-graph.svg', svg)
+  logStage('build test page html')
+
+  await exec(`${process.argv[0]} buildfiles/scripts/build-html.js test-page.html`)
+
+  logStage('move to final dir')
+  logEndStage()
+}
+
+async function buildDocs () {
+  logStartStage('build:docs', 'copy reports')
 
   await cp_R('reports', '.tmp/build/docs/reports')
 
-  logStage('build html')
+  logStage('build docs html')
 
-  await cmdSpawn(`${process.argv[0]} buildfiles/scripts/build-html.js index.html`)
-  await cmdSpawn(`${process.argv[0]} buildfiles/scripts/build-html.js test-page.html`)
+  await Promise.all([
+    exec(`${process.argv[0]} buildfiles/scripts/build-html.js index.html`),
+    exec(`${process.argv[0]} buildfiles/scripts/build-html.js contributing.html`),
+  ])
 
   logStage('move to final dir')
 
-  await rm_rf('build')
   await cp_R('.tmp/build', 'build')
-  await cp_R('build/dist', 'build/docs/dist')
-
   logEndStage()
+}
+
+/**
+ * @param {string} outputDir
+ */
+async function buildESM (outputDir) {
+  const esbuild = await import('esbuild')
+
+  const fileListJS = await listNonIgnoredFiles({ patterns: ['src/**/!(*.spec).js'] })
+  const fileListJsJob = fileListJS.map(async (path) => {
+    const js = readFileSync(path).toString()
+    const updatedJs = js
+      .replaceAll('.element.html"', '.element.html.generated.js"')
+      .replaceAll(".element.html'", ".element.html.generated.js'")
+      .replaceAll('.element.css"', '.element.css.generated.js"')
+      .replaceAll(".element.css'", ".element.css.generated.js'")
+
+    const noSrcPath = path.split('/').slice(1).join('/')
+    const outfile = pathFromProject(`${outputDir}/${noSrcPath}`)
+    const outdir = dirname(outfile)
+    if (!existsSync(outdir)) { await mkdir_p(outdir) }
+    return fs.writeFile(outfile, updatedJs)
+  })
+
+  const fileListCSS = await listNonIgnoredFiles({ patterns: ['src/**/*.element.css'] })
+  const fileListCssJob = fileListCSS.map(async (path) => {
+    const minCss = await minifyCss(await fs.readFile(path, 'utf8'))
+    const minCssJs = await esbuild.transform(minCss, { loader: 'text', format: 'esm' })
+    const noSrcPath = path.split('/').slice(1).join('/')
+    const outfile = pathFromProject(`${outputDir}/${noSrcPath}.generated.js`)
+    const outdir = dirname(outfile)
+    if (!existsSync(outdir)) { await mkdir_p(outdir) }
+    return fs.writeFile(outfile, `// generated code from ${path}\n${minCssJs.code}`)
+  })
+
+  const fileListHtml = await listNonIgnoredFiles({ patterns: ['src/**/*.element.html'] })
+  const fileListHtmlJob = fileListHtml.map(async (path) => {
+    const minHtml = await minifyHtml(await fs.readFile(path, 'utf8'))
+    const minHtmlJs = await esbuild.transform(minHtml, { loader: 'text', format: 'esm' })
+    const noSrcPath = path.split('/').slice(1).join('/')
+    const outfile = pathFromProject(`${outputDir}/${noSrcPath}.generated.js`)
+    const outdir = dirname(outfile)
+    if (!existsSync(outdir)) { await mkdir_p(outdir) }
+    return fs.writeFile(outfile, `// generated code from ${path}\n${minHtmlJs.code}`)
+  })
+
+  await Promise.all([...fileListJsJob, ...fileListCssJob, ...fileListHtmlJob])
+}
+
+async function execBuild () {
+  await buildTest()
+  await buildDocs()
 }
 
 async function execlintCodeOnChanged () {
@@ -232,9 +384,49 @@ async function execlintCode () {
 }
 
 async function execGithubBuildWorkflow () {
+  logStartStage('build:github')
+  await buildTest()
   await execTests()
-  await execBuild()
+  await buildDocs()
 }
+
+async function prepareRelease () {
+  await cleanRelease()
+  logStartStage('release:prepare', 'check version')
+  const publishedVersion = await getLatestPublishedVersion()
+  const packageJson = await readPackageJson()
+  const currentVersion = packageJson.version
+
+  const { gt } = await import('semver')
+  if (!gt(currentVersion, publishedVersion)) {
+    throw Error(`current version (${currentVersion}) must be higher than latest published version (${publishedVersion})`)
+  }
+  logEndStage()
+  await buildTest()
+  await execTests()
+  await buildDocs()
+  logStartStage('release:prepare', 'create dist')
+  await cp_R('build/dist', 'dist')
+  logStage('create package')
+  mkdir_p('package/content')
+  await cp_R('dist', 'package/content/dist')
+  await cp_R('README.md', 'package/content/README.md')
+  await cp_R('LICENSE', 'package/content/LICENSE')
+  const files = (await getFilesAsArray('src')).map(path => relative(pathFromProject('.'), path))
+  await Promise.all(files.filter(path => !path.includes('.spec.')).map(path => fs.cp(path, `package/content/${path}`)))
+  await writeFile('package/content/package.json', JSON.stringify({ ...packageJson, devDependencies: undefined, scripts: undefined, directories: undefined }, null, 2))
+  await cmdSpawn('npm pack --pack-destination "' + pathFromProject('package') + '"', { cwd: pathFromProject('package/content') })
+  logEndStage()
+}
+
+async function cleanRelease () {
+  logStartStage('release:clean', 'remove dist')
+  await rm_rf('dist')
+  await rm_rf('package')
+  logEndStage()
+}
+
+// @section 4 utils
 
 function helpText () {
   const fromNPM = isRunningFromNPMScript()
@@ -247,7 +439,7 @@ function helpText () {
 
 Tasks: 
   ${tasksToShow.map(([key, value]) => `${key.padEnd(maxTaskLength, ' ')}  ${value.description}`).join('\n  ')}
-  ${helpArgs.padEnd(maxTaskLength, ' ')}  ${helpTask.description}`
+  ${'help, --help, -h'.padEnd(maxTaskLength, ' ')}  ${helpTask.description}`
 }
 
 /** @param {string[]} paths  */
@@ -281,21 +473,10 @@ function logEndStage () {
 
 function logStartStage (jobname, stage) {
   logStage.currentJobName = jobname
-  process.stdout.write(`[${jobname}] ${stage}...`)
+  stage && process.stdout.write(`[${jobname}] ${stage}...`)
 }
 
-async function checkNodeModulesFolder () {
-  if (existsSync(pathFromProject('node_modules'))) { return }
-  console.log('node_modules absent running "npm ci"...')
-  await cmdSpawn('npm ci')
-}
-
-function cmdSpawn (command, options = {}) {
-  const p = spawn('/bin/sh', ['-c', command], { stdio: 'inherit', ...options })
-  return new Promise((resolve) => {
-    p.on('exit', (code) => resolve(code ?? 1))
-  }).then(code => +code)
-}
+// @section 5 Dev server
 
 async function openDevServer ({ openBrowser = false } = {}) {
   const { default: serve } = await import('wonton')
@@ -346,13 +527,29 @@ async function openDevServer ({ openBrowser = false } = {}) {
   }
 }
 
+async function openTestServer () {
+  const { default: serve } = await import('wonton')
+
+  const host = 'localhost'
+  const port = 8182
+
+  const params = {
+    host,
+    port,
+    fallback: 'index.html',
+    live: false,
+    root: pathFromProject('.'),
+  }
+  serve.start(params)
+}
+
 function wait (ms) {
   return new Promise((resolve) => {
     setTimeout(resolve, ms)
   })
 }
 
-// Linters
+// @section 6 linters
 
 async function lintCode ({ onlyChanged }, options) {
   const esLintFilePatterns = ['**/*.js']
@@ -452,28 +649,33 @@ async function validateFiles ({ patterns, onlyChanged, validation }) {
   return errorCount ? 1 : 0
 }
 
-// File Utils
+// @section 7 minifiers
 
-async function * getFiles (dir) {
-  const dirents = await fs.readdir(dir, { withFileTypes: true })
-  for (const dirent of dirents) {
-    const res = resolve(dir, dirent.name)
-    if (dirent.isDirectory()) {
-      yield * getFiles(res)
-    } else {
-      yield res
-    }
-  }
+async function minifyHtml (htmlText) {
+  const { minify } = await import('html-minifier')
+  return minify(htmlText, {
+    removeAttributeQuotes: true,
+    useShortDoctype: true,
+    collapseWhitespace: true,
+  })
 }
 
-async function * watchDirs (...dirs) {
-  const { watch } = await import('chokidar')
-  let currentResolver = () => {}
-  console.log(`watching ${dirs}`)
-  watch(dirs).on('change', (filename, stats) => currentResolver({ filename, stats }))
-  while (true) {
-    yield new Promise(resolve => { currentResolver = resolve })
-  }
+async function minifyCss (cssText) {
+  const esbuild = await import('esbuild')
+  const result = await esbuild.transform(cssText, { loader: 'css', minify: true })
+  return result.code
+}
+
+// @section 8 exec utilities
+
+/**
+ * @param {string} command
+ * @param {import('node:child_process').ExecFileOptions} options
+ * @returns {Promise<number>} code exit
+ */
+function cmdSpawn (command, options = {}) {
+  const p = spawn('/bin/sh', ['-c', command], { stdio: 'inherit', ...options })
+  return new Promise((resolve) => { p.on('exit', resolve) })
 }
 
 async function execCmd (command, args) {
@@ -488,6 +690,36 @@ async function execCmd (command, args) {
 
 async function execGitCmd (args) {
   return (await execCmd('git', args)).stdout.trim().toString().split('\n')
+}
+
+// @section 9 filesystem utilities
+
+async function * getFiles (dir) {
+  const dirents = await fs.readdir(dir, { withFileTypes: true })
+  for (const dirent of dirents) {
+    const res = resolve(dir, dirent.name)
+    if (dirent.isDirectory()) {
+      yield * getFiles(res)
+    } else {
+      yield res
+    }
+  }
+}
+
+async function getFilesAsArray (dir) {
+  const arr = []
+  for await (const i of getFiles(dir)) arr.push(i)
+  return arr
+}
+
+async function * watchDirs (...dirs) {
+  const { watch } = await import('chokidar')
+  let currentResolver = () => {}
+  console.log(`watching ${dirs}`)
+  watch(dirs).on('change', (filename, stats) => currentResolver({ filename, stats }))
+  while (true) {
+    yield new Promise(resolve => { currentResolver = resolve })
+  }
 }
 
 async function listNonIgnoredFiles ({ ignorePath = '.gitignore', patterns } = {}) {
@@ -532,4 +764,289 @@ async function listChangedFiles () {
 
 function isRunningFromNPMScript () {
   return JSON.parse(readFileSync(pathFromProject('./package.json'))).name === process.env.npm_package_name
+}
+
+// @section 10 npm utilities
+
+async function checkNodeModulesFolder () {
+  if (existsSync(pathFromProject('node_modules'))) { return }
+  console.log('node_modules absent running "npm ci"...')
+  await cmdSpawn('npm ci')
+}
+
+async function getLatestPublishedVersion () {
+  const pkg = await readPackageJson()
+
+  // const version = await exec(`npm view ${pkg.name} version`)
+
+  return pkg.version.trim()
+}
+
+async function readPackageJson () {
+  return await readFile(pathFromProject('package.json')).then(str => JSON.parse(str))
+}
+
+// @section 11 badge utilities
+
+function getBadgeColors () {
+  getBadgeColors.cache ??= {
+    green: '#007700',
+    yellow: '#777700',
+    orange: '#aa0000',
+    red: '#aa0000',
+    blue: '#007ec6',
+  }
+  return getBadgeColors.cache
+}
+
+async function makeBadge (params) {
+  const { makeBadge: libMakeBadge } = await import('badge-maker')
+  return libMakeBadge({
+    style: 'for-the-badge',
+    ...params,
+  })
+}
+
+function getLightVersionOfBadgeColor (color) {
+  const colors = getBadgeColors()
+  getLightVersionOfBadgeColor.cache ??= {
+    [colors.green]: '#90e59a',
+    [colors.yellow]: '#dd4',
+    [colors.orange]: '#fa7',
+    [colors.red]: '#f77',
+    [colors.blue]: '#acf',
+  }
+  return getLightVersionOfBadgeColor.cache[color]
+}
+
+function badgeColor (pct) {
+  const colors = getBadgeColors()
+  if (pct > 80) { return colors.green }
+  if (pct > 60) { return colors.yellow }
+  if (pct > 40) { return colors.orange }
+  if (pct > 20) { return colors.red }
+  return 'red'
+}
+
+async function svgStyle (color) {
+  const { document } = await loadDom()
+  const style = document.createElement('style')
+  style.innerHTML = `
+  text { fill: #333; }
+  rect.label { fill: #ccc; }
+  rect { fill: ${getLightVersionOfBadgeColor(color) || color} }
+  @media (prefers-color-scheme: dark) {
+    text { fill: #fff; }
+    rect.label { fill: #555; stroke: none; }
+    rect { fill: ${color} }
+  }
+  `.replaceAll(/\n+\s*/g, '')
+  return style
+}
+
+async function applyA11yTheme (svgContent) {
+  const { document } = await loadDom()
+  const { body } = document
+  body.innerHTML = svgContent
+  const svg = body.querySelector('svg')
+  if (!svg) { return svgContent }
+  svg.querySelectorAll('text').forEach(el => el.removeAttribute('fill'))
+  const rects = Array.from(svg.querySelectorAll('rect'))
+  rects.slice(0, 1).forEach(el => {
+    el.classList.add('label')
+    el.removeAttribute('fill')
+  })
+  const colors = getBadgeColors()
+  let color = colors.red
+  rects.slice(1).forEach(el => {
+    color = el.getAttribute('fill') || colors.red
+    el.removeAttribute('fill')
+  })
+  svg.prepend(await svgStyle(color))
+
+  return svg.outerHTML
+}
+
+async function makeBadgeForCoverages (path) {
+  const json = await readFile(`${path}/coverage-summary.json`).then(str => JSON.parse(str))
+  const svg = await makeBadge({
+    label: 'coverage',
+    message: `${json.total.lines.pct}%`,
+    color: badgeColor(json.total.lines.pct),
+  })
+
+  const badgeWrite = writeFile(`${path}/coverage-badge.svg`, svg)
+  const a11yBadgeWrite = writeFile(`${path}/coverage-badge-a11y.svg`, await applyA11yTheme(svg))
+  await Promise.all([badgeWrite, a11yBadgeWrite])
+}
+
+async function makeBadgeForTestResult (path) {
+  const json = await readFile(`${path}/test-results.json`).then(str => JSON.parse(str))
+  const tests = (json?.suites ?? []).flatMap(suite => suite.specs)
+  const passedTests = tests.filter(test => test.ok)
+  const testAmount = tests.length
+  const passedAmount = passedTests.length
+  const passed = passedAmount === testAmount
+  const svg = await makeBadge({
+    label: 'tests',
+    message: `${passedAmount} / ${testAmount}`,
+    color: passed ? '#007700' : '#aa0000',
+  })
+  const badgeWrite = writeFile(`${path}/test-results-badge.svg`, svg)
+  const a11yBadgeWrite = writeFile(`${path}/test-results-badge-a11y.svg`, await applyA11yTheme(svg))
+  await Promise.all([badgeWrite, a11yBadgeWrite])
+}
+
+async function makeBadgeForLicense (path) {
+  const pkg = await readPackageJson()
+
+  const svg = await makeBadge({
+    label: 'license',
+    message: pkg.license,
+    color: '#007700',
+  })
+
+  const badgeWrite = writeFile(`${path}/license-badge.svg`, svg)
+  const a11yBadgeWrite = writeFile(`${path}/license-badge-a11y.svg`, await applyA11yTheme(svg))
+  await Promise.all([badgeWrite, a11yBadgeWrite])
+}
+
+async function makeBadgeForNPMVersion (path) {
+  const version = await getLatestPublishedVersion()
+
+  const svg = await makeBadge({
+    label: 'npm',
+    message: version,
+    color: '#007ec6',
+  })
+
+  const badgeWrite = writeFile(`${path}/npm-version-badge.svg`, svg)
+  const a11yBadgeWrite = writeFile(`${path}/npm-version-badge-a11y.svg`, await applyA11yTheme(svg))
+  await Promise.all([badgeWrite, a11yBadgeWrite])
+}
+
+async function loadDom () {
+  if (!loadDom.cache) {
+    loadDom.cache = import('jsdom').then(({ JSDOM }) => {
+      const jsdom = new JSDOM('<body></body>', { url: import.meta.url })
+      const window = jsdom.window
+      const DOMParser = window.DOMParser
+      /** @type {Document} */
+      const document = window.document
+      return { window, DOMParser, document }
+    })
+  }
+  return loadDom.cache
+}
+
+// @section 12 module graph utilities
+
+async function createModuleGraphSvg (moduleGrapnJson) {
+  const { default: { graphlib, layout } } = await import('@dagrejs/dagre')
+  const { default: anafanafo } = await import('anafanafo')
+  const padding = 5
+  const svgStokeMargin = 5
+  const inputs = moduleGrapnJson.inputs
+
+  const graph = new graphlib.Graph()
+
+  // Set an object for the graph label
+  graph.setGraph({})
+
+  // Default to assigning a new object as a label for each new edge.
+  graph.setDefaultEdgeLabel(function () { return {} })
+
+  const inputsNodeMetrics = Object.fromEntries(
+    Object.entries(inputs).map(([file]) => {
+      const textWidthPx = anafanafo(file, { font: 'bold 11px Helvetica' })
+      const textHeighthPx = 11
+      const height = textHeighthPx + padding * 2
+      const width = textWidthPx + padding * 2
+      graph.setNode(file, { label: file,  width: width + svgStokeMargin, height: height + svgStokeMargin })
+      return [file, {
+        textWidthPx, textHeighthPx, height, width,
+      }]
+    }),
+  )
+
+  Object.entries(inputs).forEach(([file, info]) => {
+    const { imports } = info
+    imports.forEach(({ path }) => graph.setEdge(file, path))
+  })
+
+  layout(graph, { rankdir: 'TB' })
+
+  let maxWidth = 0
+  let maxHeight = 0
+
+  const inputsSvg = Object.entries(inputs).map(([file, info], index) => {
+    const { height, width } = inputsNodeMetrics[file]
+    const { x, y } = graph.node(file)
+    maxWidth = Math.max(maxWidth, x + width)
+    maxHeight = Math.max(maxHeight, y + height)
+    return {
+      text: `<text x="${x}" y="${y}">${file}</text>`,
+      rect: `<rect rx="4" ry="4" width="${width}" x="${x - width / 2}" y="${y - height / 2}" height="${height}"/>`,
+    }
+  })
+
+  const lineArrowMarker = '<marker id="arrowhead" viewBox="0 0 10 10" refX="8" refY="5" markerUnits="strokeWidth" markerWidth="10" markerHeight="10" orient="auto">' +
+  '<path d="M 0 0 L 10 5 L 0 10 L 2 5 z" /></marker>'
+  const marker = graph.edgeCount() > 0 ? lineArrowMarker : ''
+  const defs = marker ? `<defs>${marker}</defs>` : ''
+
+  const inputsLinesSvg = graph.edges().map(e => {
+    const allPoints = [graph.node(e.v), ...graph.edge(e).points]
+    const points = allPoints.map(({ x, y }) => `${x},${y}`).join(' ')
+    return `<polyline class="outer" stroke-width="3" points="${points}"/><polyline points="${points}" marker-end="url(#arrowhead)"/><polyline points="${points}"/>`
+  })
+
+  return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" role="img" aria-label="NPM: 0.4.0" viewBox="0 0 ${maxWidth} ${maxHeight}">
+  <style>
+    text { fill: #222; }
+    rect { fill: #ddd; stroke: #222 }
+    polyline {stroke: #ddd; stroke-linejoin: round} 
+    polyline.outer {stroke: #222;} 
+    #arrowhead path {stroke: #222; fill: #ddd; stroke-linejoin: round} 
+    @media (prefers-color-scheme: dark) {
+      text { fill: #eee; }
+      rect { fill: #444; stroke:#eee }
+      polyline {stroke: #222; } 
+      polyline.outer {stroke: #eee;}   
+      #arrowhead path {stroke: #eee; fill: #222; } 
+    }</style>
+  <title>Module graph</title>${defs}
+  <g shape-rendering="geometricPrecision" fill="none" >${inputsLinesSvg}</g>
+  <g fill="#555" stroke="#fff" shape-rendering="geometricPrecision">${inputsSvg.map(({ rect: _ }) => _).join('')}</g>
+  <g font-family="Helvetica,sans-serif" text-rendering="geometricPrecision" font-size="11" dominant-baseline="middle" text-anchor="middle">
+  ${inputsSvg.map(({ text: _ }) => _).join('')}
+  </g>
+  </svg>`
+}
+
+// @section 13 build tools plugins
+
+/**
+ * @returns {Promise<import('esbuild').Plugin>} - esbuild plugin
+ */
+async function getESbuildPlugin () {
+  return {
+    name: 'assetsBuid',
+    async setup (build) {
+      build.onLoad({ filter: /\.element.css$/ }, async (args) => {
+        return {
+          contents: await minifyCss(await fs.readFile(args.path, 'utf8')),
+          loader: 'text',
+        }
+      })
+
+      build.onLoad({ filter: /\.element.html$/ }, async (args) => {
+        return {
+          contents: await minifyHtml(await fs.readFile(args.path, 'utf8')),
+          loader: 'text',
+        }
+      })
+    },
+
+  }
 }
