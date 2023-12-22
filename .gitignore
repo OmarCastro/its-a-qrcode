@@ -33,3 +33,6 @@ coverage
 
 # smoke test generated content
 smoke-test/npm/js/index.min.js
+
+# npm package publish folder
+/package
