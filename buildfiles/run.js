@@ -777,9 +777,8 @@ async function checkNodeModulesFolder () {
 async function getLatestPublishedVersion () {
   const pkg = await readPackageJson()
 
-  // const version = await exec(`npm view ${pkg.name} version`)
-
-  return pkg.version.trim()
+  const version = await exec(`npm view ${pkg.name} version`)
+  return version.stdout.trim()
 }
 
 async function readPackageJson () {
