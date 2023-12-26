@@ -3,7 +3,7 @@ export const CORRECTION_LEVEL_M = 0
 export const CORRECTION_LEVEL_Q = 3
 export const CORRECTION_LEVEL_H = 2
 
-const correctionLevelNames = ['Medium', 'Low', 'Quartile', 'High']
+const correctionLevelNames = ['Medium', 'Low', 'High', 'Quartile']
 
 /** @type {Record<string, { bit: number, name: string }>} */
 const correctionLevelMap = correctionLevelNames.reduce((acc, name, bit) => {
@@ -11,7 +11,6 @@ const correctionLevelMap = correctionLevelNames.reduce((acc, name, bit) => {
   return { ...acc, [name.toUpperCase()]: result, [name[0]]: result }
 }, {})
 
-const validKeys = correctionLevelNames.flatMap(name => [name, name[0]])
 /**
  * Get error correction level from string
  * @param {string} string - correction level text
@@ -25,7 +24,8 @@ export function fromString (string) {
 
   const result = correctionLevelMap[string.toUpperCase()]
   if (!result) {
-    throw new Error(`Unknown Error Correction Level: ${string} expected one of the following values (case insensitive): ${validKeys}`)
+    const validKeys = [1, 0, 3, 2].flatMap(idx => [correctionLevelNames[idx][0], correctionLevelNames[idx]]).map(name => `"${name}"`).join(', ')
+    throw new Error(`Unknown Error Correction Level: "${string}" expected one of the following values (case insensitive): ${validKeys}`)
   }
   return result
 }
