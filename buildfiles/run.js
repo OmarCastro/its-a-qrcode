@@ -140,18 +140,18 @@ async function execTests () {
 
   logStartStage('test', 'run tests')
 
-  await cmdSpawn('TZ=UTC npx c8 --all --include "src/**/*.{js,ts}" --exclude "src/**/*.{test,spec}.{js,ts}" --temp-directory ".tmp/coverage" --report-dir reports/.tmp/coverage/unit --reporter json-summary --reporter json --reporter lcov playwright test')
+  await cmdSpawn('TZ=UTC npx c8 --all --include "src/**/*.{js,ts}" --exclude "src/**/*.{test,spec}.{js,ts}" --temp-directory ".tmp/coverage" --report-dir reports/.tmp/coverage/unit --reporter json-summary -r html --reporter json --reporter lcov playwright test')
 
   await rm_rf('reports/.tmp/coverage/final')
   await mkdir_p('reports/.tmp/coverage/final')
   await cp_R('.tmp/coverage', 'reports/.tmp/coverage/final/tmp')
-  if (existsSync('reports/.tmp/coverage/ui/tmp')) {
+  const uiTestsExecuted = existsSync('reports/.tmp/coverage/ui/tmp')
+  if (uiTestsExecuted) {
     await cp_R('reports/.tmp/coverage/ui/tmp', 'reports/.tmp/coverage/final/tmp')
-
-    await cmdSpawn('TZ=UTC npx c8 --report-dir reports/.tmp/coverage/ui report -r lcov -r json-summary --include build/docs/dist/color-wheel.element.min.js')
-    logStage('merge coverage reports')
+    await cmdSpawn('TZ=UTC npx c8 --report-dir reports/.tmp/coverage/ui report -r lcov -r json-summary --include build/docs/dist/qrcode.element.min.js')
+    logStage('merge unit & ui coverage reports')
   }
-  await cmdSpawn("TZ=UTC npx c8 --report-dir reports/.tmp/coverage/final report -r lcov -r json-summary --include 'src/*.ts' --include 'src/*.js' --include 'build/docs/dist/color-wheel.element.min.js'")
+  await cmdSpawn("TZ=UTC npx c8 --all --include 'src/**/*.{js,ts}' --exclude 'src/**/*.{test,spec}.{js,ts}' --report-dir reports/.tmp/coverage/final report -r lcov -r html -r json-summary")
 
   if (existsSync(COVERAGE_DIR)) {
     await rm_rf(COVERAGE_BACKUP_DIR)
@@ -165,11 +165,11 @@ async function execTests () {
 
   const badges = [
     makeBadgeForCoverages(pathFromProject('reports/coverage/unit')),
-    // makeBadgeForCoverages(pathFromProject('reports/coverage/ui')),
     makeBadgeForCoverages(pathFromProject('reports/coverage/final')),
     makeBadgeForTestResult(pathFromProject('reports/test-results')),
     makeBadgeForLicense(pathFromProject('reports')),
     makeBadgeForNPMVersion(pathFromProject('reports')),
+    ...(uiTestsExecuted ? [makeBadgeForCoverages(pathFromProject('reports/coverage/ui'))] : []),
   ]
 
   logStage('fix report styles')
