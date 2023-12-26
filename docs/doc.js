@@ -71,26 +71,15 @@ document.querySelectorAll('.example').forEach(element => {
   element.addEventListener('input', (event) => {
     const bindSelectorAttr = 'data-bind-selector'
     const { target } = event
-
     if (matchesTextEdit(target)) {
       const selector = event.target.getAttribute(bindSelectorAttr) || 'qr-code'
       const node = element.querySelector(selector)
       if (node) { node.textContent = event.target.textContent }
     }
-    if (event.target.matches('.lang-edit')) {
-      const selector = event.target.getAttribute(bindSelectorAttr) || '[lang]'
+    if (event.target.matches('.data-error-correction-level-edit')) {
+      const selector = event.target.getAttribute(bindSelectorAttr) || '[data-error-correction-level]'
       const node = element.querySelector(selector)
-      node && node.setAttribute('lang', event.target.textContent)
-    }
-    if (event.target.matches('.data-i18n-edit')) {
-      const selector = event.target.getAttribute(bindSelectorAttr) || '[data-i18n-text]'
-      const node = element.querySelector(selector)
-      node && node.setAttribute('data-i18n-text', event.target.textContent)
-    }
-    if (event.target.matches('.data-i18n--title-edit')) {
-      const selector = event.target.getAttribute(bindSelectorAttr) || '[data-i18n--title]'
-      const node = element.querySelector(selector)
-      node && node.setAttribute('data-i18n--title', event.target.textContent)
+      node && node.setAttribute('data-error-correction-level', event.target.textContent)
     }
   })
 

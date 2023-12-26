@@ -29,8 +29,8 @@
         </h1>
 
         <section class="section section--badge">
-            <a href="reports/coverage/unit" aria-label="Show test code coverage information">
-                <img src="reports/coverage/unit/coverage-badge-a11y.svg"></svg>
+            <a href="reports/coverage/final" aria-label="Show test code coverage information">
+                <img src="reports/coverage/final/coverage-badge-a11y.svg"></svg>
             </a>
             <a href="reports/playwright-report" aria-label="Show test results">
                 <img src="reports/test-results/test-results-badge-a11y.svg" ></svg>
@@ -124,6 +124,49 @@
             <qr-code>tel:+12125551212</qr-code>
 
             <script type="text/plain" class="html-example"><{{elementName}}>{{tel:+12125551212¦text}}</{{elementName}}></script>
+        </div>
+
+        <div class="section--error-correction-level" ss:markdown>
+            ### Error correction level
+
+            When generating a QR Code, you can choose between different levels of error correction (EC). 
+            Error correction helps, that a QR Code stays readable, even if some pixels are missing. Sometimes this is done on purpose when placing
+            a logo in the QR Code, but sometimes the code just gets damaged, like CDs get scratched, but they will be still readable by CD players.
+            There are 4 different levels of QR Code error correction
+
+            - Level L - up to 7% damage
+            - Level M - up to 15% damage
+            - Level Q - up to 25% damage
+            - Level H - up to 30% damage (recommend for QR Codes with an embedded logo)
+
+            The higher the EC level, the more pixels of the QR Code may be damaged, but the bigger the QR Code gets. 
+            The following example shows the QR Code with the same data for all four types of EC levels:
+            <div class="example-ec-level-line">
+                <div class="example">
+                    <qr-code data-error-correction-level="L">Lorem ipsum dolor sit amet</qr-code>
+                    <script type="text/plain" class="html-example"><{{elementName}} data-error-correction-level="{{L¦ec-level}}">{{Lorem ipsum dolor sit amet¦text}}</{{elementName}}></script>    
+                </div>
+                <div class="example">
+                    <qr-code data-error-correction-level="M">Lorem ipsum dolor sit amet</qr-code>
+                    <script type="text/plain" class="html-example"><{{elementName}} data-error-correction-level="{{M¦ec-level}}">{{Lorem ipsum dolor sit amet¦text}}</{{elementName}}></script>    
+                </div>
+            </div>
+            <div class="example-ec-level-line">
+                <div class="example">
+                    <qr-code data-error-correction-level="Q">Lorem ipsum dolor sit amet</qr-code>
+                    <script type="text/plain" class="html-example"><{{elementName}} data-error-correction-level="{{Q¦ec-level}}">{{Lorem ipsum dolor sit amet¦text}}</{{elementName}}></script>    
+                </div>
+                <div class="example">
+                    <qr-code data-error-correction-level="H">Lorem ipsum dolor sit amet</qr-code>
+                    <script type="text/plain" class="html-example"><{{elementName}} data-error-correction-level="{{H¦ec-level}}">{{Lorem ipsum dolor sit amet¦text}}</{{elementName}}></script>    
+                </div>
+            </div>
+
+            As you can see the QR Code with the same data encoded gets bigger the higher the error correction level is. You can set the EC level by
+            setting the `data-error-correction-level` value, the supported values are the short and long names of the EC level, so the supported
+            values are `L`,`Low`,`M`,`Medium`,`Q`,`Quartile`,`H`,`High`. It is case insensitive, so `LOW` equals to `Low`
+
+          
         </div>
 
         <div class="example example--color" ss:markdown>

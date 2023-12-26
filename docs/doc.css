@@ -288,3 +288,10 @@ pre:hover code span[contenteditable="true"]::before {
     border-top-width: 2px;
     cursor: initial;
 }
+
+.example-ec-level-line {
+    display: flex;
+    justify-content: space-evenly;
+    text-align: center;
+    flex-wrap: wrap;
+}
