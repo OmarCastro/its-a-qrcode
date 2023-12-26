@@ -31,7 +31,7 @@ await import('prismjs/components/prism-bash.js')
 
 const projectPath = new URL('../../', import.meta.url)
 const docsPath = new URL('docs', projectPath).pathname
-const docsOutputPath = new URL('.tmp/build/docs', projectPath).pathname
+const docsOutputPath = new URL('build/docs', projectPath).pathname
 
 const fs = await import('fs')
 
@@ -50,7 +50,7 @@ const exampleCode = (strings, ...expr) => {
       .replace(/{{([^¦]+)¦text}}/g, '<span contenteditable="true" class="text-edit">$1</span>')
       .replace(/{{([^¦]+)¦text¦([^}]+)}}/g, '<span contenteditable="true" class="text-edit" data-bind-selector="$2">$1</span>')
       .replace(/{{([^¦]+)¦lang¦([^}]+)}}/g, '<span contenteditable="true" class="lang-edit" data-bind-selector="$2">$1</span>')
-      .replace(/{{([^¦]+)¦data-i18n}}/, '<span contenteditable="true" class="data-i18n-edit">$1</span>')
+      .replace(/{{([^¦]+)¦ec-level}}/, '<span contenteditable="true" class="data-error-correction-level-edit">$1</span>')
       .replace(/{{([^¦]+)¦data-i18n¦([^}]+)}}/g, '<span contenteditable="true" class="data-i18n-edit" data-bind-selector="$2">$1</span>')
       .replace(/{{([^¦]+)¦data-i18n--title}}/, '<span contenteditable="true" class="data-i18n--title-edit">$1</span>')
     statement += strings[i + 1]
