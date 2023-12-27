@@ -17,3 +17,7 @@ test('getBestMode - numbers with upper case letters will set best mode to alphan
 test('getBestMode - kanji characters will set best mode to kanji', ({ expect }) => {
   expect(getBestMode("こんにちは世界").mode).toEqual(MODE_KANJI)
 })
+
+test('getBestMode - other chars will set best mode to byte', ({ expect }) => {
+  expect(getBestMode("Lorem ipsum dolor sit amet").mode).toEqual(MODE_8BIT_BYTE)
+})
