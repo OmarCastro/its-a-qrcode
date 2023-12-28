@@ -18,10 +18,7 @@ export function createDataURL ({ cellSize = 2, margin, qrcode, darkColor = 'blac
   const canvas = document.createElement('canvas')
   canvas.width = size
   canvas.height = size
-  const context = canvas.getContext('2d')
-  if (!context) {
-    return ''
-  }
+  const context = /** @type {CanvasRenderingContext2D} */(canvas.getContext('2d'))
   context.fillStyle = lightColor
   context.fillRect(0, 0, size, size)
   context.clearRect(margin, margin, paintSize, paintSize)
