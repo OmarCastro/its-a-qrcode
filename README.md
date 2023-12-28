@@ -29,6 +29,6 @@
 </a>
 
 
-A color wheel with color picking feature, for both big and small screens
+"It's a QR Code" is a web component that show its text content as QR code image
 
 full documentation on: https://omarcastro.github.io/its-a-qrcode
