@@ -32,7 +32,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Run build
-        run: npm run build:github-action
+        run: HOME=/root npm run build:github-action
       - name: Setup Pages
         uses: actions/configure-pages@v2
       - name: Upload artifact
