@@ -1,4 +1,4 @@
-# its-a-color-wheel
+# its-a-qrcode
 <a href="https://www.npmjs.com/package/its-a-qrcode" aria-label="go to NPM package" title="go to NPM package">
     <picture>
         <source srcset="https://img.shields.io/npm/v/its-a-qrcode?style=for-the-badge&logo=npm&logoColor=%23ccc&color=%2306A" media="(prefers-color-scheme: dark)"> 
