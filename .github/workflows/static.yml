@@ -32,7 +32,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Run build
-        run: ${{ github.workspace }}/buildfiles/run build:github-action
+        run: npm run build:github-action
       - name: Setup Pages
         uses: actions/configure-pages@v2
       - name: Upload artifact
