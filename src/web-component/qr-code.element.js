@@ -2,7 +2,7 @@ import { QrCode } from '../qr-code.js'
 import { createImgTag } from '../render/img-tag.render.js'
 import { createSvgTag } from '../render/svg.render.js'
 import { isValid } from '../error-correction/ec-level.js'
-import css from './its-a-qr-code.element.css'
+import css from './qr-code.element.css'
 
 let loadStyles = () => {
   const sheet = new CSSStyleSheet()
