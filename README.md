@@ -1,4 +1,4 @@
-# its-a-qrcode
+# It's a QR Code
 <a href="https://www.npmjs.com/package/its-a-qrcode" aria-label="go to NPM package" title="go to NPM package">
     <picture>
         <source srcset="https://img.shields.io/npm/v/its-a-qrcode?style=for-the-badge&logo=npm&logoColor=%23ccc&color=%2306A" media="(prefers-color-scheme: dark)"> 
@@ -29,6 +29,6 @@
 </a>
 
 
-"It's a QR Code" is a web component that show its text content as QR code image
+"It's a QR Code" is a web component that shows its text content as QR code image
 
 full documentation on: https://omarcastro.github.io/its-a-qrcode
