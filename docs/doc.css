@@ -15,6 +15,16 @@
     font-size: 1em;
 }
 
+.example--basic qr-code {  min-height: 70px;}
+.example--url-link qr-code {  min-height: 80px;}
+.example--mail-to  qr-code {  min-height: 75px;}
+.example--telephone qr-code {  min-height: 70px;}
+
+qr-code:not(:defined) {
+	display: inline-flex;  
+	opacity: 0;  
+}
+
 
 
 @media (prefers-color-scheme: dark) {

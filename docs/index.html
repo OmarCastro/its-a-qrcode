@@ -30,19 +30,31 @@
 
         <section class="section section--badge">
             <a href="reports/coverage/final" aria-label="Show test code coverage information">
-                <img src="reports/coverage/final/coverage-badge-a11y.svg"></svg>
+                <svg ss:include="reports/coverage/final/coverage-badge-a11y.svg"></svg>
             </a>
             <a href="reports/playwright-report" aria-label="Show test results">
-                <img src="reports/test-results/test-results-badge-a11y.svg" ></svg>
+                <svg ss:include="reports/test-results/test-results-badge-a11y.svg" ></svg>
             </a>
             <a href="https://github.com/OmarCastro/its-i18n" aria-label="go to Github repository" title="go to Github repository">
-                <img src="reports/license-badge-a11y.svg" ></svg>
+                <svg ss:include="reports/license-badge-a11y.svg" ></svg>
             </a>
             <a href="https://www.npmjs.com/package/its-a-qrcode" aria-label="go to NPM package" title="go to NPM package">
-                <img src="reports/npm-version-badge-a11y.svg" ></svg>
+                <picture>
+                    <source srcset="https://img.shields.io/npm/v/its-a-qrcode?style=for-the-badge&logo=npm&logoColor=%23ccc&color=%2306A" media="(prefers-color-scheme: dark)"> 
+                    <img src="https://img.shields.io/npm/v/its-a-qrcode?style=for-the-badge&logo=npm&logoColor=%23333&labelColor=%23ccc&color=%23007ec6">
+                </picture>
             </a>
-            <a href="https://github.com/OmarCastro/its-a-qrcode" aria-label="go to Github repository" title="go to Github repository">
-                <img src="https://img.shields.io/github/v/release/OmarCastro/its-a-qrcode?style=for-the-badge" alt="project version" height="30" width="150" ></img>
+            <a href="https://github.com/OmarCastro/its-a-qrcode/releases/latest" aria-label="go to release page" title="go to release page">
+                <picture>
+                    <source srcset="https://img.shields.io/github/v/release/OmarCastro/its-a-qrcode?style=for-the-badge&logo=github&logoColor=%23ccc&color=%2306A" media="(prefers-color-scheme: dark)"> 
+                    <img src="https://img.shields.io/github/v/release/OmarCastro/its-a-qrcode?style=for-the-badge&logo=github&logoColor=%23333&labelColor=%23ccc">
+                  </picture>
+            </a>
+            <a href="https://github.com/OmarCastro/its-a-qrcode" aria-label="go to Github" title="go to Github">
+                <picture>
+                    <source srcset="https://img.shields.io/github/stars/OmarCastro/its-a-qrcode?style=for-the-badge&logo=github&logoColor=%23ccc&color=%2306A" media="(prefers-color-scheme: dark)"> 
+                    <img src="https://img.shields.io/github/stars/OmarCastro/its-a-qrcode?style=for-the-badge&logo=github&logoColor=%23333&labelColor=%23ccc">
+                  </picture>
             </a>
         </section>
 
