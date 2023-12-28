@@ -14,12 +14,18 @@
         <source srcset="https://img.shields.io/github/stars/OmarCastro/its-a-qrcode?style=for-the-badge&logo=github&logoColor=%23ccc&color=%2306A" media="(prefers-color-scheme: dark)"> 
         <img src="https://img.shields.io/github/stars/OmarCastro/its-a-qrcode?style=for-the-badge&logo=github&logoColor=%23333&labelColor=%23ccc">
         </picture>
-</a><a href="https://github.com/OmarCastro/its-i18n" aria-label="go to Github repository" title="go to Github repository">
-    <img src="https://omarcastro.github.io/its-a-qrcode/reports/license-badge-a11y.svg" ></svg>
-</a><a href="reports/playwright-report" aria-label="Show test results">
-    <img src="https://omarcastro.github.io/its-a-qrcode/reports/test-results/test-results-badge-a11y.svg" ></svg>
-</a><a href="reports/coverage/final" aria-label="Show test code coverage information">
-    <img src="https://omarcastro.github.io/its-a-qrcode/reports/coverage/final/coverage-badge-a11y.svg"></svg>
+</a><a href="https://github.com/OmarCastro/its-a-qrcode" aria-label="go to Github repository" title="go to Github repository">
+<picture>
+    <img src="https://omarcastro.github.io/its-a-qrcode/reports/license-badge-a11y.svg">
+</picture>
+</a><a href="https://omarcastro.github.io/its-a-qrcode/reports/playwright-report" aria-label="Show test results">
+<picture>
+    <img src="https://omarcastro.github.io/its-a-qrcode/reports/test-results/test-results-badge-a11y.svg">
+</picture>
+</a><a href="https://omarcastro.github.io/its-a-qrcode/reports/coverage/final" aria-label="Show test code coverage information">
+<picture>
+    <img src="https://omarcastro.github.io/its-a-qrcode/reports/coverage/final/coverage-badge-a11y.svg">
+</picture>
 </a>
 
 
