@@ -1,26 +1,28 @@
 <html>
     <head>
-        <link rel="stylesheet" href="doc.css">
         <script type="module" src="dist/qrcode.element.min.js?named=qr-code" async></script>
+        <link rel="stylesheet" href="code-example.css" ss:inline>
+        <style> @media (prefers-color-scheme: dark) {:root {background: #202530; color: #dddcdf}};</style>
     </head>
     <body>
-        <p> &lt;qr-code>hello world&lt;/qr-code> </p>
-
-        <qr-code>hello world</qr-code>
-
-        <p> &lt;qr-code>12345&lt;/qr-code> </p>
-
-        <qr-code>12345</qr-code>
-
-        <p> &lt;qr-code data-error-correction-level="L">Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus porro alias iure necessitatibus consequuntur iusto aliquid optio, deserunt corporis recusandae officia id inventore voluptas! Repellat inventore dolorum officia magnam accusantium.&lt;/qr-code> </p>
-
-        <qr-code data-error-correction-level="L">Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus porro alias iure necessitatibus consequuntur iusto aliquid optio, deserunt corporis recusandae officia id inventore voluptas! Repellat inventore dolorum officia magnam accusantium.</qr-code>
+        <div>
+            <h2>hello world</h2>
+            <script type="text/plain" class="html-example"><qr-code class="qr-code--hello-world">hello world</qr-code></script>
+            <qr-code class="qr-code--hello-world">hello world</qr-code>
+        </div>
 
 
-        <p> &lt;qr-code data-error-correction-level="H">Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus porro alias iure necessitatibus consequuntur iusto aliquid optio, deserunt corporis recusandae officia id inventore voluptas! Repellat inventore dolorum officia magnam accusantium.&lt;/qr-code> </p>
+        <div>
+            <h2>12345</h2>
+            <script type="text/plain" class="html-example"><qr-code class="qr-code--123">12345</qr-code></script>
+            <qr-code class="qr-code--123">12345</qr-code>
+        </div>
 
-        <qr-code data-error-correction-level="H">Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus porro alias iure necessitatibus consequuntur iusto aliquid optio, deserunt corporis recusandae officia id inventore voluptas! Repellat inventore dolorum officia magnam accusantium.</qr-code>
-
+        <div>
+            <h2>Error correction level</h2>
+            <script type="text/plain" class="html-example"><qr-code class="qr-code--error-correction-level" data-error-correction-level="L">Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus porro alias iure necessitatibus consequuntur iusto aliquid optio, deserunt corporis recusandae officia id inventore voluptas! Repellat inventore dolorum officia magnam accusantium.</qr-code></script>
+            <qr-code class="qr-code--error-correction-level" data-error-correction-level="L">Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus porro alias iure necessitatibus consequuntur iusto aliquid optio, deserunt corporis recusandae officia id inventore voluptas! Repellat inventore dolorum officia magnam accusantium.</qr-code>
+        </div>
 
     </body>
 </html>
