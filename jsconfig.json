@@ -22,6 +22,9 @@
             "ESNext"
           ]
     },
+    "files": [
+        "custom.d.ts"
+    ],
     "include": [
         "src/**/*.js",
         "src/**/*.ts"

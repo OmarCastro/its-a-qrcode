@@ -2,11 +2,20 @@ import { QrCode } from './qr-code'
 import { createImgTag } from './render/img-tag.render'
 import { createSvgTag } from './render/svg.render.js'
 import { isValid } from './error-correction/ec-level.js'
+import css from './its-a-qr-code.element.css'
+
+let loadStyles = () => {
+  const sheet = new CSSStyleSheet()
+  sheet.replaceSync(css)
+  loadStyles = () => sheet
+  return sheet
+}
 
 export class QRCodeElement extends HTMLElement {
   constructor () {
     super()
-    this.attachShadow({ mode: 'open' })
+    const shadowRoot = this.attachShadow({ mode: 'open' })
+    shadowRoot.adoptedStyleSheets = [loadStyles()]
     observer.observe(this, observerOptions)
   }
 
