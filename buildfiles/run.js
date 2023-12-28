@@ -798,8 +798,12 @@ function getBadgeColors () {
   return getBadgeColors.cache
 }
 
+function asciiIconSvg (asciicode) {
+  return `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Cstyle%3Etext %7Bfont-size: 10px; fill: %23333;%7D @media (prefers-color-scheme: dark) %7Btext %7B fill: %23ccc; %7D%7D %3C/style%3E%3Ctext x='0' y='10'%3E${asciicode}%3C/text%3E%3C/svg%3E`
+}
+
 async function makeBadge (params) {
-  const { makeBadge: libMakeBadge } = await import('badge-maker')
+  const { default: libMakeBadge } = await import('badge-maker/lib/make-badge.js')
   return libMakeBadge({
     style: 'for-the-badge',
     ...params,
@@ -827,29 +831,43 @@ function badgeColor (pct) {
   return 'red'
 }
 
-async function svgStyle (color) {
+async function svgStyle () {
   const { document } = await loadDom()
   const style = document.createElement('style')
   style.innerHTML = `
   text { fill: #333; }
+  .icon {fill: #444; }
   rect.label { fill: #ccc; }
-  rect { fill: ${getLightVersionOfBadgeColor(color) || color} }
+  rect.body { fill: var(--light-fill); }
   @media (prefers-color-scheme: dark) {
     text { fill: #fff; }
+    .icon {fill: #ccc; }
     rect.label { fill: #555; stroke: none; }
-    rect { fill: ${color} }
+    rect.body { fill: var(--dark-fill); }
   }
   `.replaceAll(/\n+\s*/g, '')
   return style
 }
 
-async function applyA11yTheme (svgContent) {
+async function applyA11yTheme (svgContent, options = {}) {
   const { document } = await loadDom()
   const { body } = document
   body.innerHTML = svgContent
   const svg = body.querySelector('svg')
   if (!svg) { return svgContent }
   svg.querySelectorAll('text').forEach(el => el.removeAttribute('fill'))
+  if (options.replaceIconToText) {
+    const img = svg.querySelector('image')
+    if (img) {
+      const text = document.createElementNS('http://www.w3.org/2000/svg', 'text')
+      text.innerHTML = options.replaceIconToText
+      text.setAttribute('transform', 'scale(.15)')
+      text.classList.add('icon')
+      text.setAttribute('x', '90')
+      text.setAttribute('y', '125')
+      img.replaceWith(text)
+    }
+  }
   const rects = Array.from(svg.querySelectorAll('rect'))
   rects.slice(0, 1).forEach(el => {
     el.classList.add('label')
@@ -860,8 +878,11 @@ async function applyA11yTheme (svgContent) {
   rects.slice(1).forEach(el => {
     color = el.getAttribute('fill') || colors.red
     el.removeAttribute('fill')
+    el.classList.add('body')
+    el.style.setProperty('--dark-fill', color)
+    el.style.setProperty('--light-fill', getLightVersionOfBadgeColor(color))
   })
-  svg.prepend(await svgStyle(color))
+  svg.prepend(await svgStyle())
 
   return svg.outerHTML
 }
@@ -872,10 +893,11 @@ async function makeBadgeForCoverages (path) {
     label: 'coverage',
     message: `${json.total.lines.pct}%`,
     color: badgeColor(json.total.lines.pct),
+    logo: asciiIconSvg('🛡︎'),
   })
 
   const badgeWrite = writeFile(`${path}/coverage-badge.svg`, svg)
-  const a11yBadgeWrite = writeFile(`${path}/coverage-badge-a11y.svg`, await applyA11yTheme(svg))
+  const a11yBadgeWrite = writeFile(`${path}/coverage-badge-a11y.svg`, await applyA11yTheme(svg, { replaceIconToText: '🛡︎' }))
   await Promise.all([badgeWrite, a11yBadgeWrite])
 }
 
@@ -890,9 +912,11 @@ async function makeBadgeForTestResult (path) {
     label: 'tests',
     message: `${passedAmount} / ${testAmount}`,
     color: passed ? '#007700' : '#aa0000',
+    logo: asciiIconSvg('✔'),
+    logoWidth: 16,
   })
   const badgeWrite = writeFile(`${path}/test-results-badge.svg`, svg)
-  const a11yBadgeWrite = writeFile(`${path}/test-results-badge-a11y.svg`, await applyA11yTheme(svg))
+  const a11yBadgeWrite = writeFile(`${path}/test-results-badge-a11y.svg`, await applyA11yTheme(svg, { replaceIconToText: '✔' }))
   await Promise.all([badgeWrite, a11yBadgeWrite])
 }
 
@@ -900,13 +924,14 @@ async function makeBadgeForLicense (path) {
   const pkg = await readPackageJson()
 
   const svg = await makeBadge({
-    label: 'license',
+    label: ' license',
     message: pkg.license,
     color: '#007700',
+    logo: asciiIconSvg('🏛'),
   })
 
   const badgeWrite = writeFile(`${path}/license-badge.svg`, svg)
-  const a11yBadgeWrite = writeFile(`${path}/license-badge-a11y.svg`, await applyA11yTheme(svg))
+  const a11yBadgeWrite = writeFile(`${path}/license-badge-a11y.svg`, await applyA11yTheme(svg, { replaceIconToText: '🏛' }))
   await Promise.all([badgeWrite, a11yBadgeWrite])
 }
 
