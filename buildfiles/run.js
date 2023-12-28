@@ -148,10 +148,10 @@ async function execTests () {
   const uiTestsExecuted = existsSync('reports/.tmp/coverage/ui/tmp')
   if (uiTestsExecuted) {
     await cp_R('reports/.tmp/coverage/ui/tmp', 'reports/.tmp/coverage/final/tmp')
-    await cmdSpawn('TZ=UTC npx c8 --report-dir reports/.tmp/coverage/ui report -r lcov -r json-summary --include build/docs/dist/qrcode.element.min.js')
+    await cmdSpawn('TZ=UTC npx c8 --report-dir reports/.tmp/coverage/ui report -r lcov -r json-summary -r html --all --include build/docs/dist/qrcode.element.min.js')
     logStage('merge unit & ui coverage reports')
   }
-  await cmdSpawn("TZ=UTC npx c8 --all --include 'src/**/*.{js,ts}' --exclude 'src/**/*.{test,spec}.{js,ts}' --report-dir reports/.tmp/coverage/final report -r lcov -r html -r json-summary")
+  await cmdSpawn("TZ=UTC npx c8 --all --include 'src/**/*.{js,ts}' --exclude 'src/**/*.{test,spec}.{js,ts}' --include build/docs/dist/qrcode.element.min.js --report-dir reports/.tmp/coverage/final report -r lcov -r html -r json-summary")
 
   if (existsSync(COVERAGE_DIR)) {
     await rm_rf(COVERAGE_BACKUP_DIR)
