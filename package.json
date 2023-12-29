@@ -1,13 +1,9 @@
 {
   "name": "its-a-qrcode",
   "version": "0.2.0",
-  "description": "",
-  "main": "src/entrypoint/node.js",
+  "description": "a web component that shows its text content as QR code image",
+  "main": "dist/esm/entrypoint/node.js",
   "type": "module",
-  "directories": {
-    "doc": "docs",
-    "lib": "lib"
-  },
   "scripts": {
     "build": "node ./buildfiles/run.js build",
     "build:github-action": "node ./buildfiles/run.js build:github-action",
@@ -22,7 +18,7 @@
     "release:clean": "node ./buildfiles/run.js release:clean",
     "help": "node ./buildfiles/run.js help"
   },
-  "author": "",
+  "author": "Omar Castro <omar.castro.360@gmail.com> (https://github.com/OmarCastro/)",
   "license": "MIT",
   "devDependencies": {
     "@codemirror/lang-javascript": "^6.2.1",
