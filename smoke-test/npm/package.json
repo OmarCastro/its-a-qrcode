@@ -1,0 +1,25 @@
+{
+  "name": "its-a-qrcode-smoke-test",
+  "version": "0.1.0",
+  "description": "its-a-qrcode NPM smoke test",
+  "type": "module",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/OmarCastro/its-a-qrcode.git"
+  },
+  "author": "Omar Castro",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/OmarCastro/its-a-qrcode/issues"
+  },
+  "homepage": "https://omarcastro.github.io/its-a-qrcode/",
+  "dependencies": {
+    "its-a-qrcode": "latest"
+  }
+}
