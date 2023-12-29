@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+## [0.2.0] - 2023-12-29
+
+### Added
+
 - scalable qr code image
 - improved documenatation
 - UI tests
@@ -20,7 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix wrong README on npm
 - Fix wrong import path
 
-## [0.1.0] - 2023-01-23
+## [0.1.0] - 2023-12-23
 
 ### Added
 
