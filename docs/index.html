@@ -76,6 +76,17 @@
 
             <pre><code class="language-markup keep-markup">&lt;script type="module" src="https://cdn.jsdelivr.net/gh/OmarCastro/its-a-qrcode@0.2.0/dist/qrcode.element.min.js?named=<span class="component-name-edit" contenteditable="true">qr-code</span>">&lt;/script></code></pre>
 
+            ### NPM
+
+            If you wish to import from npm and use a bundler, you can install the `its-a-qrcode` package
+
+            <pre><code class="language-shell keep-markup">npm install its-a-qrcode</code></pre>
+
+            Not all bundlers support query strings, it is recommended to import and register the component, like the following code:
+
+            <pre><code class="language-js keep-markup">import element from 'its-a-qrcode'
+
+            customElements.define('<span class="component-name-edit" contenteditable="true">qr-code</span>', element)</code></pre>
         </section>
 
         <section class="section section--getting-started" ss:markdown>
