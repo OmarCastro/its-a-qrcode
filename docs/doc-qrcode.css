@@ -8,3 +8,18 @@
     height: 100%;
     --qrcode-resize: true
 }
+
+.resizable {
+    width: 500px;
+    height: 450px;
+}
+
+/* Smartphones (portrait and landscape) ----------- */
+@media only screen and (min-device-width : 320px) and (max-device-width : 480px) {
+    .resizable {
+        width: 200px;
+        height: 200px;
+    }
+}
+
+

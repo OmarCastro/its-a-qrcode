@@ -63,6 +63,22 @@ body > .content {
     padding: 3em;
 }
 
+/* Smartphones (portrait and landscape) ----------- */
+@media only screen and (min-device-width : 320px) and (max-device-width : 480px) {
+    body > .sidebar {
+        display: none;
+    }
+
+    body {
+        display: block;
+    }
+
+    body > .content {
+        padding: 0;
+    }
+    
+}
+
 :not(pre) > code:not([class]), 
 :not(pre) > code.language-none {
     background: var(--bg-code-color);
@@ -310,4 +326,8 @@ pre:hover code span[contenteditable="true"]::before {
     justify-content: space-evenly;
     text-align: center;
     flex-wrap: wrap;
+}
+
+.example-ec-level-line > .example {
+    max-width: 100%;
 }
