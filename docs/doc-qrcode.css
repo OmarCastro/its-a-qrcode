@@ -2,3 +2,9 @@
     --qrcode-dark-color: darkblue;
     --qrcode-light-color: pink;
 }
+
+.resizable qr-code {
+    width: 100%;
+    height: 100%;
+    --qrcode-resize: true
+}

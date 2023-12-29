@@ -94,6 +94,28 @@
             <script type="text/plain" class="html-example"><{{elementName}}>{{Hello world¦text}}</{{elementName}}></script>
         </div>
 
+        <div class="example example--resize" >
+            <h3> Resize </h3>
+
+            <div class="resizable" style="width: 751px; height: 600px;">
+                <qr-code class="resizable-qr-code">Hello world</qr-code>
+            </div>
+            <script type="text/plain" class="html-example">
+                <{{elementName}} class="resizable-qr-code">{{Hello world¦text}}</{{elementName}}>
+            </script>
+            <script type="text/plain" class="css-example">
+                .resizable-qr-code {
+                    width: 100%;
+                    height: 100%;                
+                    --qrcode-resize: {{true¦qrcode-resize}};
+                }
+            </script>
+            <p ss:markdown>To enable qr code resize, one of the values are supported: `true`, `yes`, `enable`, `enabled`. It is case insensitive (`Yes` equals to `yes`). Any other value disables it </p>
+        </div>
+
+
+
+
         <h3> Data types </h3>
 
 
@@ -181,11 +203,19 @@
           
         </div>
 
-        <div class="example example--color" ss:markdown>
-            ### Color
+        <div class="example example--color">
+            <h3> Color </h3>
 
             <qr-code class="example--color__qr">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua</qr-code>
-            <script type="text/plain" class="html-example"><{{elementName}}>{{Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua¦text}}</{{elementName}}></script>
+            <script type="text/plain" class="html-example">
+                <{{elementName}}>{{Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua¦text}}</{{elementName}}>
+            </script>
+            <script type="text/plain" class="css-example">
+                .example--color__qr {
+                    --qrcode-dark-color: darkblue;
+                    --qrcode-light-color: pink;
+                }
+            </script>
         </div>
 
     </div>

@@ -81,6 +81,12 @@ document.querySelectorAll('.example').forEach(element => {
       const node = element.querySelector(selector)
       node && node.setAttribute('data-error-correction-level', event.target.textContent)
     }
+
+    if (event.target.matches('.data-qrcode-resize-edit')) {
+      const selector = event.target.getAttribute(bindSelectorAttr) || 'qr-code'
+      const node = element.querySelector(selector)
+      node && node.style.setProperty('--qrcode-resize', event.target.textContent || '""')
+    }
   })
 
   element.addEventListener('focusin', (event) => {

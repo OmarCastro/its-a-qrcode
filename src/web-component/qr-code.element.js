@@ -73,9 +73,9 @@ function applyQrCode (element) {
   const darkColor = getComputedStyle(element).getPropertyValue('--qrcode-dark-color') || 'black'
   const lightColor = getComputedStyle(element).getPropertyValue('--qrcode-light-color') || 'white'
 
-  const renderMode = getComputedStyle(element).getPropertyValue('--qrcode-render')
-  if (renderMode && renderMode.trim().toLowerCase() === 'svg') {
-    const svg = createSvgTag({ qrcode: qr, darkColor, lightColor })
+  const renderMode = getRenderMode(element)
+  if (renderMode === 'svg') {
+    const svg = createSvgTag({ qrcode: qr, darkColor, lightColor, scalable: isResizeEnabled(element) })
     shadowRoot.innerHTML = svg
     return
   }
@@ -108,4 +108,28 @@ function updateImgElement (imageElement, imgHtml) {
   imageElement.width = imgDom.width
   imageElement.height = imgDom.height
   return true
+}
+
+/**
+ * Gets the render mode to be used:
+ *  - if mode is "raster", it will render the qrcode as an rasterized image
+ *  - if mode is "svg", it will render the qrcode as a scalable image using SVG
+ * @param {QRCodeElement} element - target qr code element
+ * @returns {"raster"|"svg"} render mode
+ */
+function getRenderMode (element) {
+  const renderModeCss = (getComputedStyle(element).getPropertyValue('--qrcode-render') || '').trim().toLowerCase()
+  if (renderModeCss === 'svg') return 'svg'
+  if (renderModeCss === 'raster') return 'raster'
+  if (isResizeEnabled(element)) return 'svg'
+  return 'raster'
+}
+
+/**
+ * @param {QRCodeElement} element - target qr code element
+ * @returns {boolean} true if resize enabled
+ */
+function isResizeEnabled (element) {
+  const resizeCss = (getComputedStyle(element).getPropertyValue('--qrcode-resize') || '').trim().toLowerCase()
+  return resizeCss === 'true' || resizeCss === 'yes' || resizeCss === 'enabled' || resizeCss === 'enable'
 }

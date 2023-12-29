@@ -50,9 +50,9 @@ const exampleCode = (strings, ...expr) => {
       .replace(/{{([^¦]+)¦text}}/g, '<span contenteditable="true" class="text-edit">$1</span>')
       .replace(/{{([^¦]+)¦text¦([^}]+)}}/g, '<span contenteditable="true" class="text-edit" data-bind-selector="$2">$1</span>')
       .replace(/{{([^¦]+)¦lang¦([^}]+)}}/g, '<span contenteditable="true" class="lang-edit" data-bind-selector="$2">$1</span>')
-      .replace(/{{([^¦]+)¦ec-level}}/, '<span contenteditable="true" class="data-error-correction-level-edit">$1</span>')
-      .replace(/{{([^¦]+)¦data-i18n¦([^}]+)}}/g, '<span contenteditable="true" class="data-i18n-edit" data-bind-selector="$2">$1</span>')
-      .replace(/{{([^¦]+)¦data-i18n--title}}/, '<span contenteditable="true" class="data-i18n--title-edit">$1</span>')
+      .replace(/{{([^¦]+)¦ec-level}}/g, '<span contenteditable="true" class="data-error-correction-level-edit">$1</span>')
+      .replace(/{{([^¦]+)¦qrcode-resize¦([^}]+)}}/g, '<span contenteditable="true" class="data-qrcode-resize-edit" data-bind-selector="$2">$1</span>')
+      .replace(/{{([^¦]+)¦qrcode-resize}}/g, '<span contenteditable="true" class="data-qrcode-resize-edit">$1</span>')
     statement += strings[i + 1]
   }
 
