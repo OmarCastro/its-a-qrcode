@@ -104,11 +104,111 @@ export function tob64CompressedMap () {
   return result
 }
 
+export function tob64CompressedListMap () {
+  const tableMap = tob64CompressedMap()
+  const result = {}
+  for (const [key, value] of Object.entries(tableMap)) {
+    let values = ""
+    let level = []
+    let previous;
+    for (const valStr of [...value.split(','), "end-of-line"]) {
+      let initialLevel = level.length
+      if(!previous){
+        previous = valStr
+        continue
+      }
+      if(level.length === 0){
+        if(previous[0] === valStr[0]){
+          values += valStr[0] + "["
+          level.push(valStr[0])
+        }
+      }
+      if(level.length === 1){
+        if(previous.substring(0, 2) === valStr.substring(0, 2)){
+          values += valStr[1] + "["
+          level.push(valStr[1])
+        } else if(previous[0] !== valStr[0]){
+          values +=  previous.substring(level.length) + "]"
+          level.pop()
+        }
+      }
+
+      if(level.length === 2){
+        if(previous.substring(0, 3) === valStr.substring(0, 3)){
+          values += valStr[2] + "["
+          level.push(valStr[2])
+        } else if(previous[0] !== valStr[0]){
+          values +=  previous.substring(level.length) + "]]"
+          level.length = 0
+        } else if(previous[1] !== valStr[1]){
+          values += previous.substring(level.length) + "]"
+          level.pop()
+        }
+      }
+
+      if(level.length === 3){
+        if(previous[0] !== valStr[0]){
+          values +=  previous.substring(level.length) + "]]]"
+          level.length = 0
+        } else if(previous[1] !== valStr[1]){
+          values += previous.substring(level.length) + "]]"
+          level.length = 1
+        } else if(previous[2] !== valStr[2]){
+          values += previous.substring(level.length) + "]"
+          level.length = 2
+        }
+      }
+      
+      if(initialLevel <= level.length){
+        values+=previous.substring(level.length)
+      }
+      if(valStr === "end-of-line"){
+        values+="]".repeat(level.length)
+      } else {
+        values+=","
+      }
+      previous = valStr
+
+    }
+    result[key] = values
+  }
+  return result
+}
+
+
+const sizeInKB = (byteSize) => (byteSize / 1024).toFixed(2)
+const sizePercent = (from, to) => (from * 100 / to).toFixed(2)
+
 const table = getNonCompressedTable()
+const originalMapSize = JSON.stringify(table).length
 
-const tableMap = tob64CompressedMap()
+console.log(`[INFO] compressing...`)
+console.log(`[INFO] ......... original map : ${sizeInKB(originalMapSize)}kB`)
 
-const compressionDiff = diff(usingTable(tableMap).Utf8ToJisTable(), table)?.map(n => {
+const tableMapSize = JSON.stringify(toTableMap()).length
+const tableMapSizePercOriginal = sizePercent(tableMapSize, originalMapSize)
+console.log(`[INFO] ... compression stage 1: to table map: ${sizeInKB(tableMapSize)}kB (${tableMapSizePercOriginal}% of original)`)
+
+const compressedMapSize = JSON.stringify(toCompressedMap()).length
+const compressedMapSizePercPrevious = sizePercent(compressedMapSize, tableMapSize)
+const compressedMapSizePercOriginal = sizePercent(compressedMapSize, originalMapSize)
+console.log(`[INFO] ... compression stage 2: compressed table map: ${sizeInKB(compressedMapSize)}kB (${compressedMapSizePercPrevious}% of previous compression) (${compressedMapSizePercOriginal}% of original)`)
+
+const b64CompressedMapSize = JSON.stringify(tob64CompressedMap()).length
+const b64CompressedMapSizePercPrevious = sizePercent(b64CompressedMapSize, compressedMapSize)
+const b64CompressedMapSizePercOriginal = sizePercent(b64CompressedMapSize, originalMapSize)
+console.log(`[INFO] ... compression stage 3: hex to base64 on compressed table map: ${sizeInKB(b64CompressedMapSize)}kB (${b64CompressedMapSizePercPrevious}% of previous compression) (${b64CompressedMapSizePercOriginal}% of original)`)
+
+const compressedTable = tob64CompressedListMap()
+const b64ListCompressedMapSize = JSON.stringify(compressedTable).length
+const b64ListCompressedMapSizePercPrevious = sizePercent(b64ListCompressedMapSize, b64CompressedMapSize)
+const b64ListCompressedMapSizePercOriginal = sizePercent(b64ListCompressedMapSize, originalMapSize)
+console.log(`[INFO] ... compression stage 4: minify value list on property: ${sizeInKB(b64ListCompressedMapSize)}kB (${b64ListCompressedMapSizePercPrevious}% of previous compression) (${b64ListCompressedMapSizePercOriginal}% of original)`)
+console.log(`[INFO]`)
+console.log(`[INFO] compessed, final result: ${sizeInKB(b64ListCompressedMapSize)}kB (${100 - b64ListCompressedMapSizePercOriginal}% size reduction)`)
+
+
+const compressionDiff = diff(usingTable(compressedTable).Utf8ToJisTable(), table)?.map(n => {
   return {
     ...n,
     path: n.path.map(n => parseInt(n).toString(16)),
@@ -120,7 +220,7 @@ console.log(compressionDiff || '[INFO] Compression and decompression OK')
 console.log(diff(getUtf8ToJisTable(), table) ? '[WARN] Code not compatible with table' : '[INFO] Code OK')
 
 if (!compressionDiff) {
-  const code = `export default ${JSON.stringify(tableMap, null, 2)}`
+  const code = `export default ${JSON.stringify(compressedTable, null, 2)}`
 
   const eslint = new ESLint({ fix: true })
   const results = await eslint.lintText(code)

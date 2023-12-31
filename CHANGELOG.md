@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- add another compression stage for utf8 to JIS table, reducing the table by 24% compared to previous stage (final minified + gzipped package reduced by 3kB)
+
 ## [0.2.0] - 2023-12-29
 
 ### Added
