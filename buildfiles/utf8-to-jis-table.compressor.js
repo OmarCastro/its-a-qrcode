@@ -2,6 +2,7 @@
 import { usingTable, getUtf8ToJisTable } from '../src/utils/utf8-to-jis-table.js'
 import { hexToBase64 } from '../src/utils/text-decode-encode.util.js'
 import { ESLint } from 'eslint'
+import { gzipSync } from 'node:zlib'
 
 import pkg from 'deep-diff'
 const { diff } = pkg
@@ -178,34 +179,46 @@ export function tob64CompressedListMap () {
 
 const sizeInKB = (byteSize) => (byteSize / 1024).toFixed(2)
 const sizePercent = (from, to) => (from * 100 / to).toFixed(2)
+console.log(`[INFO] compressing...`)
 
 const table = getNonCompressedTable()
-const originalMapSize = JSON.stringify(table).length
+const originalMapBuffer = Buffer.from(JSON.stringify(table))
+const originalMapSize = originalMapBuffer.byteLength
+const originalMapGZipSize = gzipSync(originalMapBuffer).byteLength
+console.log(`[INFO]   original map`)
+console.log(`[INFO]     size: ${sizeInKB(originalMapSize)}kB`)
+console.log(`[INFO]     GZipped size: ${sizeInKB(originalMapGZipSize)}kB`)
 
-console.log(`[INFO] compressing...`)
-console.log(`[INFO] ......... original map : ${sizeInKB(originalMapSize)}kB`)
-
-const tableMapSize = JSON.stringify(toTableMap()).length
+const tableMapBuffer = Buffer.from(JSON.stringify(toTableMap()))
+const tableMapSize = tableMapBuffer.byteLength
 const tableMapSizePercOriginal = sizePercent(tableMapSize, originalMapSize)
-console.log(`[INFO] ... compression stage 1: to table map: ${sizeInKB(tableMapSize)}kB (${tableMapSizePercOriginal}% of original)`)
+const tableMapGZipSize = gzipSync(tableMapBuffer).byteLength
+const tableMapGZipSizePercOriginal = sizePercent(tableMapGZipSize, originalMapGZipSize)
+console.log(`[INFO]   compression stage 1: to table map`)
+console.log(`[INFO]     size: ${sizeInKB(tableMapSize)}kB (${tableMapSizePercOriginal}% of original)`)
+console.log(`[INFO]     GZipped size: ${sizeInKB(tableMapGZipSize)}kB (${tableMapGZipSizePercOriginal}% of original)`)
 
-const compressedMapSize = JSON.stringify(toCompressedMap()).length
-const compressedMapSizePercPrevious = sizePercent(compressedMapSize, tableMapSize)
-const compressedMapSizePercOriginal = sizePercent(compressedMapSize, originalMapSize)
-console.log(`[INFO] ... compression stage 2: compressed table map: ${sizeInKB(compressedMapSize)}kB (${compressedMapSizePercPrevious}% of previous compression) (${compressedMapSizePercOriginal}% of original)`)
+function logCompressionStage({ stageNumber, stageName, resultingObject, previousSizes}){
+  console.log(`[INFO]   compression stage ${stageNumber}: ${stageName}:`)
 
-const b64CompressedMapSize = JSON.stringify(tob64CompressedMap()).length
-const b64CompressedMapSizePercPrevious = sizePercent(b64CompressedMapSize, compressedMapSize)
-const b64CompressedMapSizePercOriginal = sizePercent(b64CompressedMapSize, originalMapSize)
-console.log(`[INFO] ... compression stage 3: hex to base64 on compressed table map: ${sizeInKB(b64CompressedMapSize)}kB (${b64CompressedMapSizePercPrevious}% of previous compression) (${b64CompressedMapSizePercOriginal}% of original)`)
+  const buffer = Buffer.from(JSON.stringify(resultingObject))
+  const size = buffer.length
+  const sizePercPrevious = sizePercent(size, previousSizes.original)
+  const sizePercOriginal = sizePercent(size, originalMapSize)
+  console.log(`[INFO]     size: ${sizeInKB(size)}kB (${sizePercPrevious}% of previous stage) (${sizePercOriginal}% of original)`)
 
+  const gzipSize = gzipSync(buffer).byteLength
+  const gzipSizePercPrevious = sizePercent(gzipSize, previousSizes.gzip)
+  const gzipSizePercOriginal = sizePercent(gzipSize, originalMapGZipSize)
+  console.log(`[INFO]     GZipped size: ${sizeInKB(gzipSize)}kB (${gzipSizePercPrevious}% of previous stage) (${gzipSizePercOriginal}% of original)`)
+
+  return {sizes: {original: size, gzip: gzipSize }}
+}
+
+const stage2Results = logCompressionStage({stageNumber: 2, stageName: "compress table map", resultingObject: toCompressedMap(), previousSizes: { original: tableMapSize, gzip: tableMapGZipSize}})
+const stage3Results = logCompressionStage({stageNumber: 3, stageName: "hex to base64 on compressed table map", resultingObject: tob64CompressedMap(), previousSizes: stage2Results.sizes})
 const compressedTable = tob64CompressedListMap()
-const b64ListCompressedMapSize = JSON.stringify(compressedTable).length
-const b64ListCompressedMapSizePercPrevious = sizePercent(b64ListCompressedMapSize, b64CompressedMapSize)
-const b64ListCompressedMapSizePercOriginal = sizePercent(b64ListCompressedMapSize, originalMapSize)
-console.log(`[INFO] ... compression stage 4: minify value list on property: ${sizeInKB(b64ListCompressedMapSize)}kB (${b64ListCompressedMapSizePercPrevious}% of previous compression) (${b64ListCompressedMapSizePercOriginal}% of original)`)
-console.log(`[INFO]`)
-console.log(`[INFO] compessed, final result: ${sizeInKB(b64ListCompressedMapSize)}kB (${100 - b64ListCompressedMapSizePercOriginal}% size reduction)`)
+const stage4Results = logCompressionStage({stageNumber: 4, stageName: "minify value list on each property", resultingObject: compressedTable, previousSizes: stage3Results.sizes})
 
 
 const compressionDiff = diff(usingTable(compressedTable).Utf8ToJisTable(), table)?.map(n => {
