@@ -43,10 +43,11 @@ function decompressUtf8ToJisTable (compressedTable) {
  * @param {string} compressedVals - compressed utf8-to-jis-table.constants.js field value
  */
 function decompressUtf8ValsStr (compressedVals) {
+  const commaSeparatedVals = compressedVals.replace(/;[a-zA-Z0-9+/]+;/g, match => match.slice(1, -1).split('').join(','))
   let result = ''
   let prefix = ''
   let initPrefix = ''
-  for (const char of compressedVals) {
+  for (const char of commaSeparatedVals) {
     switch (char) {
       case '[':
         initPrefix = prefix

@@ -2,10 +2,13 @@
 import { usingTable, getUtf8ToJisTable } from '../src/utils/utf8-to-jis-table.js'
 import { hexToBase64 } from '../src/utils/text-decode-encode.util.js'
 import { ESLint } from 'eslint'
-import { gzipSync } from 'node:zlib'
-
+import { gzipSync, brotliCompressSync } from 'node:zlib'
 import pkg from 'deep-diff'
 const { diff } = pkg
+
+const SAME_VALUE_SEPARATOR = ':'
+const CSCHARLIST = ';'
+
 
 export function toTableMap () {
   const inverseTable = Object.entries(getNonCompressedTable()).reduce((acc, [key, value]) => {
@@ -23,7 +26,7 @@ export function toTableMap () {
     let keyNum = parseInt(+key)
     while (Object.hasOwn(inverseTable, keyNum - 1)) {
       visitedValues.add(keyNum.toString())
-      nodesToAdd.push(inverseTable[keyNum].map(v => parseInt(v).toString(16)).join(':'))
+      nodesToAdd.push(inverseTable[keyNum].map(v => parseInt(v).toString(16)).join(SAME_VALUE_SEPARATOR))
       keyNum--
     }
 
@@ -40,7 +43,7 @@ export function toCompressedMap () {
     let acc = 0
     const values = []
     for (const valStr of value.split(',')) {
-      if (valStr.includes(':')) {
+      if (valStr.includes(SAME_VALUE_SEPARATOR)) {
         if (acc !== 0) {
           values.push(`${currentIt.toString(16)}>${acc.toString(16)}`)
         } else if (currentIt) {
@@ -89,8 +92,8 @@ export function tob64CompressedMap () {
   for (const [key, value] of Object.entries(tableMap)) {
     const values = []
     for (const valStr of value.split(',')) {
-      if (valStr.includes(':')) {
-        values.push(valStr.split(':').map(xTob64).join(':'))
+      if (valStr.includes(SAME_VALUE_SEPARATOR)) {
+        values.push(valStr.split(SAME_VALUE_SEPARATOR).map(xTob64).join(SAME_VALUE_SEPARATOR))
         continue
       }
       if (valStr.includes('>')) {
@@ -111,7 +114,7 @@ export function tob64CompressedListMap () {
   for (const [key, value] of Object.entries(tableMap)) {
     let values = ""
     let level = []
-    let previous;
+    let previous
     for (const valStr of [...value.split(','), "end-of-line"]) {
       let initialLevel = level.length
       if(!previous){
@@ -171,6 +174,8 @@ export function tob64CompressedListMap () {
       previous = valStr
 
     }
+
+    values = values.replace(/[a-zA-Z0-9+/](,[a-zA-Z0-9+/]){2,}/g, (match) => CSCHARLIST+match.replaceAll(",", "")+CSCHARLIST)
     result[key] = values
   }
   return result
@@ -185,18 +190,25 @@ const table = getNonCompressedTable()
 const originalMapBuffer = Buffer.from(JSON.stringify(table))
 const originalMapSize = originalMapBuffer.byteLength
 const originalMapGZipSize = gzipSync(originalMapBuffer).byteLength
+const originalMapBrotliSize = brotliCompressSync(originalMapBuffer).byteLength
+
 console.log(`[INFO]   original map`)
 console.log(`[INFO]     size: ${sizeInKB(originalMapSize)}kB`)
 console.log(`[INFO]     GZipped size: ${sizeInKB(originalMapGZipSize)}kB`)
+console.log(`[INFO]     Brotli size: ${sizeInKB(originalMapBrotliSize)}kB`)
 
 const tableMapBuffer = Buffer.from(JSON.stringify(toTableMap()))
 const tableMapSize = tableMapBuffer.byteLength
 const tableMapSizePercOriginal = sizePercent(tableMapSize, originalMapSize)
 const tableMapGZipSize = gzipSync(tableMapBuffer).byteLength
 const tableMapGZipSizePercOriginal = sizePercent(tableMapGZipSize, originalMapGZipSize)
+const tableMapBrotliSize = brotliCompressSync(tableMapBuffer).byteLength
+const tableMapBrotliSizePercOriginal = sizePercent(tableMapBrotliSize, originalMapBrotliSize)
+
 console.log(`[INFO]   compression stage 1: to table map`)
 console.log(`[INFO]     size: ${sizeInKB(tableMapSize)}kB (${tableMapSizePercOriginal}% of original)`)
 console.log(`[INFO]     GZipped size: ${sizeInKB(tableMapGZipSize)}kB (${tableMapGZipSizePercOriginal}% of original)`)
+console.log(`[INFO]     Brotli size: ${sizeInKB(tableMapBrotliSize)}kB (${tableMapBrotliSizePercOriginal}% of original)`)
 
 function logCompressionStage({ stageNumber, stageName, resultingObject, previousSizes}){
   console.log(`[INFO]   compression stage ${stageNumber}: ${stageName}:`)
@@ -212,10 +224,16 @@ function logCompressionStage({ stageNumber, stageName, resultingObject, previous
   const gzipSizePercOriginal = sizePercent(gzipSize, originalMapGZipSize)
   console.log(`[INFO]     GZipped size: ${sizeInKB(gzipSize)}kB (${gzipSizePercPrevious}% of previous stage) (${gzipSizePercOriginal}% of original)`)
 
-  return {sizes: {original: size, gzip: gzipSize }}
+
+  const brotliSize = brotliCompressSync(buffer).byteLength
+  const brotliSizePercPrevious = sizePercent(brotliSize, previousSizes.brotli)
+  const brotliSizePercOriginal = sizePercent(brotliSize, originalMapBrotliSize)
+  console.log(`[INFO]     Brotli size: ${sizeInKB(brotliSize)}kB (${brotliSizePercPrevious}% of previous stage) (${brotliSizePercOriginal}% of original)`)
+
+  return {sizes: {original: size, gzip: gzipSize, brotli:brotliSize }}
 }
 
-const stage2Results = logCompressionStage({stageNumber: 2, stageName: "compress table map", resultingObject: toCompressedMap(), previousSizes: { original: tableMapSize, gzip: tableMapGZipSize}})
+const stage2Results = logCompressionStage({stageNumber: 2, stageName: "compress table map", resultingObject: toCompressedMap(), previousSizes: { original: tableMapSize, gzip: tableMapGZipSize, brotli: tableMapBrotliSize}})
 const stage3Results = logCompressionStage({stageNumber: 3, stageName: "hex to base64 on compressed table map", resultingObject: tob64CompressedMap(), previousSizes: stage2Results.sizes})
 const compressedTable = tob64CompressedListMap()
 const stage4Results = logCompressionStage({stageNumber: 4, stageName: "minify value list on each property", resultingObject: compressedTable, previousSizes: stage3Results.sizes})
