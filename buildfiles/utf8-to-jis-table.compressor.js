@@ -108,56 +108,65 @@ export function tob64CompressedMap () {
   return result
 }
 
+
 export function tob64CompressedListMap () {
   const tableMap = tob64CompressedMap()
+  const areAllEqual = (a, ...rest) => rest.every(val => val === a)
+
   const result = {}
   for (const [key, value] of Object.entries(tableMap)) {
     let values = ""
     let level = []
     let previous
-    for (const valStr of [...value.split(','), "end-of-line"]) {
+    let current
+    for (const valStr of [...value.split(','), "*end-of-line", "*extra-token"]) {
       let initialLevel = level.length
+      if(!current){
+        current = valStr
+        continue
+      }
       if(!previous){
-        previous = valStr
+        previous = current
+        current = valStr
         continue
       }
       if(level.length === 0){
-        if(previous[0] === valStr[0]){
-          values += valStr[0] + "["
-          level.push(valStr[0])
+        if(areAllEqual(previous[0], current[0], valStr[0])){
+          values += current[0] + "["
+          level.push(current[0])
         }
       }
       if(level.length === 1){
-        if(previous.substring(0, 2) === valStr.substring(0, 2)){
-          values += valStr[1] + "["
-          level.push(valStr[1])
-        } else if(previous[0] !== valStr[0]){
+        if(areAllEqual(previous.substring(0, 2), current.substring(0, 2), valStr.substring(0, 2))){
+          values += current[1] + "["
+          level.push(current[1])
+        } else if(previous[0] !== current[0]){
           values +=  previous.substring(level.length) + "]"
           level.pop()
         }
       }
 
       if(level.length === 2){
-        if(previous.substring(0, 3) === valStr.substring(0, 3)){
-          values += valStr[2] + "["
-          level.push(valStr[2])
-        } else if(previous[0] !== valStr[0]){
+        if(areAllEqual(previous.substring(0, 3), current.substring(0, 3), valStr.substring(0, 3))){
+          values += current[2] + "["
+          level.push(current[2])
+        } else if(previous[0] !== current[0]){
           values +=  previous.substring(level.length) + "]]"
           level.length = 0
-        } else if(previous[1] !== valStr[1]){
+        } else if(previous[1] !== current[1]){
           values += previous.substring(level.length) + "]"
           level.pop()
         }
       }
 
       if(level.length === 3){
-        if(previous[0] !== valStr[0]){
+        if(previous[0] !== current[0]){
           values +=  previous.substring(level.length) + "]]]"
           level.length = 0
-        } else if(previous[1] !== valStr[1]){
+        } else if(previous[1] !== current[1]){
           values += previous.substring(level.length) + "]]"
           level.length = 1
-        } else if(previous[2] !== valStr[2]){
+        } else if(previous[2] !== current[2]){
           values += previous.substring(level.length) + "]"
           level.length = 2
         }
@@ -166,12 +175,14 @@ export function tob64CompressedListMap () {
       if(initialLevel <= level.length){
         values+=previous.substring(level.length)
       }
-      if(valStr === "end-of-line"){
+      if(current === "*end-of-line"){
         values+="]".repeat(level.length)
+        break
       } else {
         values+=","
       }
-      previous = valStr
+      previous = current
+      current = valStr
 
     }
 
