@@ -24,6 +24,12 @@ const removeEmptylines = (data) => data.split('\n').filter(line => line !== '').
 
 /**
  * @param {string} data - QR code data
+ * @returns {string} QR code data without blank lines
+ */
+const removeBlanklines = (data) => data.split('\n').filter(line => line.trim() !== '').join('\n')
+
+/**
+ * @param {string} data - QR code data
  * @returns {string} vcard handled data
  */
 const vcard = (data) => removeEmptylines(trimLines(data))
@@ -33,8 +39,14 @@ const vcard = (data) => removeEmptylines(trimLines(data))
  */
 const preProcessMap = {
   none,
+  pre: none,
   trim,
+  'trim-line': trimLines,
   'trim-lines': trimLines,
+  'no-empty-line': removeEmptylines,
+  'no-empty-lines': removeEmptylines,
+  'no-blank-line': removeBlanklines,
+  'no-blank-lines': removeBlanklines,
   vcard,
 }
 
