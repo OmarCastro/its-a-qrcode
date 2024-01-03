@@ -2,6 +2,7 @@ import { QrCode } from '../qr-code.js'
 import { createImgTag } from '../render/img-tag.render.js'
 import { createSvgTag } from '../render/svg.render.js'
 import { isValid } from '../error-correction/ec-level.js'
+import { preProcess } from '../utils/data-pre-processing.util.js'
 import css from './qr-code.element.css'
 
 let loadStyles = () => {
@@ -67,7 +68,7 @@ function applyQrCode (element) {
   }
 
   const qr = new QrCode(typeNumber, element.errorCorrectionLevel)
-  qr.addData(textContent)
+  qr.addData(preProcess(textContent))
   qr.make()
 
   const darkColor = getComputedStyle(element).getPropertyValue('--qrcode-dark-color') || 'black'
