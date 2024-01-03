@@ -124,6 +124,29 @@
             <p ss:markdown>To enable qr code resize, one of the values are supported: `true`, `yes`, `enable`, `enabled`. It is case insensitive (`Yes` equals to `yes`). Any other value disables it </p>
         </div>
 
+        <div class="example example--pre-process">
+            <h3> Content pre process (since version 0.3.0) (WIP)</h3>
+
+            <qr-code>
+                
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua
+            
+            </qr-code>
+            <script type="text/plain" class="html-example">
+                <{{elementName}}>{{
+                    
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua
+                    
+                ¦text}}</{{elementName}}>
+            </script>
+            <script type="text/plain" class="css-example">
+                .example--color__qr {
+                    --qrcode-dark-color: rgba(0, 0, 200, 0.8);
+                    --qrcode-light-color: pink;
+                }
+            </script>
+        </div>
+
 
 
 
@@ -219,7 +242,7 @@
 
             <qr-code class="example--color__qr">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua</qr-code>
             <script type="text/plain" class="html-example">
-                <{{elementName}}>{{Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua¦text}}</{{elementName}}>
+                <{{elementName}} class="example--color__qr">{{Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua¦text}}</{{elementName}}>
             </script>
             <script type="text/plain" class="css-example">
                 .example--color__qr {
