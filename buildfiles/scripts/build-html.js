@@ -216,7 +216,7 @@ queryAll('[ss:toc]').forEach(element => {
 const minifiedHtml = minify('<!DOCTYPE html>' + document.documentElement?.outerHTML || '', {
   removeAttributeQuotes: true,
   useShortDoctype: true,
-  collapseWhitespace: true,
+  collapseWhitespace: false,
 })
 
 fs.writeFileSync(`${docsOutputPath}/${process.argv[2]}`, minifiedHtml)
