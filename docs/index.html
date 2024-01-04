@@ -124,27 +124,70 @@
             <p ss:markdown>To enable qr code resize, one of the values are supported: `true`, `yes`, `enable`, `enabled`. It is case insensitive (`Yes` equals to `yes`). Any other value disables it </p>
         </div>
 
-        <div class="example example--pre-process">
-            <h3> Content pre process (since version 0.3.0) (WIP)</h3>
-
-            <qr-code>
-                
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua
+        <div class="section--content-pre-process">
+            <h3> Content pre process  (since version 0.3.0) (WIP)</h3>
             
-            </qr-code>
-            <script type="text/plain" class="html-example">
-                <{{elementName}}>{{
+        
+            <div ss:markdown>
+                To be easier to handle specific data types, the text content is processed before turning into a QR Code, as to be more flexible on where to put the content.
+
+                The next example shows that even with space and new lines the content is the trimmed text. This is the default behaviour
+            </div>
+                        
+            <div class="example example--pre-process-default">
+                <qr-code>
                     
                     Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua
+                
+                </qr-code>
+                <div class="qrcode--content-view"></div>
+                <script type="text/plain" class="html-example">
+                    <{{elementName}}>{{
+                        
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua
+                        
+                    ¦text}}</{{elementName}}>
+                </script>
+            </div>
+
+            <div ss:markdown>
+                For specific data types the content is processed differently, e.g. if it begins with "BEGIN:VCARD", not only it is trimmed the whole text content,
+                but also each line is trimmed and any blank line is removed
+            </div>
+
+            <div class="example example--pre-process-default">
+                <qr-code>
                     
-                ¦text}}</{{elementName}}>
-            </script>
-            <script type="text/plain" class="css-example">
-                .example--color__qr {
-                    --qrcode-dark-color: rgba(0, 0, 200, 0.8);
-                    --qrcode-light-color: pink;
-                }
-            </script>
+                    BEGIN:VCARD
+                    VERSION:4.0
+                    FN:Simon Perreault
+                    N:Perreault;Simon;;;ing. jr,M.Sc.
+                    
+                    BDAY:--0203
+
+                    GENDER:M
+                    EMAIL;TYPE=work:simon.perreault@viagenie.ca
+                    END:VCARD
+                
+                </qr-code>
+                <div class="qrcode--content-view"></div>
+                <script type="text/plain" class="html-example">
+                    <{{elementName}}>{{
+                        
+                        BEGIN:VCARD
+                        VERSION:4.0
+                        FN:Simon Perreault
+                        N:Perreault;Simon;;;ing. jr,M.Sc.
+
+                        BDAY:--0203
+
+                        GENDER:M
+                        EMAIL;TYPE=work:simon.perreault@viagenie.ca
+                        END:VCARD
+                        
+                    ¦text}}</{{elementName}}>
+                </script>
+            </div>
         </div>
 
 
