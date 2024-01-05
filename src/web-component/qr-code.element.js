@@ -69,14 +69,14 @@ function applyQrCode (element) {
     return
   }
 
-  const { textContent } = element
-  if (!textContent) {
+  const { qrCodeContent } = element
+  if (!qrCodeContent) {
     return
   }
 
   const oldQr = qrCodeData.get(element)
   const qr = new QrCode(typeNumber, element.errorCorrectionLevel)
-  qr.addData(preProcess(textContent))
+  qr.addData(qrCodeContent)
   qr.make()
   qrCodeData.set(element, qr)
 
@@ -94,11 +94,12 @@ function applyQrCode (element) {
   const oldImgElement = shadowRoot.querySelector('img')
   if (oldImgElement) {
     const updated = updateImgElement(oldImgElement, imgHtml)
-    if (updated) {
-      return
+    if (!updated) {
+      shadowRoot.innerHTML = imgHtml
     }
+  } else {
+    shadowRoot.innerHTML = imgHtml
   }
-  shadowRoot.innerHTML = imgHtml
 
   if (oldQr && (oldQr.dataList.length !== qr.dataList.length || oldQr.dataList.some((val, index) => val.data !== qr.dataList[index].data))) {
     const customEvent = new CustomEvent('qrcode-content-change', { detail: { previousQRCode: oldQr, qrCode: qr } })
