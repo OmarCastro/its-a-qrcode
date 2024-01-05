@@ -180,7 +180,7 @@ async function execTests () {
   const files = await getFilesAsArray('reports/coverage/final')
   const cpBase = files.filter(path => basename(path) === 'base.css').map(path => fs.cp('buildfiles/assets/coverage-report-base.css', path))
   const cpPrettify = files.filter(path => basename(path) === 'prettify.css').map(path => fs.cp('buildfiles/assets/coverage-report-prettify.css', path))
-  await Promise.all([rmTmp, rmBak, ...badges, ...cpBase, ...cpPrettify])
+  await Promise.allSettled([rmTmp, rmBak, ...badges, ...cpBase, ...cpPrettify])
 
   await rm_rf('build/docs/reports')
   await mkdir_p('build/docs')
