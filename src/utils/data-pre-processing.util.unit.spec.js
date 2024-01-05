@@ -27,13 +27,13 @@ test('QR Code data pre process - trim lines on if starts with BEGIN:VCARD', ({ e
         
     `)
   ).toEqual(
-    `BEGIN:VCARD
-VERSION:4.0
-FN:Simon Perreault
-N:Perreault;Simon;;;ing. jr,M.Sc.
-BDAY:--0203
-GENDER:M
-EMAIL;TYPE=work:simon.perreault@viagenie.ca
+    `BEGIN:VCARD\r
+VERSION:4.0\r
+FN:Simon Perreault\r
+N:Perreault;Simon;;;ing. jr,M.Sc.\r
+BDAY:--0203\r
+GENDER:M\r
+EMAIL;TYPE=work:simon.perreault@viagenie.ca\r
 END:VCARD`
   )
 })

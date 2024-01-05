@@ -17,6 +17,50 @@ const trim = (data) => data.trim()
 const trimLines = (data) => data.split('\n').map(line => line.trim()).join('\n')
 
 /**
+ * @param {string} lineStr - line content
+ * @returns {{ level: number, isBlankLine: boolean }} identation information
+ */
+function getLineIdentation (lineStr) {
+  const { length } = lineStr
+  for (let level = 0; level < length; level++) {
+    if (lineStr.charAt(level).trim() !== '') {
+      return { level, isBlankLine: false }
+    }
+  }
+  return { level: length, isBlankLine: true }
+}
+
+/**
+ * @param {string} data - QR code data
+ * @returns {string} QR code data with all lines dedented
+ */
+const dedent = (data) => {
+  const lines = data.split('\n')
+  const identationsByLine = lines.map(getLineIdentation)
+  const minIdentation = Math.min(...identationsByLine
+    .filter(({ isBlankLine }) => !isBlankLine)
+    .map(({ level }) => level))
+  const detentedLines = lines.map((line, lineNumber) => line.substring(Math.min(identationsByLine[lineNumber].level, minIdentation)))
+  return detentedLines.join('\n')
+}
+
+/**
+ * @param {string} data - QR code data
+ * @returns {string} QR code data with all lines dedented
+ */
+const dedentFromFirstLine = (data) => {
+  const lines = data.split('\n')
+  const identationsByLine = lines.map(getLineIdentation)
+  const firstNonBlankLineIdentation = identationsByLine.find(({ isBlankLine }) => !isBlankLine)
+  if (!firstNonBlankLineIdentation) {
+    return data
+  }
+  const charAmountToDedent = firstNonBlankLineIdentation.level
+  const detentedLines = lines.map((line, lineNumber) => line.substring(Math.min(identationsByLine[lineNumber].level, charAmountToDedent)))
+  return detentedLines.join('\n')
+}
+
+/**
  * @param {string} data - QR code data
  * @returns {string} QR code data with trimmed lines
  */
@@ -32,7 +76,35 @@ const removeBlanklines = (data) => data.split('\n').filter(line => line.trim() !
  * @param {string} data - QR code data
  * @returns {string} vcard handled data
  */
-const vcard = (data) => removeEmptylines(trimLines(data))
+const vcard = (data) => {
+  const unwrapedTextData = removeBlanklines(dedentFromFirstLine(data))
+  /*
+    > Content lines SHOULD be folded to a maximum width of 75 octets, excluding the line
+    > break.  Multi-octet characters MUST remain contiguous
+
+    https://www.rfc-editor.org/rfc/rfc6350#section-3.2
+  */
+  let lineWidth = 0
+  let wrapedTextData = ''
+  for (const char of unwrapedTextData) {
+    if (char === '\n') {
+      lineWidth = 0
+    }
+    if (lineWidth >= 75) {
+      wrapedTextData += '\n '
+      lineWidth = 0
+    }
+
+    wrapedTextData += char
+  }
+  return useCrflLineBreak(wrapedTextData)
+}
+
+/**
+ * @param {string} data - QR code data
+ * @returns {string} data with newlines converted to CRFL (\r\n)
+ */
+const useCrflLineBreak = (data) => data.replaceAll('\r\n', '\n').replaceAll('\n', '\r\n')
 
 /**
  * @type {{[name:string]: (data: string) => string}}
@@ -41,6 +113,8 @@ const preProcessMap = {
   none,
   pre: none,
   trim,
+  dedent,
+  'dedent-from-first-line': dedentFromFirstLine,
   'trim-line': trimLines,
   'trim-lines': trimLines,
   'no-empty-line': removeEmptylines,
