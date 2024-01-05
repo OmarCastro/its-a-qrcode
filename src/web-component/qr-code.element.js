@@ -11,6 +11,8 @@ let loadStyles = () => {
   loadStyles = () => sheet
   return sheet
 }
+/** @type {WeakMap<QRCodeElement, QrCode>} */
+const qrCodeData = new WeakMap()
 
 export class QRCodeElement extends HTMLElement {
   constructor () {
@@ -22,6 +24,11 @@ export class QRCodeElement extends HTMLElement {
 
   connectedCallback () {
     applyQrCode(this)
+  }
+
+  get qrCodeContent () {
+    const { textContent } = this
+    return textContent ? preProcess(textContent) : textContent
   }
 
   get errorCorrectionLevel () {
@@ -67,9 +74,11 @@ function applyQrCode (element) {
     return
   }
 
+  const oldQr = qrCodeData.get(element)
   const qr = new QrCode(typeNumber, element.errorCorrectionLevel)
   qr.addData(preProcess(textContent))
   qr.make()
+  qrCodeData.set(element, qr)
 
   const darkColor = getComputedStyle(element).getPropertyValue('--qrcode-dark-color') || 'black'
   const lightColor = getComputedStyle(element).getPropertyValue('--qrcode-light-color') || 'white'
@@ -90,6 +99,11 @@ function applyQrCode (element) {
     }
   }
   shadowRoot.innerHTML = imgHtml
+
+  if (oldQr && (oldQr.dataList.length !== qr.dataList.length || oldQr.dataList.some((val, index) => val.data !== qr.dataList[index].data))) {
+    const customEvent = new CustomEvent('qrcode-content-change', { detail: { previousQRCode: oldQr, qrCode: qr } })
+    element.dispatchEvent(customEvent)
+  }
 }
 
 /**
