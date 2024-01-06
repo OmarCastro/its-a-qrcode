@@ -117,10 +117,10 @@ document.querySelectorAll('.example').forEach(element => {
         e.preventDefault()
       })
 
-      node.addEventListener('qrcode-content-change', () => setTextContentWithVisibleWhiteSpace(nodeQrContent, node.qrCodeContent))
+      node.addEventListener('qrcode-content-change', () => setTextContentWithVisibleWhitespace(nodeQrContent, node.qrCodeContent))
       requestAnimationFrame(function reflectContent () {
         if (node.qrCodeContent) {
-          setTextContentWithVisibleWhiteSpace(nodeQrContent, node.qrCodeContent)
+          setTextContentWithVisibleWhitespace(nodeQrContent, node.qrCodeContent)
         } else {
           requestAnimationFrame(reflectContent)
         }
@@ -130,11 +130,10 @@ document.querySelectorAll('.example').forEach(element => {
 })
 
 /**
- *
- * @param {HTMLElement} element
- * @param {string} textContent
+ * @param {HTMLElement} element - target element
+ * @param {string} textContent - text content to apply
  */
-function setTextContentWithVisibleWhiteSpace (element, textContent) {
+function setTextContentWithVisibleWhitespace (element, textContent) {
   element.textContent = textContent.replaceAll('\r', '␍').replaceAll(' ', '␠').replaceAll('\n', '␊\n').replaceAll('\t', '␉')
   element.innerHTML = element.innerHTML
     .replaceAll('␍', '<i class="whitespace-char whitespace-char--carriage-return"></i>')
