@@ -170,8 +170,18 @@
             </div>
 
             <div ss:markdown>
-                For specific data types the content is processed differently, e.g. if it begins with "BEGIN:VCARD", not only it is trimmed the whole text content,
-                but also each line is trimmed and any blank line is removed
+                For specific data types the content is processed differently. One example is VCARD content.
+                
+                If the element text content begins with "BEGIN:VCARD", it will apply de vcard preprocessor which does the following actions:
+                
+                <ol>
+                    <li> dedent using the first letter position as the amount of characters to dedent </li>
+                    <li> remove blank lines (empty lines and lines with whitespace only) </li>
+                    <li> fold lines if it passes the 75 character limit (<a href="https://www.rfc-editor.org/rfc/rfc6350#section-3.2">RFC6350 section-3.2</a>)</li>
+                    <li> convert lines to CRFL (<a href="https://www.rfc-editor.org/rfc/rfc6350#section-3.2">RFC6350 section-3.2</a>)</li>
+                </ol>
+                dedented using the "BEGIN:VCARD" position as the amount to dedent
+                as well as limit the 
             </div>
 
             <div class="example example--pre-process-default">
