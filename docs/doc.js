@@ -109,11 +109,12 @@ document.querySelectorAll('.example').forEach(element => {
       contentViewElement.insertAdjacentHTML('beforeend', '<pre class="qrcode--content-code-view"><label><input type="checkbox" checked/>Visible whitespace</label><span class="code"></span></pre>')
       const nodeQrContent = contentViewElement.querySelector('.code')
 
-      nodeQrContent.addEventListener('copy', function (e) {
+      nodeQrContent.addEventListener('copy', function copyWithoutRichContent (e) {
+        const textOnly = document.getSelection().toString()
+        const clipdata = e.clipboardData || window.clipboardData
+        clipdata.setData('text/plain', textOnly)
+        clipdata.setData('text/html', textOnly)
         e.preventDefault()
-        console.log(e)
-        // var text = (e.originalEvent || e).clipboardData.getData('text/plain') || prompt('Paste something..');
-        // document.execCommand('insertText', false, text);
       })
 
       node.addEventListener('qrcode-content-change', () => setTextContentWithVisibleWhiteSpace(nodeQrContent, node.qrCodeContent))
