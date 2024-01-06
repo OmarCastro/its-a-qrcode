@@ -12,20 +12,18 @@
     --resizable-border-color: #303540;
     --tab-active-color: #007299;
     font-family: -apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji";
-    font-size: 1em;
 }
 
-.example--basic qr-code {  min-height: 70px;}
-.example--url-link qr-code {  min-height: 80px;}
-.example--mail-to  qr-code {  min-height: 75px;}
-.example--telephone qr-code {  min-height: 70px;}
-
-qr-code:not(:defined) {
-	display: inline-flex;  
-	opacity: 0;  
+qr-code {
+    .example--basic & {  min-height: 70px;}
+    .example--url-link & {  min-height: 80px;}
+    .example--mail-to  & {  min-height: 75px;}
+    .example--telephone & {  min-height: 70px;}
+    &:not(:defined){
+        display: inline-flex;  
+        opacity: 0;      
+    }
 }
-
-
 
 @media (prefers-color-scheme: dark) {
     :root {
@@ -52,15 +50,15 @@ body {
     display: flex;
     flex-direction: row;
     counter-reset: heading;
-}
 
-body > .sidebar {
-    background-color: var(--bg-sidebar-color);
-    border-right: var(--sidebar-border-color) 1px solid;
-}
+    & > .sidebar {
+        background-color: var(--bg-sidebar-color);
+        border-right: var(--sidebar-border-color) 1px solid;    
+    }
 
-body > .content {
-    padding: 3em;
+    & > .content {
+        padding: 3em;
+    }
 }
 
 /* Smartphones (portrait and landscape) ----------- */
@@ -93,13 +91,12 @@ body > .content {
     position: sticky;
     top: 0;
     padding: 1em;
-}
-
-.toc ol {
-    counter-reset: section;
-    list-style-type: none;
-    padding-left: 1em;
-    white-space: nowrap;
+    & ol {
+        counter-reset: section;
+        list-style-type: none;
+        padding-left: 1em;
+        white-space: nowrap;    
+    }
 }
 
 .toc ol li::before {
@@ -330,4 +327,14 @@ pre:hover code span[contenteditable="true"]::before {
 
 .example-ec-level-line > .example {
     max-width: 100%;
+}
+
+
+table {  
+    margin: 0px auto;
+}
+
+table, th, td {
+    border-collapse: collapse;
+    border: 1px solid var(--fg-color);
 }

@@ -102,7 +102,45 @@ document.querySelectorAll('.example').forEach(element => {
       target.textContent = target.innerHTML
     }
   })
+
+  element.querySelectorAll('.qrcode--content-view').forEach(contentViewElement => {
+    const node = contentViewElement.querySelector('qr-code')
+    if (node) {
+      contentViewElement.insertAdjacentHTML('beforeend', '<pre class="qrcode--content-code-view"><label><input type="checkbox" checked/>Visible whitespace</label><span class="code"></span></pre>')
+      const nodeQrContent = contentViewElement.querySelector('.code')
+
+      nodeQrContent.addEventListener('copy', function (e) {
+        e.preventDefault()
+        console.log(e)
+        // var text = (e.originalEvent || e).clipboardData.getData('text/plain') || prompt('Paste something..');
+        // document.execCommand('insertText', false, text);
+      })
+
+      node.addEventListener('qrcode-content-change', () => setTextContentWithVisibleWhiteSpace(nodeQrContent, node.qrCodeContent))
+      requestAnimationFrame(function reflectContent () {
+        if (node.qrCodeContent) {
+          setTextContentWithVisibleWhiteSpace(nodeQrContent, node.qrCodeContent)
+        } else {
+          requestAnimationFrame(reflectContent)
+        }
+      })
+    }
+  })
 })
+
+/**
+ *
+ * @param {HTMLElement} element
+ * @param {string} textContent
+ */
+function setTextContentWithVisibleWhiteSpace (element, textContent) {
+  element.textContent = textContent.replaceAll('\r', '␍').replaceAll(' ', '␠').replaceAll('\n', '␊\n').replaceAll('\t', '␉')
+  element.innerHTML = element.innerHTML
+    .replaceAll('␍', '<i class="whitespace-char whitespace-char--carriage-return"></i>')
+    .replaceAll('␊', '<i class="whitespace-char whitespace-char--line-feed"></i>')
+    .replaceAll('␠', '<i class="whitespace-char whitespace-char--space"> </i>')
+    .replaceAll('␉', '<i class="whitespace-char--tab">\t</i>')
+}
 
 /**
  * @param {Event} event - 'input' event object

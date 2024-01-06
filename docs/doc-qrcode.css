@@ -22,4 +22,77 @@
     }
 }
 
+.qrcode--content-view {
+    font-size: 1rem;
+    display: flex;
+    gap: 2em;
+}
 
+.qrcode--content-code-view{
+    position: relative;
+    padding: 10px;
+    border: 1px solid var(--fg-color);
+    padding-top: calc(20px + 1em);
+
+
+    & > label {
+        position: absolute;
+        top: 0;
+        left: 0;
+        padding: 5px;
+    }
+
+    &:has(input:not(:checked)) > .code > .whitespace-char::before {
+        content: ""
+    }
+
+    & > .code {
+        white-space: pre-wrap;
+
+        & > .whitespace-char {
+            opacity: 0.8;
+            position: relative;
+        }
+        & > :is(.whitespace-char--carriage-return, .whitespace-char--line-feed) {
+            width: 1em;
+            user-select: none;
+            display: inline-block;
+        }
+        
+
+        & > :is(.whitespace-char--carriage-return, .whitespace-char--line-feed)::before {
+            position: relative;
+        }
+        & > :is(.whitespace-char--space, .whitespace-char--tab)::before {
+            position: absolute;
+            left: 50%;
+            transform: translate(-50%, 0%);
+        }
+
+        & > .whitespace-char--space::before           { content: "⸱" }
+        & > .whitespace-char--carriage-return::before { content: "⏎" }
+        & > .whitespace-char--line-feed::before { content: "¶" }
+        & > .whitespace-char--tab::before { content: "→" }
+    }
+    &::before {
+        content: "QR Code Content";
+        position: absolute;
+        color: var(--tab-active-color);
+        text-align: end;
+        top: 0;
+        right: 0;
+        padding: 5px;
+        font-family: Consolas,Monaco,"Andale Mono","Ubuntu Mono",monospace;
+        background: var(--code-bg);
+        border-top-right-radius: 5px;
+        padding-left: 20px;
+        clip-path: polygon(0 0, 100% 0, 100% 100%, 20px 100%);
+        pointer-events: none;
+    }
+}
+
+
+.whitespace-table td:first-child {  
+    text-align: center;
+    padding: 0.5rem;
+}
