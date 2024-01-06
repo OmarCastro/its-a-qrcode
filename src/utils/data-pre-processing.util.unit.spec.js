@@ -10,8 +10,7 @@ test('QR Code data pre process - trims by default on basic text', ({ expect }) =
     'https://omarcastro.github.io/its-a-qrcode'
   )
 })
-
-test('QR Code data pre process - trim lines on if starts with BEGIN:VCARD', ({ expect }) => {
+test('QR Code data pre process - use vcard pre processing if starts with BEGIN:VCARD', ({ expect }) => {
   // VCard of Simon Perreault, author of RFC6350 (https://datatracker.ietf.org/doc/html/rfc6350)
   expect(
     preProcess(`
@@ -98,4 +97,41 @@ dasdasd
 fffff`)
 
 })
+
+test('QR Code data pre process - vcard preproccess wraps line content when bypasses 75 octets', ({ expect }) => {
+  const result = preProcess(`
+
+  BEGIN:VCARD
+  VERSION:4.0
+  FN:Lorem Ipsum
+  N:Ipsum;Lorem;;;ing. jr,M.Sc.
+  EMAIL;TYPE=work:lorem.ipsum@viagenie.com
+  NOTE:Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Semper eget duis at tellus at urna condimentum mattis. Ultrices vitae auctor eu augue. Vulputate enim nulla aliquet porttitor lacus luctus accumsan. Sit amet nisl suscipit adipiscing bibendum est ultricies integer. Tellus in metus vulputate eu. Dui ut ornare lectus sit. Nibh sed pulvinar proin gravida hendrerit lectus a. Aliquet nibh praesent tristique magna sit amet purus gravida. Et malesuada fames ac turpis egestas sed. Pellentesque adipiscing commodo elit at imperdiet dui accumsan sit. Id neque aliquam vestibulum morbi blandit cursus risus. Tortor at risus viverra adipiscing at.
+  END:VCARD
+      
+  `, "vcard")
+
+  expect(result.split("\r\n").every(line => line.length <= 75)).toBe(true)
+
+  expect(result).toEqual(
+`BEGIN:VCARD\r
+VERSION:4.0\r
+FN:Lorem Ipsum\r
+N:Ipsum;Lorem;;;ing. jr,M.Sc.\r
+EMAIL;TYPE=work:lorem.ipsum@viagenie.com\r
+NOTE:Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmo\r
+ d tempor incididunt ut labore et dolore magna aliqua. Semper eget duis at \r
+ tellus at urna condimentum mattis. Ultrices vitae auctor eu augue. Vulputa\r
+ te enim nulla aliquet porttitor lacus luctus accumsan. Sit amet nisl susci\r
+ pit adipiscing bibendum est ultricies integer. Tellus in metus vulputate e\r
+ u. Dui ut ornare lectus sit. Nibh sed pulvinar proin gravida hendrerit lec\r
+ tus a. Aliquet nibh praesent tristique magna sit amet purus gravida. Et ma\r
+ lesuada fames ac turpis egestas sed. Pellentesque adipiscing commodo elit \r
+ at imperdiet dui accumsan sit. Id neque aliquam vestibulum morbi blandit c\r
+ ursus risus. Tortor at risus viverra adipiscing at.\r
+END:VCARD`
+  )
+
+})
+
 

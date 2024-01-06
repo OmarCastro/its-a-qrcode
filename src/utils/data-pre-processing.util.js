@@ -88,14 +88,17 @@ const vcard = (data) => {
   let wrapedTextData = ''
   for (const char of unwrapedTextData) {
     if (char === '\n') {
+      wrapedTextData += char
       lineWidth = 0
+      continue
     }
     if (lineWidth >= 75) {
       wrapedTextData += '\n '
-      lineWidth = 0
+      lineWidth = 1
     }
 
     wrapedTextData += char
+    lineWidth++
   }
   return useCrflLineBreak(wrapedTextData)
 }
