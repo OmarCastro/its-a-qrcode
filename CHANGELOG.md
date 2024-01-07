@@ -9,7 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- BREAKING CHANGE: data pre-process qr-code element textContent before transforming to QR Code image, to maintain backward compatibility add attribute `data-pre-process="none"`
 - add another compression stage for utf8 to JIS table, reducing the table by 30% compared to previous stage (final minified + gzipped package reduced by 3kB)
+- add vCard preprocessor
+- add vEvent preprocessor
 
 ## [0.2.0] - 2023-12-29
 
