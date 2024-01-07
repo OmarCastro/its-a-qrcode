@@ -53,7 +53,7 @@ test('QR Code data pre process - use vevent process if starts with BEGIN:VEVENT'
         
     `)
   ).toEqual(
-  `BEGIN:VEVENT
+  `BEGIN:VEVENT\r
 UID:19970901T130000Z-123401@example.com\r
 DTSTAMP:19970901T130000Z\r
 DTSTART:19970903T163000Z\r
@@ -115,7 +115,7 @@ test('QR Code data pre process - multiple preprocess will call them from left to
   const input = `   
   https://omarcastro.github.io/its-a-qrcode  
 
-  dasdasd 
+  dasdasd  
 
   fffff  
   `
@@ -125,6 +125,36 @@ expect(preProcess(input, "trim-lines no-empty-lines")).toEqual(`https://omarcast
 dasdasd
 fffff`)
 
+})
+
+test('QR Code data pre process - dedent-from-first-line will detent by 2 spaces, ignoring blank lines', ({ expect }) => {
+  // Note: all non blank lines have 2 spaces at the end
+  const input = `   
+  https://omarcastro.github.io/its-a-qrcode  
+
+    dasdasd  
+
+    fffff  
+  `
+expect(preProcess(input, "dedent-from-first-line")).toEqual(` 
+https://omarcastro.github.io/its-a-qrcode  
+
+  dasdasd  
+
+  fffff  
+`)
+
+})
+
+test('QR Code data pre process - dedent-from-first-line with only blank lines will do nothing', ({ expect }) => {
+  const input = `   
+  
+
+      
+
+      
+  `
+expect(preProcess(input, "dedent-from-first-line")).toEqual(input)
 })
 
 test('QR Code data pre process - vcard preproccess wraps line content when bypasses 75 octets', ({ expect }) => {
