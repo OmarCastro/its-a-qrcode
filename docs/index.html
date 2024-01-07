@@ -186,16 +186,18 @@
                 <div class="qrcode--content-view">
                     <qr-code>
                         
+                       
                         BEGIN:VCARD
                         VERSION:4.0
-                        FN:Simon Perreault
-                        N:Perreault;Simon;;;ing. jr,M.Sc.
 
-                        BDAY:--0203
+                        FN:Lorem Ipsum
+                        N:Ipsum;Lorem;;;ing. jr,M.Sc.
+                        EMAIL;TYPE=work:lorem.ipsum@viagenie.com
 
-                        GENDER:M
-                        EMAIL;TYPE=work:simon.perreault@viagenie.ca
+                        NOTE:Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Semper eget duis at tellus at urna condimentum mattis. Ultrices vitae auctor eu augue.
+
                         END:VCARD
+      
                     
                     </qr-code>
                 </div>
@@ -204,13 +206,13 @@
                         
                         BEGIN:VCARD
                         VERSION:4.0
-                        FN:Simon Perreault
-                        N:Perreault;Simon;;;ing. jr,M.Sc.
 
-                        BDAY:--0203
+                        FN:Lorem Ipsum
+                        N:Ipsum;Lorem;;;ing. jr,M.Sc.
+                        EMAIL;TYPE=work:lorem.ipsum@viagenie.com
 
-                        GENDER:M
-                        EMAIL;TYPE=work:simon.perreault@viagenie.ca
+                        NOTE:Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Semper eget duis at tellus at urna condimentum mattis. Ultrices vitae auctor eu augue.
+
                         END:VCARD
                         
                     ¦text}}</{{elementName}}>
@@ -224,13 +226,19 @@
         <h3> Data types </h3>
 
 
-        <div class="example example--url-link" ss:markdown>
-            #### URL link
+        <div class="example example--url-link">
+            <h4> URL link</h4>
 
-            To create a link using a QR code just put the URL link as the component text
+            <p>To create a link using a QR code just put the URL link as the component text</p>
 
-            <qr-code>https://omarcastro.github.io/its-a-qrcode/</qr-code>
-            <script type="text/plain" class="html-example"><{{elementName}}>{{https://omarcastro.github.io/its-a-qrcode/¦text}}</{{elementName}}></script>
+            <qr-code>
+                https://omarcastro.github.io/its-a-qrcode/
+            </qr-code>
+            <script type="text/plain" class="html-example">
+                <{{elementName}}>{{
+                    https://omarcastro.github.io/its-a-qrcode/
+                ¦text}}</{{elementName}}>
+            </script>
         </div>
 
         <div class="example example--mail-to" ss:markdown>
@@ -263,6 +271,38 @@
             <qr-code>tel:+12125551212</qr-code>
 
             <script type="text/plain" class="html-example"><{{elementName}}>{{tel:+12125551212¦text}}</{{elementName}}></script>
+        </div>
+
+        <div class="example example--vcard">
+            <h4> Content pre process  (since version 0.3.0) (WIP)</h4>
+
+            As written previously on previously on "Content pre process" section, QR code has support for vCard without worrying much about the specifics
+            as it does some pre-processing to make it tolerant to the vCard specification
+            
+            
+            <qr-code>
+                BEGIN:VCARD
+                VERSION:4.0
+                FN:Simon Perreault
+                N:Perreault;Simon;;;ing. jr,M.Sc.
+                BDAY:--0203
+                GENDER:M
+                EMAIL;TYPE=work:simon.perreault@viagenie.ca
+                END:VCARD
+            </qr-code>
+
+            <script type="text/plain" class="html-example">
+                <{{elementName}}>{{
+                    BEGIN:VCARD
+                    VERSION:4.0
+                    FN:Simon Perreault
+                    N:Perreault;Simon;;;ing. jr,M.Sc.
+                    BDAY:--0203
+                    GENDER:M
+                    EMAIL;TYPE=work:simon.perreault@viagenie.ca
+                    END:VCARD
+                ¦text}}</{{elementName}}>
+            </script>
         </div>
 
         <div class="section--error-correction-level" ss:markdown>
