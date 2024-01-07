@@ -274,10 +274,12 @@
         </div>
 
         <div class="example example--vcard">
-            <h4> Content pre process  (since version 0.3.0) (WIP)</h4>
+            <h4> vCard </h4>
 
-            As written previously on previously on "Content pre process" section, QR code has support for vCard without worrying much about the specifics
-            as it does some pre-processing to make it tolerant to the vCard specification
+            <p  ss:markdown>
+                As written previously on previously on "Content pre process" section, QR code has support for vCard without worrying much about the specifics
+                as it does some pre-processing to make it tolerant to the vCard specification. more on https://github.com/zxing/zxing/wiki/Barcode-Contents#telephone-numbers
+            </p>
             
             
             <qr-code>
@@ -301,6 +303,32 @@
                     GENDER:M
                     EMAIL;TYPE=work:simon.perreault@viagenie.ca
                     END:VCARD
+                ¦text}}</{{elementName}}>
+            </script>
+        </div>
+
+        <div class="example example--vevent">
+            <h4> Calendar Events </h4>
+
+            <p  ss:markdown>
+                There is also anothe pre process that is executed when the content starts with "BEGIN:VEVENT". more on https://github.com/zxing/zxing/wiki/Barcode-Contents#telephone-numbers
+            </p>
+            
+            <qr-code>
+                BEGIN:VEVENT
+                SUMMARY:Summer+Vacation!
+                DTSTART:20180601T070000Z
+                DTEND:20180831T070000Z
+                END:VEVENT
+            </qr-code>
+
+            <script type="text/plain" class="html-example">
+                <{{elementName}}>{{
+                    BEGIN:VEVENT
+                    SUMMARY:Summer+Vacation!
+                    DTSTART:20180601T070000Z
+                    DTEND:20180831T070000Z
+                    END:VEVENT
                 ¦text}}</{{elementName}}>
             </script>
         </div>
