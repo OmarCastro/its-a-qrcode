@@ -105,6 +105,19 @@ const vcard = (data) => {
 
 /**
  * @param {string} data - QR code data
+ * @returns {string} vevent handled data
+ */
+const vevent = (data) => {
+  /*
+    VEVENT is similar to VCARD
+
+    https://www.rfc-editor.org/rfc/rfc5545
+  */
+  return vcard(data)
+}
+
+/**
+ * @param {string} data - QR code data
  * @returns {string} data with newlines converted to CRFL (\r\n)
  */
 const useCrflLineBreak = (data) => data.replaceAll('\r\n', '\n').replaceAll('\n', '\r\n')
@@ -125,6 +138,7 @@ const preProcessMap = {
   'no-blank-line': removeBlanklines,
   'no-blank-lines': removeBlanklines,
   vcard,
+  vevent,
 }
 
 /**
@@ -134,6 +148,9 @@ const preProcessMap = {
 function getPreproccessesFromContent (data) {
   const trimmedData = trim(data)
   if (/^BEGIN:[vV][cC][aA][rR][dD]/.test(trimmedData)) {
+    return ['vcard']
+  }
+  if (/^BEGIN:[vV][eE][vV][eE][nN][tT]/.test(trimmedData)) {
     return ['vcard']
   }
   return ['trim']
