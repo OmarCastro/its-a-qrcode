@@ -151,7 +151,7 @@ function getPreproccessesFromContent (data) {
     return ['vcard']
   }
   if (/^BEGIN:[vV][eE][vV][eE][nN][tT]/.test(trimmedData)) {
-    return ['vcard']
+    return ['vevent']
   }
   return ['trim']
 }

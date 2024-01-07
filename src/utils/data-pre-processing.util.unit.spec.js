@@ -10,7 +10,7 @@ test('QR Code data pre process - trims by default on basic text', ({ expect }) =
     'https://omarcastro.github.io/its-a-qrcode'
   )
 })
-test('QR Code data pre process - use vcard pre processing if starts with BEGIN:VCARD', ({ expect }) => {
+test('QR Code data pre process - use vcard process if starts with BEGIN:VCARD', ({ expect }) => {
   // VCard of Simon Perreault, author of RFC6350 (https://datatracker.ietf.org/doc/html/rfc6350)
   expect(
     preProcess(`
@@ -34,6 +34,35 @@ BDAY:--0203\r
 GENDER:M\r
 EMAIL;TYPE=work:simon.perreault@viagenie.ca\r
 END:VCARD`
+  )
+})
+
+test('QR Code data pre process - use vevent process if starts with BEGIN:VEVENT', ({ expect }) => {
+  // VCard of Simon Perreault, author of RFC6350 (https://datatracker.ietf.org/doc/html/rfc6350)
+  expect(
+    preProcess(`
+
+    BEGIN:VEVENT
+    UID:19970901T130000Z-123401@example.com
+    DTSTAMP:19970901T130000Z
+    DTSTART:19970903T163000Z
+    DTEND:19970903T190000Z
+    SUMMARY:Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Semper eget duis at tellus at urna condimentum mattis. Ultrices vitae auctor eu augue.
+    CATEGORIES:IPSUM,LOREM
+    END:VEVENT
+        
+    `)
+  ).toEqual(
+  `BEGIN:VEVENT
+UID:19970901T130000Z-123401@example.com\r
+DTSTAMP:19970901T130000Z\r
+DTSTART:19970903T163000Z\r
+DTEND:19970903T190000Z\r
+SUMMARY:Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiu\r
+ smod tempor incididunt ut labore et dolore magna aliqua. Semper eget duis \r
+ at tellus at urna condimentum mattis. Ultrices vitae auctor eu augue.\r
+CATEGORIES:IPSUM,LOREM\r
+END:VEVENT`
   )
 })
 
