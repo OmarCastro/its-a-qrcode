@@ -37,9 +37,13 @@ function getLineIdentation (lineStr) {
 const dedent = (data) => {
   const lines = data.split('\n')
   const identationsByLine = lines.map(getLineIdentation)
-  const minIdentation = Math.min(...identationsByLine
+  const identationsLevelsToCheck = identationsByLine
     .filter(({ isBlankLine }) => !isBlankLine)
-    .map(({ level }) => level))
+    .map(({ level }) => level)
+  if (identationsLevelsToCheck.length <= 0 || Math.min(...identationsLevelsToCheck) === 0) {
+    return data
+  }
+  const minIdentation = Math.min(...identationsLevelsToCheck)
   const detentedLines = lines.map((line, lineNumber) => line.substring(Math.min(identationsByLine[lineNumber].level, minIdentation)))
   return detentedLines.join('\n')
 }
