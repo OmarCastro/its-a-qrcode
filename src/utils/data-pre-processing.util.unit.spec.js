@@ -127,7 +127,7 @@ fffff`)
 
 })
 
-test('QR Code data pre process - dedent-from-first-line will detent by 2 spaces, ignoring blank lines', ({ expect }) => {
+test('QR Code data pre process - dedent-from-first-line will dedent by the identation of the first non blank line', ({ expect }) => {
   // Note: all non blank lines have 2 spaces at the end
   const input = `   
   https://omarcastro.github.io/its-a-qrcode  
@@ -155,6 +155,48 @@ test('QR Code data pre process - dedent-from-first-line with only blank lines wi
       
   `
 expect(preProcess(input, "dedent-from-first-line")).toEqual(input)
+})
+
+test('QR Code data pre process - dedent will detent by the identation of the smallest idented non blank line', ({ expect }) => {
+  // Note: all non blank lines have 2 spaces at the end
+  const input = `   
+    https://omarcastro.github.io/its-a-qrcode  
+
+  dasdasd  
+
+    fffff  
+  `
+expect(preProcess(input, "dedent")).toEqual(` 
+  https://omarcastro.github.io/its-a-qrcode  
+
+dasdasd  
+
+  fffff  
+`)
+
+})
+
+
+test('QR Code data pre process - dedent with only blank lines will do nothing', ({ expect }) => {
+  const input = `   
+  
+
+      
+
+      
+  `
+expect(preProcess(input, "dedent")).toEqual(input)
+})
+
+test('QR Code data pre process - dedent with an non blank lines with no identation will also do nothing', ({ expect }) => {
+  const input = `   
+  https://omarcastro.github.io/its-a-qrcode  
+
+dasdasd  
+
+  fffff  
+  `
+expect(preProcess(input, "dedent")).toEqual(input)
 })
 
 test('QR Code data pre process - vcard preproccess wraps line content when bypasses 75 octets', ({ expect }) => {
