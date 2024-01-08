@@ -334,6 +334,10 @@ table {
     margin: 0px auto;
 }
 
+th, td {
+    padding: 0.2em;
+}
+
 table, th, td {
     border-collapse: collapse;
     border: 1px solid var(--fg-color);

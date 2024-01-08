@@ -96,3 +96,25 @@
     text-align: center;
     padding: 0.5rem;
 }
+
+.preprocesses-list {
+    display: grid;
+    & > li {
+        display: contents;
+    }
+    grid-template-columns: auto 1fr;
+    gap: 1em;
+    .name {
+        grid-column: 1 / 2;
+        text-align: right;
+
+    }
+
+    .description {
+    
+        grid-column: 2 / 3;
+    
+    }
+    
+
+}

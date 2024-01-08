@@ -218,6 +218,60 @@
                     ¦text}}</{{elementName}}>
                 </script>
             </div>
+
+            As you can see, the objective of the data pre-processing is to simply write the content without needing to deal with specific details
+
+            <ul class="preprocesses-list">
+                <li>
+                    <b class="name">pre</b>
+                    <span class="description">
+                        Put element textContent as is as QR Code image content, just overrides the default behaviour
+                        <br><b>Aliases: </b>none
+                    </span>
+                </li>
+                <li>
+                    <b class="name">trim</b>
+                    <span class="description">Remove all leading and trailing whitespace from element text content</span>
+                </li>
+                <li>
+                    <b class="name">dedent-from-first-line</b>
+                    <span class="description">Remove leading whitespace from every line in text. The maximum amount of leading whitespace is the whitespace amount in the first non blank line</span>
+                </li>
+                <li>
+                    <b class="name">trim-line</b>
+                    <span class="description">
+                        Remove all leading and trailing whitespace from every line in element text
+                        <br><b>Aliases: </b>trim-lines
+                    </span>
+                </li>
+                <li>
+                    <b class="name">no-empty-line</b>
+                    <span class="description">
+                        Remove all empty lines in element text content
+                        <br><b>Aliases: </b>no-empty-lines
+                    </span>
+                </li>
+                <li>
+                    <b class="name">no-blank-line</b>
+                    <span class="description">
+                        Remove all empty of lines with only whitespace characters in element text content
+                        <br><b>Aliases: </b>no-blank-lines
+                    </span>
+                </li>
+                <li>
+                    <b class="name">vcard</b>
+                    <span class="description">
+                        Applies vCard process as described previously
+                    </span>
+                </li>
+                <li>
+                    <b class="name">vevent</b>
+                    <span class="description">
+                        Applies vEvent process, it does exaclty the same process as the vCard, so it is pratically an alias but it is not inteded to be
+                    </span>
+                </li>
+            </ul>
+
         </div>
 
 
@@ -311,7 +365,7 @@
             <h4> Calendar Events </h4>
 
             <p  ss:markdown>
-                There is also anothe pre process that is executed when the content starts with "BEGIN:VEVENT". more on https://github.com/zxing/zxing/wiki/Barcode-Contents#telephone-numbers
+                There is also another process that is executed when the content starts with "BEGIN:VEVENT". more on https://github.com/zxing/zxing/wiki/Barcode-Contents#telephone-numbers
             </p>
             
             <qr-code>
