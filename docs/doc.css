@@ -58,6 +58,7 @@ body {
 
     & > .content {
         padding: 3em;
+        min-width: 0;
     }
 }
 

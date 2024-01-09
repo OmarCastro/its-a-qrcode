@@ -25,6 +25,7 @@
 .qrcode--content-view {
     font-size: 1rem;
     display: flex;
+    flex-wrap: wrap;
     gap: 2em;
 }
 
@@ -99,21 +100,20 @@
 
 .preprocesses-list {
     display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 1em;
+
     & > li {
         display: contents;
     }
-    grid-template-columns: auto 1fr;
-    gap: 1em;
-    .name {
+
+    & .name {
         grid-column: 1 / 2;
         text-align: right;
-
     }
 
-    .description {
-    
+    & .description {
         grid-column: 2 / 3;
-    
     }
     
 
