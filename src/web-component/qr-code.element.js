@@ -28,7 +28,7 @@ export class QRCodeElement extends HTMLElement {
 
   get qrCodeContent () {
     const { textContent } = this
-    return textContent ? preProcess(textContent) : textContent
+    return textContent ? preProcess(textContent, this.getAttribute('data-pre-process') || '') : textContent
   }
 
   get errorCorrectionLevel () {
