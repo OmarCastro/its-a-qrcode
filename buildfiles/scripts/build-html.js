@@ -53,6 +53,7 @@ const exampleCode = (strings, ...expr) => {
       .replace(/{{([^¦]+)¦ec-level}}/g, '<span contenteditable="true" class="data-error-correction-level-edit">$1</span>')
       .replace(/{{([^¦]+)¦qrcode-resize¦([^}]+)}}/g, '<span contenteditable="true" class="data-qrcode-resize-edit" data-bind-selector="$2">$1</span>')
       .replace(/{{([^¦]+)¦qrcode-resize}}/g, '<span contenteditable="true" class="data-qrcode-resize-edit">$1</span>')
+      .replace(/{{([^¦]+)¦data-pre-process}}/g, '<span contenteditable="true" class="data-pre-process-edit">$1</span>')
     statement += strings[i + 1]
   }
 

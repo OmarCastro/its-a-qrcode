@@ -68,26 +68,7 @@ document.querySelectorAll('.example').forEach(element => {
     requestIdleCallback(() => applyExample(exampleObj, element))
   })
 
-  element.addEventListener('input', (event) => {
-    const bindSelectorAttr = 'data-bind-selector'
-    const { target } = event
-    if (matchesTextEdit(target)) {
-      const selector = event.target.getAttribute(bindSelectorAttr) || 'qr-code'
-      const node = element.querySelector(selector)
-      if (node) { node.textContent = event.target.textContent }
-    }
-    if (event.target.matches('.data-error-correction-level-edit')) {
-      const selector = event.target.getAttribute(bindSelectorAttr) || '[data-error-correction-level]'
-      const node = element.querySelector(selector)
-      node && node.setAttribute('data-error-correction-level', event.target.textContent)
-    }
-
-    if (event.target.matches('.data-qrcode-resize-edit')) {
-      const selector = event.target.getAttribute(bindSelectorAttr) || 'qr-code'
-      const node = element.querySelector(selector)
-      node && node.style.setProperty('--qrcode-resize', event.target.textContent || '""')
-    }
-  })
+  element.addEventListener('input', handleInput.bind(null, element))
 
   element.addEventListener('focusin', (event) => {
     const { target } = event
@@ -128,6 +109,37 @@ document.querySelectorAll('.example').forEach(element => {
     }
   })
 })
+
+/**
+ * @param {Element} exampleElement - example element listening for input events
+ * @param {InputEvent} event - triggered event
+ */
+function handleInput (exampleElement, event) {
+  const bindSelectorAttr = 'data-bind-selector'
+  const { target } = event
+  if (matchesTextEdit(target)) {
+    const selector = event.target.getAttribute(bindSelectorAttr) || 'qr-code'
+    const node = exampleElement.querySelector(selector)
+    if (node) { node.textContent = event.target.textContent }
+  }
+  if (event.target.matches('.data-error-correction-level-edit')) {
+    const selector = event.target.getAttribute(bindSelectorAttr) || '[data-error-correction-level]'
+    const node = exampleElement.querySelector(selector)
+    node && node.setAttribute('data-error-correction-level', event.target.textContent)
+  }
+
+  if (event.target.matches('.data-qrcode-resize-edit')) {
+    const selector = event.target.getAttribute(bindSelectorAttr) || 'qr-code'
+    const node = exampleElement.querySelector(selector)
+    node && node.style.setProperty('--qrcode-resize', event.target.textContent || '""')
+  }
+
+  if (event.target.matches('.data-pre-process-edit')) {
+    const selector = event.target.getAttribute(bindSelectorAttr) || 'qr-code'
+    const node = exampleElement.querySelector(selector)
+    node && node.setAttribute('data-pre-process', event.target.textContent)
+  }
+}
 
 /**
  * @param {HTMLElement} element - target element
