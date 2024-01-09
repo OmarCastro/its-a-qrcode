@@ -99,6 +99,7 @@
 }
 
 .preprocesses-list {
+    container-type: inline-size;
     display: grid;
     grid-template-columns: auto 1fr;
     gap: 1em;
@@ -118,3 +119,16 @@
     
 
 }
+
+@container (width < 400px) {
+    .preprocesses-list {
+        grid-template-columns: auto 1fr;
+        & .name {
+            grid-column: 1 / 2;
+            text-align: left;
+        }
+        & .description {
+            grid-column: 1 / 1;
+        }
+    }
+  }
