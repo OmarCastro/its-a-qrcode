@@ -182,7 +182,7 @@
                 </ol>
             </div>
 
-            <div class="example example--pre-process-default">
+            <div class="example example--pre-process-vcard">
                 <div class="qrcode--content-view">
                     <qr-code>
                         
@@ -271,6 +271,37 @@
                     </span>
                 </li>
             </ul>
+
+            <div ss:markdown>
+                For specific data types the content is processed differently. One example is VCARD content.
+                
+                If the element text content begins with "BEGIN:VCARD", it will apply de vcard preprocessor which does the following actions:
+            </div>
+
+            <div class="example example--pre-process-vcard">
+                <div class="qrcode--content-view">
+                    <qr-code data-pre-process="vcard">
+                        BEGIN:VCARD
+                        VERSION:4.0
+                        FN:Lorem Ipsum
+                        N:Ipsum;Lorem;;;ing. jr,M.Sc.
+                        EMAIL;TYPE=work:lorem.ipsum@viagenie.com
+                        NOTE:Lorem ipsum dolor sit amet
+                        END:VCARD
+                    </qr-code>
+                </div>
+                <script type="text/plain" class="html-example">
+                    <{{elementName}} data-pre-process="vcard">{{
+                        BEGIN:VCARD
+                        VERSION:4.0
+                        FN:Lorem Ipsum
+                        N:Ipsum;Lorem;;;ing. jr,M.Sc.
+                        EMAIL;TYPE=work:lorem.ipsum@viagenie.com
+                        NOTE:Lorem ipsum dolor sit amet
+                        END:VCARD
+                    ¦text}}</{{elementName}}>
+                </script>
+            </div>
 
         </div>
 
