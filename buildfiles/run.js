@@ -116,8 +116,9 @@ await main()
 
 async function execDevEnvironment ({ openBrowser = false } = {}) {
   await openDevServer({ openBrowser })
-  await Promise.all([execlintCodeOnChanged(), execTests()])
-  await execBuild()
+  await Promise.all([execlintCodeOnChanged(), buildTest()])
+  await execTests()
+  await buildDocs()
 
   const srcPath = pathFromProject('src')
   const docsPath = pathFromProject('docs')
@@ -125,12 +126,21 @@ async function execDevEnvironment ({ openBrowser = false } = {}) {
   const watcher = watchDirs(srcPath, docsPath)
 
   for await (const change of watcher) {
-    console.log(`file "${change.filename}" changed`)
-    const parallelTasks = [execBuild()]
-    if (change.filename.startsWith(srcPath)) {
-      parallelTasks.push(execTests())
+    const { filenames } = change
+    console.log(`files "${filenames}" changed`)
+    let tasks = []
+    if (filenames.some(name => name.endsWith('test-page.html'))) {
+      tasks = [buildTest, execTests, buildDocs]
+    } else if (filenames.some(name => name.startsWith(srcPath))) {
+      tasks = [execTests, buildDocs]
+    } else {
+      tasks = [buildDocs]
     }
-    await Promise.all(parallelTasks)
+
+    for (const task of tasks) {
+      await task()
+    }
+
     updateDevServer()
     await execlintCodeOnChanged()
   }
@@ -716,14 +726,35 @@ async function getFilesAsArray (dir) {
   for await (const i of getFiles(dir)) arr.push(i)
   return arr
 }
-
+/**
+ *
+ * @param  {...string} dirs
+ * @yields {Promise<{filenames: string[]}>}
+ * @returns {AsyncGenerator<Promise<{filenames: string[]}>>}
+ */
 async function * watchDirs (...dirs) {
   const { watch } = await import('chokidar')
-  let currentResolver = () => {}
+  const nothingResolver = () => {}
+  let currentResolver = nothingResolver
+  let batch = []
   console.log(`watching ${dirs}`)
-  watch(dirs).on('change', (filename, stats) => currentResolver({ filename, stats }))
+  watch(dirs).on('change', (filename) => {
+    batch.push(filename)
+    if (currentResolver !== nothingResolver) {
+      currentResolver({ filenames: batch })
+      batch = []
+      currentResolver = nothingResolver
+    }
+  })
   while (true) {
-    yield new Promise(resolve => { currentResolver = resolve })
+    yield new Promise(resolve => {
+      if (batch.length > 0) {
+        resolve({ filenames: batch })
+        batch = []
+      } else {
+        currentResolver = resolve
+      }
+    })
   }
 }
 
