@@ -119,14 +119,18 @@ async function execDevEnvironment ({ openBrowser = false } = {}) {
   await Promise.all([execlintCodeOnChanged(), execTests()])
   await execBuild()
 
-  const watcher = watchDirs(
-    new URL('src', projectPathURL).pathname,
-    new URL('docs', projectPathURL).pathname,
-  )
+  const srcPath = pathFromProject('src')
+  const docsPath = pathFromProject('docs')
+
+  const watcher = watchDirs(srcPath, docsPath)
 
   for await (const change of watcher) {
     console.log(`file "${change.filename}" changed`)
-    await Promise.all([execBuild(), execTests()])
+    const parallelTasks = [execBuild()]
+    if (change.filename.startsWith(srcPath)) {
+      parallelTasks.push(execTests())
+    }
+    await Promise.all(parallelTasks)
     updateDevServer()
     await execlintCodeOnChanged()
   }
@@ -277,25 +281,17 @@ async function buildTest () {
 
   await exec(`${process.argv[0]} buildfiles/scripts/build-html.js test-page.html`)
 
-  logStage('move to final dir')
   logEndStage()
 }
 
 async function buildDocs () {
-  logStartStage('build:docs', 'copy reports')
-
-  await cp_R('reports', '.tmp/build/docs/reports')
-
-  logStage('build docs html')
+  logStartStage('build:docs', 'build docs html')
 
   await Promise.all([
     exec(`${process.argv[0]} buildfiles/scripts/build-html.js index.html`),
     exec(`${process.argv[0]} buildfiles/scripts/build-html.js contributing.html`),
   ])
 
-  logStage('move to final dir')
-
-  await cp_R('.tmp/build', 'build')
   logEndStage()
 }
 
@@ -472,12 +468,17 @@ function logStage (stage) {
 }
 
 function logEndStage () {
-  console.log('done')
+  const startTime = logStage.perfMarks[logStage.currentMark]
+  console.log(startTime ? `done (${Date.now() - startTime}ms)` : 'done')
 }
 
 function logStartStage (jobname, stage) {
+  const markName = 'stage ' + stage
   logStage.currentJobName = jobname
+  logStage.currentMark = markName
+  logStage.perfMarks ??= {}
   stage && process.stdout.write(`[${jobname}] ${stage}...`)
+  logStage.perfMarks[logStage.currentMark] = Date.now()
 }
 
 // @section 5 Dev server
