@@ -730,7 +730,7 @@ async function getFilesAsArray (dir) {
  *
  * @param  {...string} dirs
  * @yields {Promise<{filenames: string[]}>}
- * @returns {AsyncGenerator<Promise<{filenames: string[]}>>}
+ * @returns {AsyncGenerator<Promise<{filenames: string[]}>>} iterator of changed filenames
  */
 async function * watchDirs (...dirs) {
   const { watch } = await import('chokidar')
