@@ -129,10 +129,8 @@ async function execDevEnvironment ({ openBrowser = false } = {}) {
     const { filenames } = change
     console.log(`files "${filenames}" changed`)
     let tasks = []
-    if (filenames.some(name => name.endsWith('test-page.html'))) {
+    if (filenames.some(name => name.endsWith('test-page.html') || name.startsWith(srcPath))) {
       tasks = [buildTest, execTests, buildDocs]
-    } else if (filenames.some(name => name.startsWith(srcPath))) {
-      tasks = [execTests, buildDocs]
     } else {
       tasks = [buildDocs]
     }
@@ -202,12 +200,11 @@ async function execTests () {
   logEndStage()
 }
 
-async function buildTest () {
-  logStartStage('build:test', 'bundle')
-
-  const esbuild = await import('esbuild')
-
-  const commonBuildParams = {
+/**
+ * @returns {import('esbuild').BuildOptions} common build option for esbuild
+ */
+function esBuildCommonParams () {
+  return {
     target: ['es2022'],
     bundle: true,
     minify: false,
@@ -215,6 +212,14 @@ async function buildTest () {
     absWorkingDir: pathFromProject('.'),
     logLevel: 'info',
   }
+}
+
+async function buildTest () {
+  logStartStage('build:test', 'bundle')
+
+  const esbuild = await import('esbuild')
+
+  const commonBuildParams = esBuildCommonParams()
 
   const buildPath = 'build'
   const esmDistPath = `${buildPath}/dist/esm`
@@ -255,6 +260,29 @@ async function buildTest () {
     plugins: [await getESbuildPlugin()],
   })
 
+  await Promise.all([buildDistFromEsm, buildDocsDist])
+
+  const metafile = (await buildDocsDist).metafile
+  await mkdir_p('reports')
+  await writeFile('reports/module-graph.json', JSON.stringify(metafile, null, 2))
+  const svg = await createModuleGraphSvg(metafile)
+  await writeFile('reports/module-graph.svg', svg)
+  logStage('build test page html')
+
+  await exec(`${process.argv[0]} buildfiles/scripts/build-html.js test-page.html`)
+
+  logEndStage()
+}
+
+async function buildDocs () {
+  logStartStage('build:docs', 'build docs')
+
+  const esbuild = await import('esbuild')
+  const commonBuildParams = esBuildCommonParams()
+
+  const buildPath = 'build'
+  const docsPath = `${buildPath}/docs`
+
   /**
    * Builds documentation specific JS code
    */
@@ -280,24 +308,8 @@ async function buildTest () {
     outfile: `${docsPath}/doc.css`,
   })
 
-  await Promise.all([buildDistFromEsm, buildDocsDist, buildDocsJS, buildDocsStyles])
-
-  const metafile = (await buildDocsDist).metafile
-  await mkdir_p('reports')
-  await writeFile('reports/module-graph.json', JSON.stringify(metafile, null, 2))
-  const svg = await createModuleGraphSvg(metafile)
-  await writeFile('reports/module-graph.svg', svg)
-  logStage('build test page html')
-
-  await exec(`${process.argv[0]} buildfiles/scripts/build-html.js test-page.html`)
-
-  logEndStage()
-}
-
-async function buildDocs () {
-  logStartStage('build:docs', 'build docs html')
-
   await Promise.all([
+    buildDocsJS, buildDocsStyles,
     exec(`${process.argv[0]} buildfiles/scripts/build-html.js index.html`),
     exec(`${process.argv[0]} buildfiles/scripts/build-html.js contributing.html`),
   ])
