@@ -134,10 +134,10 @@ function handleInput (exampleElement, event) {
     node && node.style.setProperty('--qrcode-resize', event.target.textContent || '""')
   }
 
-  if (event.target.matches('.data-pre-process-edit')) {
+  if (event.target.matches('.data-whitespace-edit')) {
     const selector = event.target.getAttribute(bindSelectorAttr) || 'qr-code'
     const node = exampleElement.querySelector(selector)
-    node && node.setAttribute('data-pre-process', event.target.textContent)
+    node && node.setAttribute('data-whitespace', event.target.textContent)
   }
 }
 

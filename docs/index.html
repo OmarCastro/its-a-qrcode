@@ -124,13 +124,13 @@
             <p ss:markdown>To enable qr code resize, one of the values are supported: `true`, `yes`, `enable`, `enabled`. It is case insensitive (`Yes` equals to `yes`). Any other value disables it </p>
         </div>
 
-        <div class="section--content-pre-process">
-            <h3> Data pre process </h3>
+        <div class="section--whitespace-process">
+            <h3> Whitespace process </h3>
         
             <div ss:markdown>
-                To be easier to handle specific data types, the text content is processed before turning into a QR Code, as to be more flexible on where to put the content.
+                To be easier to handle specific data types, the text content is processed before turning into a QR Code, mostly whitespace, as to be more flexible on where to put the content.
                 
-                The next examples in this section will show the QR Code content with visible whitespaces to get which symbol represents, the next table can be used as a guide
+                The next examples in this section will show the QR Code content with visible whitespaces to get which symbol represents. The next table can be used as a guide
                 to understand the symbols
 
                 <table class="whitespace-table">
@@ -221,15 +221,15 @@
             <h4>Custom process</h4>
 
             <p ss:markdown>
-                As you can see, the objective of the data pre-processing is to simply write the content without needing to deal with specific details, 
-                you can choose a custom process before converting to QR code by setting `data-pre-process` attribute, the next list shows the supported processes    
+                As you can see, the objective of the processing the whitespace is to simply write the content without needing to deal with specific details, as well to reduce the QRCode size.
+                You can choose a custom process before converting to QR code by setting `data-whitespace` attribute, the next list shows the supported processes    
             </p>
 
             <ul class="preprocesses-list">
                 <li>
                     <b class="name">pre</b>
                     <span class="description">
-                        Put element textContent as is as QR Code image content, just overrides the default behaviour
+                        Put element textContent as is, and turns it as QR Code image content, just overrides the default behaviour
                         <br><b>Aliases: </b>none
                     </span>
                 </li>
@@ -281,13 +281,13 @@
             </ul>
 
             <div ss:markdown>
-                The next example can be used to test the data-pre-processing, multiple pre processes can be applied by adding them to the `data-pre-process` attibute separated by space
-                (e.g. `data-pre-process="trim dedent"`) the order of execution will be from left to right
+                The next example can be used to test the data-pre-processing, multiple pre processes can be applied by adding them to the `data-data-whitespace` attibute separated by space
+                (e.g. `data-whitespace="trim dedent"`) the order of execution will be from left to right
             </div>
 
             <div class="example example--pre-process-vcard">
                 <div class="qrcode--content-view">
-                    <qr-code data-pre-process="vcard">
+                    <qr-code data-whitespace="vcard">
                         BEGIN:VCARD
                         VERSION:4.0
                         FN:Lorem Ipsum
@@ -298,7 +298,7 @@
                     </qr-code>
                 </div>
                 <script type="text/plain" class="html-example">
-                    <{{elementName}} data-pre-process="{{vcard¦data-pre-process}}">{{
+                    <{{elementName}} data-whitespace="{{vcard¦data-whitespace}}">{{
                         BEGIN:VCARD
                         VERSION:4.0
                         FN:Lorem Ipsum
