@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - add another compression stage for utf8 to JIS table, reducing the table by 30% compared to previous stage (final minified + gzipped package reduced by 3kB)
 - add vCard whitespace processor
 - add vEvent whitespace processor
+- improve documentation for mobile use
 
 ## [0.2.0] - 2023-12-29
 
