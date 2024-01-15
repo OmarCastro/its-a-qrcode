@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+## [0.3.0] - 2024-01-15
+
+### Added
+
 - BREAKING CHANGE: whitespace processing on qr-code element textContent before transforming to QR Code image. To maintain backward compatibility add the following attribute: `data-whitespace="pre"`
 - add another compression stage for utf8 to JIS table, reducing the table by 30% compared to previous stage (final minified + gzipped package reduced by 3kB)
 - add vCard whitespace processor
