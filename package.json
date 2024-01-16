@@ -1,6 +1,6 @@
 {
   "name": "its-a-qrcode",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "a web component that shows its text content as QR code image",
   "main": "dist/esm/entrypoint/node.js",
   "type": "module",
