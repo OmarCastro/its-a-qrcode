@@ -3,6 +3,7 @@ import { createImgTag } from '../render/img-tag.render.js'
 import { createSvgTag } from '../render/svg.render.js'
 import { isValid } from '../error-correction/ec-level.js'
 import { preProcess } from '../utils/data-pre-processing.util.js'
+import { parseQrCodeColorsFromElement } from '../utils/css-colors.util.js'
 import css from './qr-code.element.css'
 
 let loadStyles = () => {
@@ -80,17 +81,16 @@ function applyQrCode (element) {
   qr.make()
   qrCodeData.set(element, qr)
 
-  const darkColor = getComputedStyle(element).getPropertyValue('--qrcode-dark-color') || 'black'
-  const lightColor = getComputedStyle(element).getPropertyValue('--qrcode-light-color') || 'white'
+  const colors = parseQrCodeColorsFromElement(element)
 
   const renderMode = getRenderMode(element)
   if (renderMode === 'svg') {
-    const svg = createSvgTag({ qrcode: qr, darkColor, lightColor, scalable: isResizeEnabled(element) })
+    const svg = createSvgTag({ qrcode: qr, darkColor: colors.darkColor, lightColor: colors.lightColor, scalable: isResizeEnabled(element) })
     shadowRoot.innerHTML = svg
     return
   }
 
-  const imgHtml = createImgTag({ qrcode: qr, darkColor, lightColor })
+  const imgHtml = createImgTag({ qrcode: qr, darkColor: colors.darkColor, lightColor: colors.lightColor })
   const oldImgElement = shadowRoot.querySelector('img')
   if (oldImgElement) {
     const updated = updateImgElement(oldImgElement, imgHtml)
