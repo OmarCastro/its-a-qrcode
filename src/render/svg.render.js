@@ -33,8 +33,8 @@ export function createSvgTag ({ cellSize, margin, alt, title, qrcode, scalable, 
   qrSvg += (altProp.text) ? '<description id="' + escapeXml(altProp.id) + '">' + escapeXml(altProp.text) + '</description>' : ''
   qrSvg += `<g stroke="none" fill="${lightColor}">`
   qrSvg += `<path d="M0,0h${size}v${size}h-${size}zM${margin},${margin}v${paintSize}h${paintSize}v-${paintSize}z"/>`
-  qrSvg += `<path d="${pathData({ cellSize, margin, qrcode, paintDarkColor: false })}"/>`
-  qrSvg += `<path d="${pathData({ cellSize, margin, qrcode, paintDarkColor: true })}" fill="${darkColor}"/>`
+  qrSvg += `<path d="${whitePathData({ cellSize, margin, qrcode })}" fill-rule="evenodd"/>`
+  qrSvg += `<path d="${dotPathData({ cellSize, margin, qrcode })}" fill="${darkColor}"/>`
   qrSvg += '</g></svg>'
 
   return qrSvg
@@ -45,10 +45,24 @@ export function createSvgTag ({ cellSize, margin, alt, title, qrcode, scalable, 
  * @param {number} opts.cellSize - cell size in pixels
  * @param {number} opts.margin - margin in pixels
  * @param {import('../qr-code.js').QrCode} opts.qrcode - QR Code data
- * @param {boolean} opts.paintDarkColor - flag paint dark or bright color
  * @returns {string} &lt;path> `d` attribute value
  */
-function pathData ({ cellSize, margin, qrcode, paintDarkColor }) {
+function whitePathData ({ cellSize, margin, qrcode }) {
+  const { moduleCount } = qrcode
+  const paintSize = moduleCount * cellSize
+
+  const d = `M${margin},${margin}h${paintSize}v${paintSize}h-${paintSize}z`
+  return d + dotPathData({ cellSize, margin, qrcode })
+}
+
+/**
+ * @param {object} opts - funtion parameters
+ * @param {number} opts.cellSize - cell size in pixels
+ * @param {number} opts.margin - margin in pixels
+ * @param {import('../qr-code.js').QrCode} opts.qrcode - QR Code data
+ * @returns {string} &lt;path> `d` attribute value
+ */
+function dotPathData ({ cellSize, margin, qrcode }) {
   const { moduleCount } = qrcode
 
   let d = ''
@@ -57,7 +71,7 @@ function pathData ({ cellSize, margin, qrcode, paintDarkColor }) {
   for (let row = 0; row < moduleCount; row += 1) {
     const mr = row * cellSize + margin
     for (let col = 0; col < moduleCount; col += 1) {
-      if (qrcode.isDark(row, col) === paintDarkColor) {
+      if (qrcode.isDark(row, col)) {
         const mc = col * cellSize + margin
         d += `M${mc},${mr}${rect}`
       }
