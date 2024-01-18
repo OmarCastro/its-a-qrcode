@@ -135,7 +135,7 @@ function setupPositionProbePatterns (qrcode) {
  * ██  ██          ██
  *     ██████████████
  * ██                 <- blank space separator
- *   ██   ██   ██  ██
+ *   ██  ██    ██  ██
  * @param {QrCode} qrcode - qr code object
  * @param {number} row - row position of the left part of the rectangle, see example
  * @param {number} col - column position of the left part of the rectangle, see example
