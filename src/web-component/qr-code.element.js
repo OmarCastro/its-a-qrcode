@@ -85,7 +85,7 @@ function applyQrCode (element) {
 
   const renderMode = getRenderMode(element)
   if (renderMode === 'svg') {
-    const svg = createSvgTag({ qrcode: qr, darkColor: colors.darkColor, lightColor: colors.lightColor, scalable: isResizeEnabled(element) })
+    const svg = createSvgTag({ qrcode: qr, colors, scalable: isResizeEnabled(element) })
     shadowRoot.innerHTML = svg
     return
   }

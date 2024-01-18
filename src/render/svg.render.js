@@ -1,4 +1,5 @@
 import { escapeXml } from '../utils/escape-xml.util.js'
+import { getDefaultColors } from '../utils/css-colors.util.js'
 
 /**
  * @param {object} opts - function parameters
@@ -8,11 +9,10 @@ import { escapeXml } from '../utils/escape-xml.util.js'
  * @param {string|SvgProp} [opts.title] - image title
  * @param {boolean} [opts.scalable] - flag to make the svg scalable
  * @param {import('../qr-code.js').QrCode} opts.qrcode - QR Code data
- * @param {string} [opts.darkColor] - dark color of QRCode image defaults to black
- * @param {string} [opts.lightColor] - light color of QRCode image defaults to white
+ * @param {import('../utils/css-colors.util.js').QRCodeCssColors} [opts.colors] - qr code colors
  * @returns {string} &lt;svg> element outer HTML
  */
-export function createSvgTag ({ cellSize, margin, alt, title, qrcode, scalable, darkColor = 'black', lightColor = 'white' }) {
+export function createSvgTag ({ cellSize, margin, alt, title, qrcode, scalable, colors = getDefaultColors() }) {
   const { moduleCount } = qrcode
 
   cellSize ||= 2
@@ -31,10 +31,12 @@ export function createSvgTag ({ cellSize, margin, alt, title, qrcode, scalable, 
   qrSvg += a11yAttributes(titleProp, altProp) + '>'
   qrSvg += (titleProp.text) ? '<title id="' + escapeXml(titleProp.id) + '">' + escapeXml(titleProp.text) + '</title>' : ''
   qrSvg += (altProp.text) ? '<description id="' + escapeXml(altProp.id) + '">' + escapeXml(altProp.text) + '</description>' : ''
-  qrSvg += `<g stroke="none" fill="${lightColor}">`
+  qrSvg += `<g stroke="none" fill="${colors.lightColor}">`
   qrSvg += `<path d="M0,0h${size}v${size}h-${size}zM${margin},${margin}v${paintSize}h${paintSize}v-${paintSize}z"/>`
   qrSvg += `<path d="${whitePathData({ cellSize, margin, qrcode })}" fill-rule="evenodd"/>`
-  qrSvg += `<path d="${dotPathData({ cellSize, margin, qrcode })}" fill="${darkColor}"/>`
+  qrSvg += `<path d="${dotPathData({ cellSize, margin, qrcode })}" fill="${colors.darkColor}"/>`
+  qrSvg += `<path d="${finderCornerPathData({ cellSize, margin, qrcode })}" fill="${colors.cornerBorderColor}"/>`
+  qrSvg += `<path d="${finderCenterPathData({ cellSize, margin, qrcode })}" fill="${colors.cornerCenterColor}"/>`
   qrSvg += '</g></svg>'
 
   return qrSvg
@@ -52,7 +54,10 @@ function whitePathData ({ cellSize, margin, qrcode }) {
   const paintSize = moduleCount * cellSize
 
   const d = `M${margin},${margin}h${paintSize}v${paintSize}h-${paintSize}z`
-  return d + dotPathData({ cellSize, margin, qrcode })
+  return d +
+    dotPathData({ cellSize, margin, qrcode }) +
+    finderCornerPathData({ cellSize, margin, qrcode }) +
+    finderCenterPathData({ cellSize, margin, qrcode })
 }
 
 /**
@@ -67,17 +72,81 @@ function dotPathData ({ cellSize, margin, qrcode }) {
 
   let d = ''
   const rect = `h${cellSize}v${cellSize}h-${cellSize}z`
-
-  for (let row = 0; row < moduleCount; row += 1) {
-    const mr = row * cellSize + margin
-    for (let col = 0; col < moduleCount; col += 1) {
-      if (qrcode.isDark(row, col)) {
-        const mc = col * cellSize + margin
-        d += `M${mc},${mr}${rect}`
+  const drawRects = [
+    [8, 0, moduleCount - 8, 8],
+    [0, 8, 8, moduleCount - 8],
+    [8, 8, moduleCount, moduleCount],
+  ]
+  for (const [minCol, minRow, maxCol, maxRow] of drawRects) {
+    for (let row = minRow; row < maxRow; row += 1) {
+      const mr = row * cellSize + margin
+      for (let col = minCol; col < maxCol; col += 1) {
+        if (qrcode.isDark(row, col)) {
+          const mc = col * cellSize + margin
+          d += `M${mc},${mr}${rect}`
+        }
       }
     }
   }
+
   return d
+}
+
+/**
+ * @param {object} opts - funtion parameters
+ * @param {number} opts.cellSize - cell size in pixels
+ * @param {number} opts.margin - margin in pixels
+ * @param {import('../qr-code.js').QrCode} opts.qrcode - QR Code data
+ * @returns {string} &lt;path> `d` attribute value
+ */
+function finderCornerPathData ({ cellSize, margin, qrcode }) {
+  const { moduleCount } = qrcode
+  return finderCornerPath(cellSize, 0, 0, margin) +
+    finderCornerPath(cellSize, moduleCount - 7, 0, margin) +
+    finderCornerPath(cellSize, 0, moduleCount - 7, margin)
+}
+
+/**
+ * @param {number} cellSize - cell size in pixels
+ * @param {number} x - qr code column position of finder path
+ * @param {number} y - qr code row position of finder path
+ * @param {number} margin - margin in pixels
+ * @returns  {string} &lt;path> `d` attribute value
+ */
+function finderCornerPath (cellSize, x, y, margin) {
+  const rx = x * cellSize + margin
+  const ry = y * cellSize + margin
+  const rectLenght = 7 * cellSize
+  const innerRecLength = 5 * cellSize
+  return `M${rx},${ry}h${rectLenght}v${rectLenght}h-${rectLenght}zM${rx + cellSize},${ry + cellSize}v${innerRecLength}h${innerRecLength}v-${innerRecLength}z`
+}
+
+/**
+ * @param {object} opts - funtion parameters
+ * @param {number} opts.cellSize - cell size in pixels
+ * @param {number} opts.margin - margin in pixels
+ * @param {import('../qr-code.js').QrCode} opts.qrcode - QR Code data
+ * @returns {string} &lt;path> `d` attribute value
+ */
+function finderCenterPathData ({ cellSize, margin, qrcode }) {
+  const { moduleCount } = qrcode
+  return finderCenterPath(cellSize, 2, 2, margin) +
+  finderCenterPath(cellSize, moduleCount - 5, 2, margin) +
+  finderCenterPath(cellSize, 2, moduleCount - 5, margin)
+}
+
+/**
+ * @param {number} cellSize - cell size in pixels
+ * @param {number} x - qr code column position of finder path
+ * @param {number} y - qr code row position of finder path
+ * @param {number} margin - margin in pixels
+ * @returns  {string} &lt;path> `d` attribute value
+ */
+function finderCenterPath (cellSize, x, y, margin) {
+  const rx = x * cellSize + margin
+  const ry = y * cellSize + margin
+  const rectLenght = 3 * cellSize
+  return `M${rx},${ry}h${rectLenght}v${rectLenght}h-${rectLenght}z`
 }
 
 /**
