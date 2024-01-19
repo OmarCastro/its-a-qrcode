@@ -5,17 +5,11 @@ let tempDiv
  *
  */
 function getTempDiv () {
-  let ele
-  if (!tempDiv) {
-    ele = document.createElement('div')
-    tempDiv = new WeakRef(ele)
-  }
-  ele = tempDiv.deref()
-  if (!ele) {
-    ele = document.createElement('div')
-    tempDiv = new WeakRef(ele)
-  }
-  return ele
+  const elem = tempDiv?.deref()
+  if (elem) { return elem }
+  const newElem = document.createElement('div')
+  tempDiv = new WeakRef(newElem)
+  return newElem
 }
 
 /**
@@ -77,19 +71,15 @@ export function parseQrcodeColorProp (colorsVar, defaultColors) {
 }
 
 /**
- * @param {HTMLElement} element - target element
- * @returns {QRCodeCssColors} cssColors to draw the QRCode
+ *
+ * @param {string} colorsVar - value of '--qrcode-corner-color' property
+ * @param {QRCodeCssColors} defaultColors - current default colors
+ * @returns {QRCodeCssColors} updated colors
  */
-export function parseQrCodeColorsFromElement (element) {
-  const computedStyle = getComputedStyle(element)
-
-  let currentColors = getDefaultColors()
-  currentColors = parseQrcodeColorProp(computedStyle.getPropertyValue('--qrcode-color')?.trim(), currentColors)
-  currentColors.darkColor = getCssColorOrElse(computedStyle.getPropertyValue('--qrcode-dark-color')?.trim(), currentColors.darkColor)
-  currentColors.lightColor = getCssColorOrElse(computedStyle.getPropertyValue('--qrcode-light-color')?.trim(), currentColors.lightColor)
-  const cornerColorsVar = computedStyle.getPropertyValue('--qrcode-corner-color')?.trim()
-  if (cornerColorsVar) {
-    const colorsList = cornerColorsVar.split(/\s+/)
+export function parseQrcodeCornerColorProp (colorsVar, defaultColors) {
+  const currentColors = { ...defaultColors }
+  if (colorsVar) {
+    const colorsList = colorsVar.split(/\s+/)
     if (colorsList.length === 1) {
       currentColors.cornerBorderColor = getCssColorOrElse(colorsList[0], currentColors.cornerBorderColor)
       currentColors.cornerCenterColor = currentColors.cornerBorderColor
@@ -99,11 +89,48 @@ export function parseQrCodeColorsFromElement (element) {
       currentColors.cornerCenterColor = getCssColorOrElse(colorsList[1], currentColors.cornerCenterColor)
     }
   }
-
-  currentColors.darkColor = getCssColorOrElse(computedStyle.getPropertyValue('--qrcode-corner-border-color')?.trim(), currentColors.darkColor)
-  currentColors.lightColor = getCssColorOrElse(computedStyle.getPropertyValue('--qrcode-corner-center-color')?.trim(), currentColors.lightColor)
-
   return currentColors
+}
+
+/**
+ * @param {HTMLElement} element - target element
+ * @returns {QRCodeColorProperties} cssColors to draw the QRCode
+ */
+export function QRCodeColorProperties (element) {
+  const computedStyle = getComputedStyle(element)
+  const propertyOf = (/** @type {string} */ prop) => computedStyle.getPropertyValue(prop).trim()
+
+  return {
+    color: propertyOf('--qrcode-color'),
+    darkColor: propertyOf('--qrcode-dark-color'),
+    lightColor: propertyOf('--qrcode-light-color'),
+    cornerColor: propertyOf('--qrcode-corner-color'),
+    cornerBorderColor: propertyOf('--qrcode-corner-border-color'),
+    cornerCenterColor: propertyOf('--qrcode-corner-center-color'),
+  }
+}
+
+/**
+ * @param {QRCodeColorProperties} colorProperties - color properties
+ * @returns {QRCodeCssColors} cssColors to draw the QRCode
+ */
+export function parseQrCodeColors (colorProperties) {
+  let currentColors = getDefaultColors()
+  currentColors = parseQrcodeColorProp(colorProperties.color, currentColors)
+  currentColors.darkColor = getCssColorOrElse(colorProperties.darkColor, currentColors.darkColor)
+  currentColors.lightColor = getCssColorOrElse(colorProperties.lightColor, currentColors.lightColor)
+  currentColors = parseQrcodeCornerColorProp(colorProperties.cornerColor, currentColors)
+  currentColors.cornerBorderColor = getCssColorOrElse(colorProperties.cornerBorderColor, currentColors.darkColor)
+  currentColors.cornerCenterColor = getCssColorOrElse(colorProperties.cornerCenterColor, currentColors.lightColor)
+  return currentColors
+}
+
+/**
+ * @param {HTMLElement} element - target element
+ * @returns {QRCodeCssColors} cssColors to draw the QRCode
+ */
+export function parseQrCodeColorsFromElement (element) {
+  return parseQrCodeColors(QRCodeColorProperties(element))
 }
 
 /**
@@ -112,4 +139,14 @@ export function parseQrCodeColorsFromElement (element) {
  * @property {string} lightColor - color to paint the white spots of the QR Code
  * @property {string} cornerBorderColor - color of the position probe pattern border
  * @property {string} cornerCenterColor - color of the position probe pattern center
+ */
+
+/**
+ * @typedef {object} QRCodeColorProperties
+ * @property {string} color - `--qrcode-color` property value
+ * @property {string} darkColor - `--qrcode-dark-color` property value
+ * @property {string} lightColor - `--qrcode-light-color` property value
+ * @property {string} cornerColor - `--qrcode-corner-color` property value
+ * @property {string} cornerBorderColor - `--qrcode-corner-border-color` property value
+ * @property {string} cornerCenterColor - `--qrcode-corner-center-color` property value
  */
