@@ -120,8 +120,8 @@ export function parseQrCodeColors (colorProperties) {
   currentColors.darkColor = getCssColorOrElse(colorProperties.darkColor, currentColors.darkColor)
   currentColors.lightColor = getCssColorOrElse(colorProperties.lightColor, currentColors.lightColor)
   currentColors = parseQrcodeCornerColorProp(colorProperties.cornerColor, currentColors)
-  currentColors.cornerBorderColor = getCssColorOrElse(colorProperties.cornerBorderColor, currentColors.darkColor)
-  currentColors.cornerCenterColor = getCssColorOrElse(colorProperties.cornerCenterColor, currentColors.lightColor)
+  currentColors.cornerBorderColor = getCssColorOrElse(colorProperties.cornerBorderColor, currentColors.cornerBorderColor)
+  currentColors.cornerCenterColor = getCssColorOrElse(colorProperties.cornerCenterColor, currentColors.cornerCenterColor)
   return currentColors
 }
 
