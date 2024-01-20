@@ -115,13 +115,17 @@ export function QRCodeColorProperties (element) {
  * @returns {QRCodeCssColors} cssColors to draw the QRCode
  */
 export function parseQrCodeColors (colorProperties) {
-  let currentColors = getDefaultColors()
+  let currentColors = {
+    ...getDefaultColors(),
+    cornerBorderColor: '',
+    cornerCenterColor: '',
+  }
   currentColors = parseQrcodeColorProp(colorProperties.color, currentColors)
   currentColors.darkColor = getCssColorOrElse(colorProperties.darkColor, currentColors.darkColor)
   currentColors.lightColor = getCssColorOrElse(colorProperties.lightColor, currentColors.lightColor)
   currentColors = parseQrcodeCornerColorProp(colorProperties.cornerColor, currentColors)
-  currentColors.cornerBorderColor = getCssColorOrElse(colorProperties.cornerBorderColor, currentColors.cornerBorderColor)
-  currentColors.cornerCenterColor = getCssColorOrElse(colorProperties.cornerCenterColor, currentColors.cornerCenterColor)
+  currentColors.cornerBorderColor = getCssColorOrElse(colorProperties.cornerBorderColor, currentColors.cornerBorderColor) || currentColors.darkColor
+  currentColors.cornerCenterColor = getCssColorOrElse(colorProperties.cornerCenterColor, currentColors.cornerCenterColor) || currentColors.cornerBorderColor
   return currentColors
 }
 
