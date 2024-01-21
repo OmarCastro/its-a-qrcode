@@ -43,7 +43,7 @@ export function getDefaultColors () {
  * @param {QRCodeCssColors} defaultColors - current default colors
  * @returns {QRCodeCssColors} updated colors
  */
-export function parseQrcodeColorProp (colorsVar, defaultColors) {
+function parseQrcodeColorProp (colorsVar, defaultColors) {
   const currentColors = { ...defaultColors }
   if (colorsVar) {
     const colorsList = colorsVar.split(/\s+/)
@@ -54,17 +54,11 @@ export function parseQrcodeColorProp (colorsVar, defaultColors) {
     if (length >= 2) {
       currentColors.lightColor = getCssColorOrElse(colorsList[1], currentColors.lightColor)
     }
-    if (length === 3) {
+    if (length >= 3) {
       currentColors.cornerBorderColor = getCssColorOrElse(colorsList[2], currentColors.cornerBorderColor)
-      currentColors.cornerCenterColor = currentColors.cornerBorderColor
     }
     if (length >= 4) {
-      currentColors.cornerBorderColor = getCssColorOrElse(colorsList[2], currentColors.cornerBorderColor)
       currentColors.cornerCenterColor = getCssColorOrElse(colorsList[3], currentColors.cornerCenterColor)
-    }
-    if (length === 1 || length === 2) {
-      currentColors.cornerBorderColor = currentColors.darkColor
-      currentColors.cornerCenterColor = currentColors.darkColor
     }
   }
   return currentColors
@@ -76,7 +70,7 @@ export function parseQrcodeColorProp (colorsVar, defaultColors) {
  * @param {QRCodeCssColors} defaultColors - current default colors
  * @returns {QRCodeCssColors} updated colors
  */
-export function parseQrcodeCornerColorProp (colorsVar, defaultColors) {
+function parseQrcodeCornerColorProp (colorsVar, defaultColors) {
   const currentColors = { ...defaultColors }
   if (colorsVar) {
     const colorsList = colorsVar.split(/\s+/)
@@ -96,7 +90,7 @@ export function parseQrcodeCornerColorProp (colorsVar, defaultColors) {
  * @param {HTMLElement} element - target element
  * @returns {QRCodeColorProperties} cssColors to draw the QRCode
  */
-export function QRCodeColorProperties (element) {
+function QRCodeColorProperties (element) {
   const computedStyle = getComputedStyle(element)
   const propertyOf = (/** @type {string} */ prop) => computedStyle.getPropertyValue(prop).trim()
 
