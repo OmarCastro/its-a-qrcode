@@ -24,6 +24,8 @@ export function createSvgTag ({ cellSize, margin, alt, title, qrcode, scalable, 
   const paintSize = moduleCount * cellSize
   const size = paintSize + margin * 2
 
+  const pathData = getPathData({ cellSize, margin, qrcode })
+
   let qrSvg = '<svg version="1.1" xmlns="http://www.w3.org/2000/svg"'
   qrSvg += !scalable ? ' width="' + size + 'px" height="' + size + 'px"' : ''
   qrSvg += ' viewBox="0 0 ' + size + ' ' + size + '" preserveAspectRatio="xMinYMin meet"'
@@ -31,12 +33,11 @@ export function createSvgTag ({ cellSize, margin, alt, title, qrcode, scalable, 
   qrSvg += a11yAttributes(titleProp, altProp) + '>'
   qrSvg += (titleProp.text) ? '<title id="' + escapeXml(titleProp.id) + '">' + escapeXml(titleProp.text) + '</title>' : ''
   qrSvg += (altProp.text) ? '<description id="' + escapeXml(altProp.id) + '">' + escapeXml(altProp.text) + '</description>' : ''
-  qrSvg += `<g stroke="none" fill="${colors.lightColor}">`
-  qrSvg += `<path d="M0,0h${size}v${size}h-${size}zM${margin},${margin}v${paintSize}h${paintSize}v-${paintSize}z"/>`
-  qrSvg += `<path d="${whitePathData({ cellSize, margin, qrcode })}" fill-rule="evenodd"/>`
-  qrSvg += `<path d="${dotPathData({ cellSize, margin, qrcode })}" fill="${colors.darkColor}"/>`
-  qrSvg += `<path d="${finderCornerPathData({ cellSize, margin, qrcode })}" fill="${colors.cornerBorderColor}"/>`
-  qrSvg += `<path d="${finderCenterPathData({ cellSize, margin, qrcode })}" fill="${colors.cornerCenterColor}"/>`
+  qrSvg += '<g stroke="none">'
+  qrSvg += `<path d="${pathData.bg}" fill-rule="evenodd" fill="${colors.lightColor}"/>`
+  qrSvg += `<path d="${pathData.dots}" fill="${colors.darkColor}"/>`
+  qrSvg += `<path d="${pathData.finderCorner}" fill="${colors.cornerBorderColor}"/>`
+  qrSvg += `<path d="${pathData.finderCenter}" fill="${colors.cornerCenterColor}"/>`
   qrSvg += '</g></svg>'
 
   return qrSvg
@@ -47,17 +48,16 @@ export function createSvgTag ({ cellSize, margin, alt, title, qrcode, scalable, 
  * @param {number} opts.cellSize - cell size in pixels
  * @param {number} opts.margin - margin in pixels
  * @param {import('../qr-code.js').QrCode} opts.qrcode - QR Code data
- * @returns {string} &lt;path> `d` attribute value
+ * @returns {PathData} path info to draw the QR Code
  */
-function whitePathData ({ cellSize, margin, qrcode }) {
+export function getPathData ({ cellSize, margin, qrcode }) {
+  const dots = dotPathData({ cellSize, margin, qrcode })
+  const finderCorner = finderCornerPathData({ cellSize, margin, qrcode })
+  const finderCenter = finderCenterPathData({ cellSize, margin, qrcode })
   const { moduleCount } = qrcode
-  const paintSize = moduleCount * cellSize
-
-  const d = `M${margin},${margin}h${paintSize}v${paintSize}h-${paintSize}z`
-  return d +
-    dotPathData({ cellSize, margin, qrcode }) +
-    finderCornerPathData({ cellSize, margin, qrcode }) +
-    finderCenterPathData({ cellSize, margin, qrcode })
+  const size = moduleCount * cellSize + margin * 2
+  const bg = `M0,0h${size}v${size}h-${size}z` + dots + finderCorner + finderCenter
+  return { dots, finderCenter, finderCorner, bg }
 }
 
 /**
@@ -181,4 +181,12 @@ const normalizeTitle = (title) => {
  * @typedef {object} SvgProp
  * @property {string} text - attribute text
  * @property {string} [id] - title tag id
+ */
+
+/**
+ * @typedef {object} PathData
+ * @property {string} dots - dots path d value
+ * @property {string} finderCenter - finder center path d value
+ * @property {string} finderCorner - finder corner path d value
+ * @property {string} bg - light colored part path d value
  */
