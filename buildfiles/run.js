@@ -174,26 +174,37 @@ async function execTests () {
     await mv(COVERAGE_DIR, COVERAGE_BACKUP_DIR)
   }
   await mv(COVERAGE_TMP_DIR, COVERAGE_DIR)
-  const rmTmp = rm_rf(REPORTS_TMP_DIR)
-  const rmBak = rm_rf(COVERAGE_BACKUP_DIR)
+  logStage('cleanup coverage info')
 
+  await Promise.allSettled([
+    rm_rf(REPORTS_TMP_DIR),
+    rm_rf(COVERAGE_BACKUP_DIR),
+  ])
   logStage('build badges')
 
-  const badges = [
+  await Promise.allSettled([
     makeBadgeForCoverages(pathFromProject('reports/coverage/unit')),
     makeBadgeForCoverages(pathFromProject('reports/coverage/final')),
     makeBadgeForTestResult(pathFromProject('reports/test-results')),
     makeBadgeForLicense(pathFromProject('reports')),
     makeBadgeForNPMVersion(pathFromProject('reports')),
     ...(uiTestsExecuted ? [makeBadgeForCoverages(pathFromProject('reports/coverage/ui'))] : []),
-  ]
+  ])
 
   logStage('fix report styles')
   const files = await getFilesAsArray('reports/coverage/final')
   const cpBase = files.filter(path => basename(path) === 'base.css').map(path => fs.cp('buildfiles/assets/coverage-report-base.css', path))
   const cpPrettify = files.filter(path => basename(path) === 'prettify.css').map(path => fs.cp('buildfiles/assets/coverage-report-prettify.css', path))
-  await Promise.allSettled([rmTmp, rmBak, ...badges, ...cpBase, ...cpPrettify])
+  await Promise.allSettled([...cpBase, ...cpPrettify])
 
+  logStage('remove temporary files')
+  await Promise.allSettled([
+    rm_rf('reports/coverage/final/tmp'),
+    rm_rf('reports/coverage/unit/tmp'),
+    ...(uiTestsExecuted ? [rm_rf('reports/coverage/ui/tmp')] : []),
+  ])
+
+  logStage('copy reports to documentation')
   await rm_rf('build/docs/reports')
   await mkdir_p('build/docs')
   await cp_R('reports', 'build/docs/reports')
@@ -478,7 +489,10 @@ async function mkdir_p (...paths) {
  * @param {string} src
    @param {string} dest  */
 async function cp_R (src, dest) {
-  await fs.cp(src, dest, { recursive: true })
+  await cmdSpawn(`cp -r '${src}' '${dest}'`)
+
+  // this command is a 1000 times slower that running the command, for that reason it is not used (30 000ms vs 30ms)
+  // await fs.cp(src, dest, { recursive: true })
 }
 
 async function mv (src, dest) {
