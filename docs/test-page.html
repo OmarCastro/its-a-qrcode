@@ -2,7 +2,14 @@
     <head>
         <script type="module" src="dist/qrcode.element.min.js?named=qr-code" async></script>
         <link rel="stylesheet" href="code-example.css" ss:inline>
-        <style> @media (prefers-color-scheme: dark) {:root {background: #202530; color: #dddcdf}};</style>
+        <style> 
+            @media (prefers-color-scheme: dark) {
+                :root {background: #202530; color: #dddcdf}
+            };
+            .qr-code--colors {
+                --qrcode-color: red rgba(244, 244, 244, 0.9) blue transparent
+            }
+        </style>
     </head>
     <body>
         <div>
@@ -18,7 +25,7 @@
         </div>
 
         <div>
-            <h2>elmement content</h2>
+            <h2>Element content</h2>
             <script type="text/plain" class="html-example"><qr-code class="qr-code--content">12345</qr-code></script>
             <qr-code class="qr-code--content">12345</qr-code>
         </div>
@@ -27,6 +34,12 @@
             <h2>Error correction level</h2>
             <script type="text/plain" class="html-example"><qr-code class="qr-code--error-correction-level" data-error-correction-level="L">Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus porro alias iure necessitatibus consequuntur iusto aliquid optio, deserunt corporis recusandae officia id inventore voluptas! Repellat inventore dolorum officia magnam accusantium.</qr-code></script>
             <qr-code class="qr-code--error-correction-level" data-error-correction-level="L">Lorem ipsum dolor sit amet consectetur adipisicing elit. Possimus porro alias iure necessitatibus consequuntur iusto aliquid optio, deserunt corporis recusandae officia id inventore voluptas! Repellat inventore dolorum officia magnam accusantium.</qr-code>
+        </div>
+
+        <div>
+            <h2>Colors</h2>
+            <script type="text/plain" class="html-example"><qr-code class="qr-code--colors">12345</qr-code></script>
+            <qr-code class="qr-code--colors">12345</qr-code>
         </div>
 
     </body>
