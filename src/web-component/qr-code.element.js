@@ -90,7 +90,7 @@ function applyQrCode (element) {
     return
   }
 
-  const imgHtml = createImgTag({ qrcode: qr, darkColor: colors.darkColor, lightColor: colors.lightColor })
+  const imgHtml = createImgTag({ qrcode: qr, colors })
   const oldImgElement = shadowRoot.querySelector('img')
   if (oldImgElement) {
     const updated = updateImgElement(oldImgElement, imgHtml)
