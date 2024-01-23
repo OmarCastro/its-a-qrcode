@@ -8,6 +8,8 @@ let domResetFunction
 if ('Deno' in globalThis || globalThis.window == null) {
   // running in Deno or node
   const { JSDOM } = await import('jsdom')
+  const { polyfillPath2D } = await import('path2d-polyfill')
+  const { CanvasRenderingContext2D } = await import('canvas')
   const jsdom = new JSDOM(
     '<!DOCTYPE html><html lang="en"><head></head><body></body></html>',
     {
@@ -20,7 +22,8 @@ if ('Deno' in globalThis || globalThis.window == null) {
   )
 
   windowObj = jsdom.window
-
+  windowObj.CanvasRenderingContext2D = CanvasRenderingContext2D
+  polyfillPath2D(windowObj)
   globalThis.ShadowRoot = windowObj.ShadowRoot
   globalThis.MutationObserver = windowObj.MutationObserver
   globalThis.CustomEvent = windowObj.CustomEvent
@@ -29,6 +32,7 @@ if ('Deno' in globalThis || globalThis.window == null) {
   globalThis.Document = windowObj.Document
   globalThis.window = windowObj
   globalThis.DOMParser = windowObj.DOMParser
+  globalThis.Path2D = windowObj.Path2D
   globalThis.requestAnimationFrame = windowObj.requestAnimationFrame
   globalThis.cancelAnimationFrame = windowObj.cancelAnimationFrame
   globalThis.requestIdleCallback = windowObj.requestIdleCallback
