@@ -19,40 +19,27 @@ export function getBestMode (data) {
   return getValidQrKanjiOrNull(data) ?? Qr8BitByte(data)
 }
 
+/** @type {{[mode: number]: number[]}} */
+const CharCountBitLengthTable = {
+  [MODE_NUMBER]:    [10, 12, 14],
+  [MODE_ALPHA_NUM]: [9, 11, 13],
+  [MODE_8BIT_BYTE]: [8, 16, 16],
+  [MODE_KANJI]:     [8, 10, 12],
+}
+
 /**
  * @param {number} mode - mode balue
  * @param {number} type - qr version
  * @returns {number} the number of bits in character count indicator
  */
 export function getCharCountBitLength (mode, type) {
-  if (type >= 1 && type < 10) { // 1 - 9
-    switch (mode) {
-      case MODE_NUMBER : return 10
-      case MODE_ALPHA_NUM : return 9
-      case MODE_8BIT_BYTE : return 8
-      case MODE_KANJI : return 8
-      default :
-        throw Error(`invalid mode: ${mode}`)
-    }
-  } else if (type < 27) { // 10 - 26
-    switch (mode) {
-      case MODE_NUMBER : return 12
-      case MODE_ALPHA_NUM : return 11
-      case MODE_8BIT_BYTE : return 16
-      case MODE_KANJI : return 10
-      default :
-        throw Error(`invalid mode: ${mode}`)
-    }
-  } else if (type < 41) { // 27 - 40
-    switch (mode) {
-      case MODE_NUMBER : return 14
-      case MODE_ALPHA_NUM : return 13
-      case MODE_8BIT_BYTE : return 16
-      case MODE_KANJI : return 12
-      default :
-        throw Error(`invalid mode: ${mode}`)
-    }
-  } else {
+  if (!(type >= 1 && type < 41)) {
     throw Error(`invalid type: ${type}`)
   }
+  const typesBitLength = CharCountBitLengthTable[mode]
+  if (!typesBitLength) {
+    throw Error(`invalid mode: ${mode}`)
+  }
+  const typeIndex = type < 10 ? 0 : type < 27 ? 1 : 2
+  return typesBitLength[typeIndex]
 };
