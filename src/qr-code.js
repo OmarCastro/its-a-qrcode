@@ -1,12 +1,12 @@
 import { ECBlocksInfo } from './error-correction/qr-ec-block.utils.js'
 import { fromString, CORRECTION_LEVEL_M } from './error-correction/ec-level.js'
-import { getLengthInBits, getPatternPosition, getBCHTypeInfo, getBCHTypeNumber, getMaskFunction } from './utils/qr-util.js'
+import { getPatternPosition, getBCHTypeInfo, getBCHTypeNumber, getMaskFunction } from './utils/qr-util.js'
 import { createData } from './utils/create-data.util.js'
 import { QrKanji } from './modes/kanji.mode.js'
 import { Qr8BitByte } from './modes/byte.mode.js'
 import { QrNumber } from './modes/number.mode.js'
 import { QrAlphaNum } from './modes/alphanum.mode.js'
-import { getBestMode } from './modes/mode-utils.util.js'
+import { getBestMode, getCharCountBitLength } from './modes/mode-utils.util.js'
 import { QrBitBuffer } from './utils/qr-bit-buffer.js'
 
 export class QrCode {
@@ -173,7 +173,7 @@ function getBestTypeNumber (qrcode) {
     for (let i = 0; i < dataList.length; i++) {
       const data = dataList[i]
       buffer.put(data.mode, 4)
-      buffer.put(data.length, getLengthInBits(data.mode, typeNumber))
+      buffer.put(data.length, getCharCountBitLength(data.mode, typeNumber))
       data.write(buffer)
     }
 

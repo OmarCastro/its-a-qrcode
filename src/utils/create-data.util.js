@@ -1,6 +1,6 @@
 import { QrBitBuffer } from './qr-bit-buffer.js'
 import { ECBlocksInfo } from '../error-correction/qr-ec-block.utils.js'
-import { getLengthInBits } from './qr-util.js'
+import { getCharCountBitLength } from '../modes/mode-utils.util.js'
 import { getErrorCorrectPolynomial } from '../error-correction/ec-polynomial.js'
 import { QrPolynomial } from './qr-polynomial.js'
 
@@ -20,7 +20,7 @@ export function createData (typeNumber, errorCorrectionLevel, dataList) {
 
   for (const data of dataList) {
     buffer.put(data.mode, 4)
-    buffer.put(data.length, getLengthInBits(data.mode, typeNumber))
+    buffer.put(data.length, getCharCountBitLength(data.mode, typeNumber))
     data.write(buffer)
   }
 
