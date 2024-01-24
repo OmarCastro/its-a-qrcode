@@ -1,5 +1,4 @@
 import { PATTERN_POSITION_TABLE } from './pattern-position-table.constants.js'
-import { MODE_8BIT_BYTE, MODE_ALPHA_NUM, MODE_KANJI, MODE_NUMBER } from '../modes/mode-bits.constants.js'
 
 /**
  * Get BCH code digit
