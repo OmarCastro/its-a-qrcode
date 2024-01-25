@@ -635,8 +635,9 @@ async function lintStyles ({ onlyChanged }) {
   const result = await stylelint.lint({ files: finalFilePatterns })
   const filesLinted = result.results.length
   process.stdout.write(`linted ${filesLinted} files. `)
+  const stringFormatter = await stylelint.formatters.string
 
-  const output = stylelint.formatters.string(result.results)
+  const output = stringFormatter(result.results)
   if (output) {
     console.log('\n' + output)
   } else {
