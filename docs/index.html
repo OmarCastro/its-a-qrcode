@@ -468,8 +468,72 @@
           
         </div>
 
+        <h2>Styling</h2>
+
+        <h3> Color </h3>
+
+        <p  ss:markdown>
+            To customize the QR code color you can use the `--qrcode-color` CSS value the value has support to various values
+
+            ```css
+            /* dark color */
+            --qrcode-color: red;
+
+            /* dark color | light-color  */
+            --qrcode-color: red #eee;
+
+            /* dark color | light-color | corner color */
+            --qrcode-color: green #eee rgba(0, 0, 200, 0.8);
+
+            /* dark color | light-color | corner border color | corner center color */
+            --qrcode-color: green #eee rgba(0, 0, 200, 0.8) blue;
+
+            ```
+
+        </p>
+
+        
+        <div class="example example--qrcode-color">
+
+            <qr-code class="example--color__qrcode-color">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua</qr-code>
+            <script type="text/plain" class="html-example">
+                <{{elementName}} class="example--color__qrcode-color">{{Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua¦text}}</{{elementName}}>
+            </script>
+            <script type="text/plain" class="css-example">
+                .example--color__qrcode-color {
+                    --qrcode-color: red beige blue green;
+                }
+            </script>
+        </div>
+       
+
+        <p  ss:markdown>
+            It is possible to use separate CSS properties to define the color of a specific part of the QR Code the next code shows the supported CSS properties
+
+            ```css
+            /* color */
+            --qrcode-dark-color: red;
+
+            /* color */
+            --qrcode-light-color: white;
+
+            /* color */
+            --qrcode-corner-color: white;
+
+            /* color | color */
+            --qrcode-corner-color: white #f00;
+
+            /* color */
+            --qrcode-corner-border-color: gray;
+
+            /* color */
+            --qrcode-corner-center-color: blue;
+
+            ```
+
+        </p>
+
         <div class="example example--color">
-            <h3> Color </h3>
 
             <qr-code class="example--color__qr">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua</qr-code>
             <script type="text/plain" class="html-example">
@@ -479,6 +543,7 @@
                 .example--color__qr {
                     --qrcode-dark-color: rgba(0, 0, 200, 0.8);
                     --qrcode-light-color: pink;
+                    --qrcode-corner-color: black #f00;
                 }
             </script>
         </div>

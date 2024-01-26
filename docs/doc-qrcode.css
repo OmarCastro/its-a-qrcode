@@ -1,6 +1,11 @@
 .example--color__qr {
     --qrcode-dark-color: rgba(0, 0, 200, 0.8);
     --qrcode-light-color: pink;
+    --qrcode-corner-color: black #f00;
+}
+
+.example--color__qrcode-color {
+    --qrcode-color: red beige blue green;
 }
 
 .resizable qr-code {
