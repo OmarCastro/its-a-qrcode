@@ -4,6 +4,7 @@ import { createSvgTag } from '../render/svg.render.js'
 import { isValid } from '../error-correction/ec-level.js'
 import { preProcess } from '../utils/data-pre-processing.util.js'
 import { parseQrCodeColorsFromElement } from '../utils/css-colors.util.js'
+import { parseQrCodeStylesFromElement } from '../utils/css-qrcode-style.js'
 import css from './qr-code.element.css'
 
 let loadStyles = () => {
@@ -82,15 +83,16 @@ function applyQrCode (element) {
   qrCodeData.set(element, qr)
 
   const colors = parseQrCodeColorsFromElement(element)
+  const style = parseQrCodeStylesFromElement(element)
 
   const renderMode = getRenderMode(element)
   if (renderMode === 'svg') {
-    const svg = createSvgTag({ qrcode: qr, colors, scalable: isResizeEnabled(element) })
+    const svg = createSvgTag({ qrcode: qr, colors, scalable: isResizeEnabled(element), style })
     shadowRoot.innerHTML = svg
     return
   }
 
-  const imgHtml = createImgTag({ qrcode: qr, colors })
+  const imgHtml = createImgTag({ qrcode: qr, colors, style })
   const oldImgElement = shadowRoot.querySelector('img')
   if (oldImgElement) {
     const updated = updateImgElement(oldImgElement, imgHtml)

@@ -1,6 +1,6 @@
-const DEFAULT_STYLE = 'default'
-const ROUNDED_STYLE = 'rounded'
-const DOTS_STYLE = 'dots'
+export const DEFAULT_STYLE = 'default'
+export const ROUNDED_STYLE = 'rounded'
+export const DOTS_STYLE = 'dots'
 
 const validStyles = new Set([DEFAULT_STYLE, ROUNDED_STYLE, DOTS_STYLE])
 
@@ -52,7 +52,7 @@ function parseQrcodeStyleProp (colorsVar, defaultColors) {
  * @param {HTMLElement} element - target element
  * @returns {QRCodeStyleProperties} cssColors to draw the QRCode
  */
-function QRCodeColorProperties (element) {
+function QRCodeStyleProperties (element) {
   const computedStyle = getComputedStyle(element)
   const propertyOf = (/** @type {string} */ prop) => computedStyle.getPropertyValue(prop).trim()
 
@@ -68,21 +68,25 @@ function QRCodeColorProperties (element) {
  * @param {QRCodeStyleProperties} styleProperties - color properties
  * @returns {QRCodeCssStyles} cssColors to draw the QRCode
  */
-export function parseQrCodeColors (styleProperties) {
-  let currentColors = getDefaultStyles()
-  currentColors = parseQrcodeStyleProp(styleProperties.style, currentColors)
-  currentColors.dots = getStyleOrElse(styleProperties.dotStyle, currentColors.dots)
-  currentColors.cornerBorder = getStyleOrElse(styleProperties.cornerBorderStyle, currentColors.cornerBorder)
-  currentColors.cornerCenter = getStyleOrElse(styleProperties.cornerCenterStyle, currentColors.cornerCenter)
-  return currentColors
+export function parseQrCodeStyles (styleProperties) {
+  let currentStyles = {
+    ...getDefaultStyles(),
+    cornerBorder: '',
+    cornerCenter: '',
+  }
+  currentStyles = parseQrcodeStyleProp(styleProperties.style, currentStyles)
+  currentStyles.dots = getStyleOrElse(styleProperties.dotStyle, currentStyles.dots)
+  currentStyles.cornerBorder = getStyleOrElse(styleProperties.cornerBorderStyle, currentStyles.cornerBorder)
+  currentStyles.cornerCenter = getStyleOrElse(styleProperties.cornerCenterStyle, currentStyles.cornerCenter)
+  return currentStyles
 }
 
 /**
  * @param {HTMLElement} element - target element
  * @returns {QRCodeCssStyles} cssColors to draw the QRCode
  */
-export function parseQrCodeColorsFromElement (element) {
-  return parseQrCodeColors(QRCodeColorProperties(element))
+export function parseQrCodeStylesFromElement (element) {
+  return parseQrCodeStyles(QRCodeStyleProperties(element))
 }
 
 /**
