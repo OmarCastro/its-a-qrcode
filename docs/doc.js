@@ -110,41 +110,50 @@ document.querySelectorAll('.example').forEach(element => {
   })
 })
 
+const BIND_SELECTOR_ATTRIBUTE = 'data-bind-selector'
+
 /**
  * @param {Element} exampleElement - example element listening for input events
  * @param {InputEvent} event - triggered event
  */
 function handleInput (exampleElement, event) {
-  const bindSelectorAttr = 'data-bind-selector'
   const { target } = event
   if (matchesTextEdit(target)) {
-    const selector = event.target.getAttribute(bindSelectorAttr) || 'qr-code'
+    const selector = event.target.getAttribute(BIND_SELECTOR_ATTRIBUTE) || 'qr-code'
     const node = exampleElement.querySelector(selector)
     if (node) { node.textContent = event.target.textContent }
+  } else if (event.target.matches('.data-error-correction-level-edit')) {
+    reflectAttributeOnElement(exampleElement, event, 'data-error-correction-level')
+  } else if (event.target.matches('.data-qrcode-resize-edit')) {
+    reflectStyleOnElement(exampleElement, event, '--qrcode-resize')
+  } else if (event.target.matches('.data-qrcode-color-edit')) {
+    reflectStyleOnElement(exampleElement, event, '--qrcode-color')
+  } else if (event.target.matches('.data-whitespace-edit')) {
+    reflectAttributeOnElement(exampleElement, event, 'data-whitespace')
   }
-  if (event.target.matches('.data-error-correction-level-edit')) {
-    const selector = event.target.getAttribute(bindSelectorAttr) || '[data-error-correction-level]'
-    const node = exampleElement.querySelector(selector)
-    node && node.setAttribute('data-error-correction-level', event.target.textContent)
-  }
+}
 
-  if (event.target.matches('.data-qrcode-resize-edit')) {
-    const selector = event.target.getAttribute(bindSelectorAttr) || 'qr-code'
-    const node = exampleElement.querySelector(selector)
-    node && node.style.setProperty('--qrcode-resize', event.target.textContent || '""')
-  }
+/**
+ * @param {Element} exampleElement - example element listening for input events
+ * @param {InputEvent} event - triggered event
+ * @param {string} attribute - reflecting attribute
+ */
+function reflectAttributeOnElement (exampleElement, event, attribute) {
+  const selector = event.target.getAttribute(BIND_SELECTOR_ATTRIBUTE) || 'qr-code'
+  const node = exampleElement.querySelector(selector)
+  node && node.setAttribute(attribute, event.target.textContent)
+}
 
-  if (event.target.matches('.data-qrcode-color-edit')) {
-    const selector = event.target.getAttribute(bindSelectorAttr) || 'qr-code'
-    const node = exampleElement.querySelector(selector)
-    node && node.style.setProperty('--qrcode-color', event.target.textContent || '""')
-  }
-
-  if (event.target.matches('.data-whitespace-edit')) {
-    const selector = event.target.getAttribute(bindSelectorAttr) || 'qr-code'
-    const node = exampleElement.querySelector(selector)
-    node && node.setAttribute('data-whitespace', event.target.textContent)
-  }
+/**
+ *
+ * @param {Element} exampleElement - example element listening for input events
+ * @param {InputEvent} event - triggered event
+ * @param {string} styleProperty - reflecting css property
+ */
+function reflectStyleOnElement (exampleElement, event, styleProperty) {
+  const selector = event.target.getAttribute(BIND_SELECTOR_ATTRIBUTE) || 'qr-code'
+  const node = exampleElement.querySelector(selector)
+  node && node.style.setProperty(styleProperty, event.target.textContent)
 }
 
 /**
