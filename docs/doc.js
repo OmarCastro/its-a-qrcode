@@ -134,6 +134,12 @@ function handleInput (exampleElement, event) {
     node && node.style.setProperty('--qrcode-resize', event.target.textContent || '""')
   }
 
+  if (event.target.matches('.data-qrcode-color-edit')) {
+    const selector = event.target.getAttribute(bindSelectorAttr) || 'qr-code'
+    const node = exampleElement.querySelector(selector)
+    node && node.style.setProperty('--qrcode-color', event.target.textContent || '""')
+  }
+
   if (event.target.matches('.data-whitespace-edit')) {
     const selector = event.target.getAttribute(bindSelectorAttr) || 'qr-code'
     const node = exampleElement.querySelector(selector)
