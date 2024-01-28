@@ -5,7 +5,7 @@ const helloWorldDarkDPath = 'M26,8h2v2h-2zM26,10h2v2h-2zM32,10h2v2h-2zM30,12h2v2
 const helloWorldDarkCornerBorderPath = 'M8,8h14v14h-14zM10,10v10h10v-10zM36,8h14v14h-14zM38,10v10h10v-10zM8,36h14v14h-14zM10,38v10h10v-10z'
 const helloWorldDarkCornerCenterPath = 'M12,12h6v6h-6zM40,12h6v6h-6zM12,40h6v6h-6z'
 const helloWorldLightDPath = 'M0,0h58v58h-58z'+helloWorldDarkDPath+helloWorldDarkCornerBorderPath+helloWorldDarkCornerCenterPath
-const helloWorldSvg = '<svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="58px" height="58px" viewBox="0 0 58 58" preserveAspectRatio="xMinYMin meet" shape-rendering="crispEdges">'+
+const helloWorldSvg = '<svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="58px" height="58px" viewBox="0 0 58 58" preserveAspectRatio="xMinYMin meet">'+
   '<g stroke="none">'+
     `<path d="${helloWorldLightDPath}" fill-rule="evenodd" fill="white"/>`+
     `<path d="${helloWorldDarkDPath}" fill="black"/>`+
