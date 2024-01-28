@@ -75,7 +75,10 @@ function dotPathData ({ cellSize, margin, qrcode, style }) {
   const { moduleCount } = qrcode
 
   let d = ''
-  const rect = `h${cellSize}v${cellSize}h-${cellSize}z`
+  let render = dotRenders.square
+  if (style.dots === DOTS_STYLE) {
+    render = dotRenders.dots
+  }
   const drawRects = [
     [8, 0, moduleCount - 8, 8],
     [0, 8, 8, moduleCount - 8],
@@ -87,13 +90,22 @@ function dotPathData ({ cellSize, margin, qrcode, style }) {
       for (let col = minCol; col < maxCol; col += 1) {
         if (qrcode.isDark(row, col)) {
           const mc = col * cellSize + margin
-          d += `M${mc},${mr}${rect}`
+          d += render(mc, mr, cellSize, qrcode, row, col)
         }
       }
     }
   }
 
   return d
+}
+
+/** @type {{[name: string]: DotPathRender}} */
+const dotRenders = {
+  square: (x, y, cellSize) => `M${x},${y}h${cellSize}v${cellSize}h-${cellSize}z`,
+  dots (x, y, cellSize) {
+    const r = cellSize / 2
+    return circlePath(x + r, y + r, r, 0)
+  },
 }
 
 /**
@@ -196,7 +208,7 @@ const normalizeTitle = (title) => {
  * @param {number} cx - horizontal position of the circle center point
  * @param {number} cy - vericak position of the circle center point
  * @param {number} r - circle radius
- * @param {0|1} [d] -  to invert direction
+ * @param {0|1} d -  to invert direction
  * @returns {string} &lt;path> `d` attribute value
  */
 function circlePath (cx, cy, r, d) {
@@ -215,4 +227,14 @@ function circlePath (cx, cy, r, d) {
  * @property {string} finderCenter - finder center path d value
  * @property {string} finderCorner - finder corner path d value
  * @property {string} bg - light colored part path d value
+ */
+
+/**
+ * @callback DotPathRender
+ * @param {number} x - top left x position of the square area to render
+ * @param {number} y - top left y position of the square area to render
+ * @param {number} cellSize - lenght of square area to render
+ * @param {import('../qr-code.js').QrCode} qrcode - QR Code data
+ * @param {number} row - QR Code dot row position to draw
+ * @param {number} col - QR Code dot column position to draw
  */
