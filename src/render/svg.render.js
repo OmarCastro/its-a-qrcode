@@ -1,6 +1,6 @@
 import { escapeXml } from '../utils/escape-xml.util.js'
 import { getDefaultColors } from '../utils/css-colors.util.js'
-import { getDefaultStyles, DOTS_STYLE } from '../utils/css-qrcode-style.js'
+import { getDefaultStyles, DOT_STYLE } from '../utils/css-qrcode-style.js'
 
 /**
  * @param {object} opts - function parameters
@@ -75,8 +75,8 @@ function dotPathData ({ cellSize, margin, qrcode, style }) {
 
   let d = ''
   let render = dotRenders.square
-  if (style.dots === DOTS_STYLE) {
-    render = dotRenders.dots
+  if (style.dots === DOT_STYLE) {
+    render = dotRenders.dot
   }
   const drawRects = [
     [8, 0, moduleCount - 8, 8],
@@ -101,7 +101,7 @@ function dotPathData ({ cellSize, margin, qrcode, style }) {
 /** @type {{[name: string]: DotPathRender}} */
 const dotRenders = {
   square: (x, y, cellSize) => `M${x},${y}h${cellSize}v${cellSize}h-${cellSize}z`,
-  dots (x, y, cellSize) {
+  dot (x, y, cellSize) {
     const r = cellSize / 2
     return circlePath(x + r, y + r, r, 0)
   },
@@ -135,7 +135,7 @@ function finderCornerPath (cellSize, x, y, margin, style) {
   const ry = y * cellSize + margin
   const rectLenght = 7 * cellSize
   const innerRecLength = 5 * cellSize
-  if (style.cornerBorder === DOTS_STYLE) {
+  if (style.cornerBorder === DOT_STYLE) {
     const radius = rectLenght / 2
     const cx = rx + radius
     const cy = ry + radius
