@@ -128,6 +128,8 @@ function handleInput (exampleElement, event) {
     reflectStyleOnElement(exampleElement, event, '--qrcode-resize')
   } else if (event.target.matches('.data-qrcode-color-edit')) {
     reflectStyleOnElement(exampleElement, event, '--qrcode-color')
+  } else if (event.target.matches('.data-qrcode-style-edit')) {
+    reflectStyleOnElement(exampleElement, event, '--qrcode-style')
   } else if (event.target.matches('.data-whitespace-edit')) {
     reflectAttributeOnElement(exampleElement, event, 'data-whitespace')
   }
