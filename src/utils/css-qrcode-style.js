@@ -1,8 +1,9 @@
 export const DEFAULT_STYLE = 'default'
 export const ROUNDED_STYLE = 'rounded'
+export const SQUARE_STYLE = 'square'
 export const DOT_STYLE = 'dot'
 
-const validStyles = new Set([DEFAULT_STYLE, ROUNDED_STYLE, DOT_STYLE])
+const validStyles = new Set([DEFAULT_STYLE, ROUNDED_STYLE, SQUARE_STYLE, DOT_STYLE])
 
 /**
  * @param {string} style - style to apply
