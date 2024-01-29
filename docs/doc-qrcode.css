@@ -14,6 +14,14 @@
     --qrcode-resize: true
 }
 
+.resizable qr-code.styled-qr-code {
+    width: 100%;
+    height: 100%;
+    --qrcode-style: dot dot dot;
+    --qrcode-resize: true
+    
+}
+
 .resizable {
     width: 500px;
     height: 450px;
