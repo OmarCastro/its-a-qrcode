@@ -137,9 +137,9 @@ const dotRenders = {
  */
 function finderCornerPathData ({ cellSize, margin, qrcode, style }) {
   const { moduleCount } = qrcode
-  return finderCornerPath(cellSize, 0, 0, margin, style) +
-    finderCornerPath(cellSize, moduleCount - 7, 0, margin, style) +
-    finderCornerPath(cellSize, 0, moduleCount - 7, margin, style)
+  return finderCornerPath(cellSize, 0, 0, margin, qrcode, style) +
+    finderCornerPath(cellSize, moduleCount - 7, 0, margin, qrcode, style) +
+    finderCornerPath(cellSize, 0, moduleCount - 7, margin, qrcode, style)
 }
 
 /**
@@ -147,10 +147,11 @@ function finderCornerPathData ({ cellSize, margin, qrcode, style }) {
  * @param {number} x - qr code column position of finder path
  * @param {number} y - qr code row position of finder path
  * @param {number} margin - margin in pixels
+ * @param {import('../qr-code.js').QrCode} qrcode - QR Code data
  * @param {import('../utils/css-qrcode-style.js').QRCodeCssStyles} style - QR code style
  * @returns {string} &lt;path> `d` attribute value
  */
-function finderCornerPath (cellSize, x, y, margin, style) {
+function finderCornerPath (cellSize, x, y, margin, qrcode, style) {
   const rx = x * cellSize + margin
   const ry = y * cellSize + margin
   const rectLenght = 7 * cellSize
@@ -161,6 +162,15 @@ function finderCornerPath (cellSize, x, y, margin, style) {
     const cy = ry + radius
     const innerRadius = innerRecLength / 2
     return circlePath(cx, cy, radius, 0) + circlePath(cx, cy, innerRadius, 1)
+  }
+  if (style.cornerCenter === DEFAULT_STYLE && style.dots !== DEFAULT_STYLE) {
+    const drawRects = /** @type {const} */ ([
+      [x, y, x + 7, y + 1],
+      [x, y + 6, x + 7, y + 7],
+      [x, y + 1, x + 1, y + 6],
+      [x + 6, y + 1, x + 7, y + 6],
+    ])
+    return drawRects.map(rect => renderQrCodeDotArea({ cellSize, margin, qrcode, style, rect })).join('')
   }
   return `M${rx},${ry}h${rectLenght}v${rectLenght}h-${rectLenght}zM${rx + cellSize},${ry + cellSize}v${innerRecLength}h${innerRecLength}v-${innerRecLength}z`
 }
