@@ -1,6 +1,6 @@
 import { escapeXml } from '../utils/escape-xml.util.js'
 import { getDefaultColors } from '../utils/css-colors.util.js'
-import { getDefaultStyles, DOT_STYLE } from '../utils/css-qrcode-style.js'
+import { getDefaultStyles, DOT_STYLE, DEFAULT_STYLE } from '../utils/css-qrcode-style.js'
 
 /**
  * @param {object} opts - function parameters
@@ -74,23 +74,43 @@ function dotPathData ({ cellSize, margin, qrcode, style }) {
   const { moduleCount } = qrcode
 
   let d = ''
+
+  const drawRects = /** @type {const} */ ([
+    [8, 0, moduleCount - 8, 8],
+    [0, 8, 8, moduleCount - 8],
+    [8, 8, moduleCount, moduleCount],
+  ])
+  for (const rect of drawRects) {
+    d += renderQrCodeDotArea({ cellSize, margin, qrcode, style, rect })
+  }
+
+  return d
+}
+
+/**
+ * @param {object} opts - funtion parameters
+ * @param {number} opts.cellSize - cell size in pixels
+ * @param {number} opts.margin - margin in pixels
+ * @param {import('../qr-code.js').QrCode} opts.qrcode - QR Code data
+ * @param {import('../utils/css-qrcode-style.js').QRCodeCssStyles} opts.style - qr code colors
+ * @param {readonly [number, number,number,number]} opts.rect - qr code colors area to render, values are [minCol, minRow, maxCol, maxRow]
+ * @returns {string} &lt;path> `d` attribute value
+ */
+function renderQrCodeDotArea ({ cellSize, margin, qrcode, style, rect }) {
+  let d = ''
+
   let render = dotRenders.square
   if (style.dots === DOT_STYLE) {
     render = dotRenders.dot
   }
-  const drawRects = [
-    [8, 0, moduleCount - 8, 8],
-    [0, 8, 8, moduleCount - 8],
-    [8, 8, moduleCount, moduleCount],
-  ]
-  for (const [minCol, minRow, maxCol, maxRow] of drawRects) {
-    for (let row = minRow; row < maxRow; row += 1) {
-      const mr = row * cellSize + margin
-      for (let col = minCol; col < maxCol; col += 1) {
-        if (qrcode.isDark(row, col)) {
-          const mc = col * cellSize + margin
-          d += render(mc, mr, cellSize, qrcode, row, col)
-        }
+
+  const [minCol, minRow, maxCol, maxRow] = rect
+  for (let row = minRow; row < maxRow; row += 1) {
+    const mr = row * cellSize + margin
+    for (let col = minCol; col < maxCol; col += 1) {
+      if (qrcode.isDark(row, col)) {
+        const mc = col * cellSize + margin
+        d += render(mc, mr, cellSize, qrcode, row, col)
       }
     }
   }
@@ -155,9 +175,9 @@ function finderCornerPath (cellSize, x, y, margin, style) {
  */
 function finderCenterPathData ({ cellSize, margin, qrcode, style }) {
   const { moduleCount } = qrcode
-  return finderCenterPath(cellSize, 2, 2, margin) +
-  finderCenterPath(cellSize, moduleCount - 5, 2, margin) +
-  finderCenterPath(cellSize, 2, moduleCount - 5, margin)
+  return finderCenterPath(cellSize, 2, 2, margin, qrcode, style) +
+  finderCenterPath(cellSize, moduleCount - 5, 2, margin, qrcode, style) +
+  finderCenterPath(cellSize, 2, moduleCount - 5, margin, qrcode, style)
 }
 
 /**
@@ -165,12 +185,25 @@ function finderCenterPathData ({ cellSize, margin, qrcode, style }) {
  * @param {number} x - qr code column position of finder path
  * @param {number} y - qr code row position of finder path
  * @param {number} margin - margin in pixels
+ *  @param {import('../qr-code.js').QrCode} qrcode - QR Code data
+ *  @param {import('../utils/css-qrcode-style.js').QRCodeCssStyles} style - QR code style
  * @returns {string} &lt;path> `d` attribute value
  */
-function finderCenterPath (cellSize, x, y, margin) {
+function finderCenterPath (cellSize, x, y, margin, qrcode, style) {
   const rx = x * cellSize + margin
   const ry = y * cellSize + margin
   const rectLenght = 3 * cellSize
+  if (style.cornerCenter === DOT_STYLE) {
+    const radius = rectLenght / 2
+    const cx = rx + radius
+    const cy = ry + radius
+    return circlePath(cx, cy, radius, 0)
+  }
+
+  if (style.cornerCenter === DEFAULT_STYLE && style.dots !== DEFAULT_STYLE) {
+    return renderQrCodeDotArea({ cellSize, margin, qrcode, style, rect: [x, y, x + 3, y + 3] })
+  }
+
   return `M${rx},${ry}h${rectLenght}v${rectLenght}h-${rectLenght}z`
 }
 

@@ -69,11 +69,7 @@ function QRCodeStyleProperties (element) {
  * @returns {QRCodeCssStyles} cssColors to draw the QRCode
  */
 export function parseQrCodeStyles (styleProperties) {
-  let currentStyles = {
-    ...getDefaultStyles(),
-    cornerBorder: '',
-    cornerCenter: '',
-  }
+  let currentStyles = getDefaultStyles()
   currentStyles = parseQrcodeStyleProp(styleProperties.style, currentStyles)
   currentStyles.dots = getStyleOrElse(styleProperties.dotStyle, currentStyles.dots)
   currentStyles.cornerBorder = getStyleOrElse(styleProperties.cornerBorderStyle, currentStyles.cornerBorder)
