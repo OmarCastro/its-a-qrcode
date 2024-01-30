@@ -163,7 +163,7 @@ function finderCornerPath (cellSize, x, y, margin, qrcode, style) {
     const innerRadius = innerRecLength / 2
     return circlePath(cx, cy, radius, 0) + circlePath(cx, cy, innerRadius, 1)
   }
-  if (style.cornerCenter === DEFAULT_STYLE && style.dots !== DEFAULT_STYLE) {
+  if (style.cornerBorder === DEFAULT_STYLE && style.dots !== DEFAULT_STYLE) {
     const drawRects = /** @type {const} */ ([
       [x, y, x + 7, y + 1],
       [x, y + 6, x + 7, y + 7],
