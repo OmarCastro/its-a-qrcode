@@ -1,6 +1,6 @@
 import { escapeXml } from '../utils/escape-xml.util.js'
 import { getDefaultColors } from '../utils/css-colors.util.js'
-import { getDefaultStyles, DOT_STYLE, DEFAULT_STYLE } from '../utils/css-qrcode-style.js'
+import { getDefaultStyles, DOT_STYLE, ROUNDED_STYLE, DEFAULT_STYLE } from '../utils/css-qrcode-style.js'
 
 /**
  * @param {object} opts - function parameters
@@ -103,6 +103,9 @@ function renderQrCodeDotArea ({ cellSize, margin, qrcode, style, rect }) {
   if (style.dots === DOT_STYLE) {
     render = dotRenders.dot
   }
+  if (style.dots === ROUNDED_STYLE) {
+    render = dotRenders.rounded
+  }
 
   const [minCol, minRow, maxCol, maxRow] = rect
   for (let row = minRow; row < maxRow; row += 1) {
@@ -125,6 +128,28 @@ const dotRenders = {
     }
     const r = cellSize / 2
     return circlePath(x + r, y + r, r, 0)
+  },
+  rounded (x, y, cellSize, qrcode, row, col) {
+    const { moduleCount } = qrcode
+    if (!qrcode.isDark(row, col)) {
+      return ''
+    }
+    const isTopDark = row > 0 && qrcode.isDark(row - 1, col)
+    const isLeftDark = col > 0 && qrcode.isDark(row, col - 1)
+    const isBottonDark = row < moduleCount - 1 && qrcode.isDark(row + 1, col)
+    const isRightDark = col < moduleCount - 1 && qrcode.isDark(row, col + 1)
+    const half = cellSize / 2
+
+    if (!isTopDark && !isLeftDark && !isBottonDark && !isRightDark) {
+      return circlePath(x + half, y + half, half, 0)
+    }
+
+    return `M${x + half},${y}` +
+    (isTopDark || isRightDark ? `h${half}v${half}` : `a${half},${half} 0 0,1 ${half},${half}`) +
+    (isRightDark || isBottonDark ? `v${half}h-${half}` : `a${half},${half} 0 0,1 -${half},${half}`) +
+    (isBottonDark || isLeftDark ? `h-${half}v-${half}` : `a${half},${half} 0 0,1 -${half},-${half}`) +
+    (isLeftDark || isTopDark ? `v-${half}h${half}` : `a${half},${half} 0 0,1 ${half},-${half}`) +
+    'z'
   },
 
 }
