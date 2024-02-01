@@ -9,6 +9,13 @@ import { QrAlphaNum } from './modes/alphanum.mode.js'
 import { getBestMode, getCharCountBitLength } from './modes/mode-utils.util.js'
 import { QrBitBuffer } from './utils/qr-bit-buffer.js'
 
+export const NEIGHBOR_TOP_LEFT = 0b100_000_000
+export const NEIGHBOR_TOP = 0b010_000_000
+export const NEIGHBOR_TOP_RIGHT = 0b001_000_000
+export const NEIGHBOR_LEFT = 0b000_100_000
+export const NEIGHBOR_SELF = 0b000_010_000
+export const NEIGHBOR_RIGHT = 0b000_001_000
+
 export class QrCode {
   /** @type {number} */
   typeNumber = 0
@@ -84,36 +91,30 @@ export class QrCode {
   /**
    * @param {number} row - vertical position
    * @param {number} col - horizontal position
-   * @returns {number} bitfields of block neighbor
+   * @returns {number} bitfields of block neighbo
    */
-  blockArea(row, col){
+  blockArea (row, col) {
     const { modules, moduleCount } = this
 
     if (row < 0 || moduleCount <= row || col < 0 || moduleCount <= col) {
       throw Error(`out of bounds row: ${row}, column: ${col}, module count: ${moduleCount}`)
     }
-    
+
     let result = 0
     const isStartRow = row === 0
     const isEndRow = row === moduleCount - 1
-    const isStartCol = row === 0
-    const isEndCol = row === moduleCount - 1
-    if(!isStartRow){
-      if(!isStartCol){ result |= modules[row - 1][col - 1] ? 0b100_000_000 : 0}
-      result |= modules[row - 1][col] ? 0b010_000_000 : 0
-      if(!isEndCol){ result |= modules[row - 1][col - 1] ? 0b001_000_000 : 0}
+    if (!isStartRow) {
+      const upRow = modules[row - 1]
+      result |= (+upRow[col - 1] | 0) * NEIGHBOR_TOP_LEFT + (+upRow[col] | 0) * NEIGHBOR_TOP + (+upRow[col + 1] | 0) * NEIGHBOR_TOP_RIGHT
     }
-    if(!isStartCol){ result |= modules[row - 1][col - 1] ? 0b000_100_000 : 0}
-    result |= modules[row - 1][col] ? 0b000_010_000 : 0
-    if(!isEndCol){ result |= modules[row - 1][col - 1] ? 0b000_001_000 : 0}
-    if(!isEndRow){
-      if(!isStartCol){ result |= modules[row - 1][col - 1] ? 0b000_000_100 : 0}
-      result |= modules[row - 1][col] ? 0b000_000_010 : 0
-      if(!isEndCol){ result |= modules[row - 1][col - 1] ? 0b000_000_001 : 0}
+    const midRow = modules[row]
+    result |= (+midRow[col - 1] | 0) * NEIGHBOR_LEFT + (+midRow[col] | 0) * NEIGHBOR_SELF + (+midRow[col + 1] | 0) * NEIGHBOR_RIGHT
+    if (!isEndRow) {
+      const downRow = modules[row + 1]
+      result |= (+downRow[col - 1] | 0) * NEIGHBOR_TOP_LEFT + (+downRow[col] | 0) * NEIGHBOR_TOP + (+downRow[col + 1] | 0) * NEIGHBOR_TOP_RIGHT
     }
     return result
   }
-
 
   /**
    *
