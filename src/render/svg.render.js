@@ -108,10 +108,8 @@ function renderQrCodeDotArea ({ cellSize, margin, qrcode, style, rect }) {
   for (let row = minRow; row < maxRow; row += 1) {
     const mr = row * cellSize + margin
     for (let col = minCol; col < maxCol; col += 1) {
-      if (qrcode.isDark(row, col)) {
-        const mc = col * cellSize + margin
-        d += render(mc, mr, cellSize, qrcode, row, col)
-      }
+      const mc = col * cellSize + margin
+      d += render(mc, mr, cellSize, qrcode, row, col)
     }
   }
 
@@ -120,11 +118,15 @@ function renderQrCodeDotArea ({ cellSize, margin, qrcode, style, rect }) {
 
 /** @type {{[name: string]: DotPathRender}} */
 const dotRenders = {
-  square: (x, y, cellSize) => `M${x},${y}h${cellSize}v${cellSize}h-${cellSize}z`,
-  dot (x, y, cellSize) {
+  square: (x, y, cellSize, qrcode, row, col) => qrcode.isDark(row, col) ? `M${x},${y}h${cellSize}v${cellSize}h-${cellSize}z` : '',
+  dot (x, y, cellSize, qrcode, row, col) {
+    if (!qrcode.isDark(row, col)) {
+      return ''
+    }
     const r = cellSize / 2
     return circlePath(x + r, y + r, r, 0)
   },
+
 }
 
 /**
