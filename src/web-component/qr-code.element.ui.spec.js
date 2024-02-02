@@ -41,16 +41,14 @@ test('text content react testing', async ({ page, expect }) => {
   await expect.soft(await qrCode.screenshot()).toMatchSnapshot('qr-code--content-text-content-changed.png');
 });
 
-test('dot style image test', async ({ page, expect }) => {
+test('style image test', async ({ page, expect }) => {
   await page.goto('./build/docs/test-page.html');
-  const qrCode = page.locator('.qr-code--dot-style')
-  await expect.soft(await qrCode.screenshot()).toMatchSnapshot('qr-code--dot-style-12345.png');
+  const qrCodeFullDotStyle = page.locator('.qr-code--dot-style')
+  await expect.soft(await qrCodeFullDotStyle.screenshot()).toMatchSnapshot('qr-code--dot-style-12345.png');
+
+  const qrCodeRoundedStyle = page.locator('.qr-code--rounded-style')
+  await expect.soft(await qrCodeRoundedStyle.screenshot()).toMatchSnapshot('qr-code--rounded-style-12345.png');
+
+  const qrCodeBodyDotStyle = page.locator('.qr-code--body-dot-style')
+  await expect.soft(await qrCodeBodyDotStyle.screenshot()).toMatchSnapshot('qr-code--body-dot-style-12345.png');
 });
-
-
-test('rounded style image test', async ({ page, expect }) => {
-  await page.goto('./build/docs/test-page.html');
-  const qrCode = page.locator('.qr-code--rounded-style')
-  await expect.soft(await qrCode.screenshot()).toMatchSnapshot('qr-code--rounded-style-12345.png');
-});
-

@@ -9,7 +9,7 @@
             .qr-code--colors {
                 --qrcode-color: red rgba(244, 244, 244, 0.9) blue transparent;
             }
-            .qr-code--dot-style, .qr-code--rounded-style {
+            .qr-code--dot-style, .qr-code--rounded-style, .qr-code--body-dot-style {
                 --qrcode-resize: true;
                 width: 300px;
                 height: 300px;
@@ -19,6 +19,9 @@
             }
             .qr-code--rounded-style {
                 --qrcode-style: rounded rounded rounded;
+            }
+            .qr-code--body-dot-style {
+                --qrcode-style: dot;
             }
             
         </style>
@@ -64,6 +67,12 @@
             <h2>Rounded Style</h2>
             <script type="text/plain" class="html-example"><qr-code class="qr-code--rounded-style">12345</qr-code></script>
             <qr-code class="qr-code--rounded-style">12345</qr-code>
+        </div>
+
+        <div>
+            <h2>Dot Style with pixel dots on corner</h2>
+            <script type="text/plain" class="html-example"><qr-code class="qr-code--body-dot-style">12345</qr-code></script>
+            <qr-code class="qr-code--body-dot-style">12345</qr-code>
         </div>
     </body>
 </html>
