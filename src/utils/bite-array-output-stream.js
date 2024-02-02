@@ -43,8 +43,4 @@ export class ByteArrayOutputStream {
   toByteArray () {
     return Uint8Array.from(this.#bytes)
   };
-
-  toString () {
-    return JSON.stringify(this.#bytes)
-  };
 }
