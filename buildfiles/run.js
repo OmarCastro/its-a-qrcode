@@ -163,7 +163,7 @@ async function execTests () {
   await cp_R('.tmp/coverage', 'reports/.tmp/coverage/final/tmp')
   const uiTestsExecuted = existsSync('reports/.tmp/coverage/ui/tmp')
   if (uiTestsExecuted) {
-    await cp_R('reports/.tmp/coverage/ui/tmp', 'reports/.tmp/coverage/final/tmp')
+    await cp_R('reports/.tmp/coverage/ui/tmp', 'reports/.tmp/coverage/final')
     await cmdSpawn(`TZ=UTC npx c8  --all ${UI_COVERAGE_INCLUDES} ${COVERAGE_REPORTERS} --report-dir reports/.tmp/coverage/ui report`)
     logStage('merge unit & ui coverage reports')
   }
@@ -196,13 +196,6 @@ async function execTests () {
   const cpBase = files.filter(path => basename(path) === 'base.css').map(path => fs.cp('buildfiles/assets/coverage-report-base.css', path))
   const cpPrettify = files.filter(path => basename(path) === 'prettify.css').map(path => fs.cp('buildfiles/assets/coverage-report-prettify.css', path))
   await Promise.allSettled([...cpBase, ...cpPrettify])
-
-  logStage('remove temporary files')
-  await Promise.allSettled([
-    rm_rf('reports/coverage/final/tmp'),
-    rm_rf('reports/coverage/unit/tmp'),
-    ...(uiTestsExecuted ? [rm_rf('reports/coverage/ui/tmp')] : []),
-  ])
 
   logStage('copy reports to documentation')
   await rm_rf('build/docs/reports')
