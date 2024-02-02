@@ -7,8 +7,20 @@
                 :root {background: #202530; color: #dddcdf}
             };
             .qr-code--colors {
-                --qrcode-color: red rgba(244, 244, 244, 0.9) blue transparent
+                --qrcode-color: red rgba(244, 244, 244, 0.9) blue transparent;
             }
+            .qr-code--dot-style, .qr-code--rounded-style {
+                --qrcode-resize: true;
+                width: 300px;
+                height: 300px;
+            }
+            .qr-code--dot-style {
+                --qrcode-style: dot dot dot;
+            }
+            .qr-code--rounded-style {
+                --qrcode-style: rounded rounded rounded;
+            }
+            
         </style>
     </head>
     <body>
@@ -42,5 +54,16 @@
             <qr-code class="qr-code--colors">12345</qr-code>
         </div>
 
+        <div>
+            <h2>Dot Style</h2>
+            <script type="text/plain" class="html-example"><qr-code class="qr-code--dot-style">12345</qr-code></script>
+            <qr-code class="qr-code--dot-style">12345</qr-code>
+        </div>
+
+        <div>
+            <h2>Rounded Style</h2>
+            <script type="text/plain" class="html-example"><qr-code class="qr-code--rounded-style">12345</qr-code></script>
+            <qr-code class="qr-code--rounded-style">12345</qr-code>
+        </div>
     </body>
 </html>
