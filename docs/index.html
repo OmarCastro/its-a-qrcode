@@ -473,7 +473,7 @@
         <h3> Color </h3>
 
         <p  ss:markdown>
-            To customize the QR code color you can use the `--qrcode-color` CSS value the value has support to various values
+            To customize the QR code color you can use the `--qrcode-color` CSS property. This property has support to various value groups
 
             ```css
             /* dark color */
@@ -551,6 +551,31 @@
 
         <h3> Shape style </h3>
 
+        <p  ss:markdown>
+            It is possible to defined the shape of the dark spots of the QR Code by setting the style. There are the following supported style values, they are case insensitive
+
+            - **default** - the default square style
+            - **rounded** - black spots will have rounded corners
+            - **square** - the same style as the default one, the difference with the default style is on the corner patterns, to forces the corner to use the same style as if the body style is the default one
+            - **dot** - paints circle dots for each cell
+            
+
+            To customize the QR code color you can use the `--qrcode-style` CSS value the value has support to various values
+
+            ```css
+            /* body style */
+            --qrcode-style: rounded;
+
+            /* body style | corner border style  */
+            --qrcode-style: dot square;
+
+            /* body style | corner border style | corner center style */
+            --qrcode-style: dot rounded square;
+
+            ```
+
+        </p>
+
         <div class="example example--style" >
 
             <div class="resizable">
@@ -567,7 +592,6 @@
                     --qrcode-resize: true;
                 }
             </script>
-            <p ss:markdown>To enable qr code resize, one of the values are supported: `true`, `yes`, `enable`, `enabled`. It is case insensitive (`Yes` equals to `yes`). Any other value disables it </p>
         </div>
 
     </div>
