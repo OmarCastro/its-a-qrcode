@@ -1,6 +1,6 @@
 import { escapeXml } from '../utils/escape-xml.util.js'
 import { getDefaultColors } from '../utils/css-colors.util.js'
-import { getDefaultStyles, DOT_STYLE, ROUNDED_STYLE, DEFAULT_STYLE } from '../utils/css-qrcode-style.js'
+import { getDefaultStyles, DOT_STYLE, ROUNDED_STYLE, DEFAULT_STYLE } from '../utils/css-qrcode-style.util.js'
 
 /**
  * @param {object} opts - function parameters
@@ -11,7 +11,7 @@ import { getDefaultStyles, DOT_STYLE, ROUNDED_STYLE, DEFAULT_STYLE } from '../ut
  * @param {boolean} [opts.scalable] - flag to make the svg scalable
  * @param {import('../qr-code.js').QrCode} opts.qrcode - QR Code data
  * @param {import('../utils/css-colors.util.js').QRCodeCssColors} [opts.colors] - qr code colors
- * @param {import('../utils/css-qrcode-style.js').QRCodeCssStyles} [opts.style] - qr code colors
+ * @param {import('../utils/css-qrcode-style.util.js').QRCodeCssStyles} [opts.style] - qr code colors
  * @returns {string} &lt;svg> element outer HTML
  */
 export function createSvgTag ({ cellSize, margin, alt, title, qrcode, scalable, colors = getDefaultColors(), style }) {
@@ -49,7 +49,7 @@ export function createSvgTag ({ cellSize, margin, alt, title, qrcode, scalable, 
  * @param {number} opts.cellSize - cell size in pixels
  * @param {number} opts.margin - margin in pixels
  * @param {import('../qr-code.js').QrCode} opts.qrcode - QR Code data
- * @param {import('../utils/css-qrcode-style.js').QRCodeCssStyles} [opts.style] - qr code colors
+ * @param {import('../utils/css-qrcode-style.util.js').QRCodeCssStyles} [opts.style] - qr code colors
  * @returns {PathData} path info to draw the QR Code
  */
 export function getPathData ({ cellSize, margin, qrcode, style = getDefaultStyles() }) {
@@ -67,7 +67,7 @@ export function getPathData ({ cellSize, margin, qrcode, style = getDefaultStyle
  * @param {number} opts.cellSize - cell size in pixels
  * @param {number} opts.margin - margin in pixels
  * @param {import('../qr-code.js').QrCode} opts.qrcode - QR Code data
- * @param {import('../utils/css-qrcode-style.js').QRCodeCssStyles} opts.style - qr code colors
+ * @param {import('../utils/css-qrcode-style.util.js').QRCodeCssStyles} opts.style - qr code colors
  * @returns {string} &lt;path> `d` attribute value
  */
 function dotPathData ({ cellSize, margin, qrcode, style }) {
@@ -92,7 +92,7 @@ function dotPathData ({ cellSize, margin, qrcode, style }) {
  * @param {number} opts.cellSize - cell size in pixels
  * @param {number} opts.margin - margin in pixels
  * @param {import('../qr-code.js').QrCode} opts.qrcode - QR Code data
- * @param {import('../utils/css-qrcode-style.js').QRCodeCssStyles} opts.style - qr code colors
+ * @param {import('../utils/css-qrcode-style.util.js').QRCodeCssStyles} opts.style - qr code colors
  * @param {readonly [number, number,number,number]} opts.rect - qr code colors area to render, values are [minCol, minRow, maxCol, maxRow]
  * @returns {string} &lt;path> `d` attribute value
  */
@@ -159,7 +159,7 @@ const dotRenders = {
  * @param {number} opts.cellSize - cell size in pixels
  * @param {number} opts.margin - margin in pixels
  * @param {import('../qr-code.js').QrCode} opts.qrcode - QR Code data
- * @param {import('../utils/css-qrcode-style.js').QRCodeCssStyles} opts.style - QR code style
+ * @param {import('../utils/css-qrcode-style.util.js').QRCodeCssStyles} opts.style - QR code style
  * @returns {string} &lt;path> `d` attribute value
  */
 function finderCornerPathData ({ cellSize, margin, qrcode, style }) {
@@ -175,7 +175,7 @@ function finderCornerPathData ({ cellSize, margin, qrcode, style }) {
  * @param {number} y - qr code row position of finder path
  * @param {number} margin - margin in pixels
  * @param {import('../qr-code.js').QrCode} qrcode - QR Code data
- * @param {import('../utils/css-qrcode-style.js').QRCodeCssStyles} style - QR code style
+ * @param {import('../utils/css-qrcode-style.util.js').QRCodeCssStyles} style - QR code style
  * @returns {string} &lt;path> `d` attribute value
  */
 function finderCornerPath (cellSize, x, y, margin, qrcode, style) {
@@ -207,7 +207,7 @@ function finderCornerPath (cellSize, x, y, margin, qrcode, style) {
  * @param {number} opts.cellSize - cell size in pixels
  * @param {number} opts.margin - margin in pixels
  * @param {import('../qr-code.js').QrCode} opts.qrcode - QR Code data
- * @param {import('../utils/css-qrcode-style.js').QRCodeCssStyles} opts.style - qr code colors
+ * @param {import('../utils/css-qrcode-style.util.js').QRCodeCssStyles} opts.style - qr code colors
  * @returns {string} &lt;path> `d` attribute value
  */
 function finderCenterPathData ({ cellSize, margin, qrcode, style }) {
@@ -223,7 +223,7 @@ function finderCenterPathData ({ cellSize, margin, qrcode, style }) {
  * @param {number} y - qr code row position of finder path
  * @param {number} margin - margin in pixels
  *  @param {import('../qr-code.js').QrCode} qrcode - QR Code data
- *  @param {import('../utils/css-qrcode-style.js').QRCodeCssStyles} style - QR code style
+ *  @param {import('../utils/css-qrcode-style.util.js').QRCodeCssStyles} style - QR code style
  * @returns {string} &lt;path> `d` attribute value
  */
 function finderCenterPath (cellSize, x, y, margin, qrcode, style) {

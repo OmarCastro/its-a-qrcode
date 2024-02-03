@@ -9,7 +9,7 @@ import { getDefaultColors } from '../utils/css-colors.util.js'
  * @param {number} [opts.margin] - margin in pixels, defaults to {@link cellSize} * 4
  * @param {import('../qr-code.js').QrCode} opts.qrcode - QR Code data
  * @param {import('../utils/css-colors.util.js').QRCodeCssColors} [opts.colors] - qr code colors
- * @param {import('../utils/css-qrcode-style.js').QRCodeCssStyles} [opts.style] - qr code colors
+ * @param {import('../utils/css-qrcode-style.util.js').QRCodeCssStyles} [opts.style] - qr code colors
  */
 export function renderTo2dContext ({ context, margin, cellSize = 2, qrcode, colors = getDefaultColors(), style }) {
   margin ??= cellSize * 4

@@ -3,15 +3,20 @@ export const ROUNDED_STYLE = 'rounded'
 export const SQUARE_STYLE = 'square'
 export const DOT_STYLE = 'dot'
 
-const validStyles = new Set([DEFAULT_STYLE, ROUNDED_STYLE, SQUARE_STYLE, DOT_STYLE])
+const validStyles = /** @type {const} */([DEFAULT_STYLE, ROUNDED_STYLE, SQUARE_STYLE, DOT_STYLE])
 
 /**
  * @param {string} style - style to apply
- * @param {string} fallback - fallback color if `color` is invalid
+ * @param {QRCodeCssStyle} fallback - fallback color if `color` is invalid
+ * @returns {QRCodeCssStyle} validStyle
  */
 function getStyleOrElse (style, fallback) {
-  const isValidStyle = validStyles.has(style.toLowerCase())
-  return isValidStyle ? style : fallback
+  if(typeof style !== "string"){
+    return fallback
+  }
+  const toLowerCaseStyle = /** @type {QRCodeCssStyle} */ (style.toLocaleLowerCase())
+  const isValidStyle = validStyles.includes(toLowerCaseStyle)
+  return isValidStyle ? toLowerCaseStyle : fallback
 }
 
 /**
@@ -34,7 +39,7 @@ export function getDefaultStyles () {
 function parseQrcodeStyleProp (colorsVar, defaultColors) {
   const currentStyles = { ...defaultColors }
   if (colorsVar) {
-    const colorsList = colorsVar.split(/\s+/)
+    const colorsList = colorsVar.trim().split(/\s+/)
     const length = colorsList.length
     if (length >= 1) {
       currentStyles.dots = getStyleOrElse(colorsList[0], currentStyles.dots)
@@ -87,10 +92,14 @@ export function parseQrCodeStylesFromElement (element) {
 }
 
 /**
+ * @typedef {typeof validStyles[number]} QRCodeCssStyle
+ */
+
+/**
  * @typedef {object} QRCodeCssStyles
- * @property {string} dots -  QR Code dots draw style
- * @property {string} cornerBorder - QR Code position probe pattern border draw style
- * @property {string} cornerCenter - QR Code position probe pattern center  draw style
+ * @property {QRCodeCssStyle} dots -  QR Code dots draw style
+ * @property {QRCodeCssStyle} cornerBorder - QR Code position probe pattern border draw style
+ * @property {QRCodeCssStyle} cornerCenter - QR Code position probe pattern center  draw style
  */
 
 /**

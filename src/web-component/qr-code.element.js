@@ -4,7 +4,7 @@ import { createSvgTag } from '../render/svg.render.js'
 import { isValid } from '../error-correction/ec-level.js'
 import { preProcess } from '../utils/data-pre-processing.util.js'
 import { parseQrCodeColorsFromElement } from '../utils/css-colors.util.js'
-import { parseQrCodeStylesFromElement } from '../utils/css-qrcode-style.js'
+import { parseQrCodeStylesFromElement } from '../utils/css-qrcode-style.util.js'
 import css from './qr-code.element.css'
 
 let loadStyles = () => {
