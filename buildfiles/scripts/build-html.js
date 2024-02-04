@@ -55,10 +55,12 @@ const exampleCode = (strings, ...expr) => {
       .replace(/{{([^¦]+)¦qrcode-resize}}/g, '<span contenteditable="true" class="data-qrcode-resize-edit">$1</span>')
       .replace(/{{([^¦]+)¦qrcode-color}}/g, '<span contenteditable="true" class="data-qrcode-color-edit">$1</span>')
       .replace(/{{([^¦]+)¦qrcode-style}}/g, '<span contenteditable="true" class="data-qrcode-style-edit">$1</span>')
+      .replace(/{{([^¦]+)¦qrcode-dot-style}}/g, '<span contenteditable="true" class="data-qrcode-dot-style-edit">$1</span>')
+      .replace(/{{([^¦]+)¦qrcode-corner-border-style}}/g, '<span contenteditable="true" class="data-qrcode-corner-border-style-edit">$1</span>')
+      .replace(/{{([^¦]+)¦qrcode-corner-center-style}}/g, '<span contenteditable="true" class="data-qrcode-corner-center-style-edit">$1</span>')
       .replace(/{{([^¦]+)¦data-whitespace}}/g, '<span contenteditable="true" class="data-whitespace-edit">$1</span>')
     statement += strings[i + 1]
   }
-
   return statement
 }
 

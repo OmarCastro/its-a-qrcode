@@ -22,6 +22,12 @@
     
 }
 
+.styled-qr-code2 {
+    --qrcode-dot-style: dot;
+    --qrcode-corner-border-style: square;
+    --qrcode-corner-center-style: rounded;
+}
+
 .resizable {
     width: 500px;
     height: 450px;

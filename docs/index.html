@@ -508,8 +508,8 @@
         </div>
        
 
-        <p  ss:markdown>
-            It is possible to use separate CSS properties to define the color of a specific part of the QR Code the next code shows the supported CSS properties
+        <p ss:markdown>
+            It is possible to use separate CSS properties to define the color of a specific part of the QR Code. The next code shows the supported CSS properties
 
             ```css
             /* color */
@@ -590,6 +590,48 @@
                     height: 100%;        
                     --qrcode-style: {{dot dot dot¦qrcode-style}};        
                     --qrcode-resize: true;
+                }
+            </script>
+        </div>
+
+        <p ss:markdown>
+            Like color styling, it is possible to use separate CSS properties to define the style of a specific part of the QR Code. The next code shows the supported CSS properties
+
+            dotStyle: propertyOf('--qrcode-dot-style'),
+            cornerBorderStyle: propertyOf('--qrcode-corner-border-style'),
+            cornerCenterStyle: propertyOf('--qrcode-corner-center-style'),
+            ```css
+            /* body style */
+            --qrcode-dot-style: dot;
+
+            /* corner border style */
+            --qrcode-corner-border-style: square;
+
+            /* corner center style */
+            --qrcode-corner-center-style: rounded;
+            ```
+
+        </p>
+
+        <div class="example example--color">
+
+            <div class="resizable">
+                <qr-code class="styled-qr-code2">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua</qr-code>
+            </div>
+            <script type="text/plain" class="html-example">
+                <{{elementName}} class="styled-qr-code2">{{Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua¦text}}</{{elementName}}>
+            </script>
+            <script type="text/plain" class="css-example">
+                .styled-qr-code2 {
+                    --qrcode-dot-style: {{dot¦qrcode-dot-style}};
+
+                    --qrcode-corner-border-style:{{square¦qrcode-corner-border-style}};
+                    
+                    --qrcode-corner-center-style: {{rounded¦qrcode-corner-center-style}};
+                    width: 100%;
+                    height: 100%;        
+                    --qrcode-resize: true;
+
                 }
             </script>
         </div>

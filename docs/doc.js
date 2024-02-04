@@ -130,6 +130,12 @@ function handleInput (exampleElement, event) {
     reflectStyleOnElement(exampleElement, event, '--qrcode-color')
   } else if (event.target.matches('.data-qrcode-style-edit')) {
     reflectStyleOnElement(exampleElement, event, '--qrcode-style')
+  } else if (event.target.matches('.data-qrcode-dot-style-edit')) {
+    reflectStyleOnElement(exampleElement, event, '--qrcode-dot-style')
+  } else if (event.target.matches('.data-qrcode-corner-border-style-edit')) {
+    reflectStyleOnElement(exampleElement, event, '--qrcode-corner-border-style')
+  } else if (event.target.matches('.data-qrcode-corner-center-style-edit')) {
+    reflectStyleOnElement(exampleElement, event, '--qrcode-corner-center-style')
   } else if (event.target.matches('.data-whitespace-edit')) {
     reflectAttributeOnElement(exampleElement, event, 'data-whitespace')
   }
