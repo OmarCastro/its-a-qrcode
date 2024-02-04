@@ -190,6 +190,15 @@ function finderCornerPath (cellSize, x, y, margin, qrcode, style) {
     const innerRadius = innerRecLength / 2
     return circlePath(cx, cy, radius, 0) + circlePath(cx, cy, innerRadius, 1)
   }
+  if (style.cornerBorder === ROUNDED_STYLE) {
+    const outerR = 2.5 * cellSize
+    const lenBeforeArc = rectLenght - 2 * outerR
+    const outerRect = `M${rx + outerR},${ry}h${lenBeforeArc}a${outerR},${outerR} 0 0,1 ${outerR},${outerR}v${lenBeforeArc}a${outerR},${outerR} 0 0,1 -${outerR},${outerR}h${-lenBeforeArc}a${outerR},${outerR} 0 0,1 -${outerR},-${outerR}v${-lenBeforeArc}a${outerR},${outerR} 0 0,1 ${outerR},-${outerR}z`
+    const innerR = 1.5 * cellSize
+    const innerlenBeforeArc = rectLenght - 2 * outerR
+    const innerRect = `M${rx + outerR + innerlenBeforeArc},${ry + cellSize}h-${innerlenBeforeArc}a${innerR},${innerR} 0 0,0 -${innerR},${innerR}v${innerlenBeforeArc}a${innerR},${innerR} 0 0,0 ${innerR},${innerR}h${innerlenBeforeArc}a${innerR},${innerR} 0 0,0 ${innerR},-${innerR}v${-innerlenBeforeArc}a${innerR},${innerR} 0 0,0 -${innerR},-${innerR}z`
+    return outerRect + innerRect
+  }
   if (style.cornerBorder === DEFAULT_STYLE && style.dots !== DEFAULT_STYLE) {
     const drawRects = /** @type {const} */ ([
       [x, y, x + 7, y + 1],
@@ -235,6 +244,11 @@ function finderCenterPath (cellSize, x, y, margin, qrcode, style) {
     const cx = rx + radius
     const cy = ry + radius
     return circlePath(cx, cy, radius, 0)
+  }
+  if (style.cornerBorder === ROUNDED_STYLE) {
+    const arcR = cellSize
+    const lenBeforeArc = rectLenght - 2 * arcR
+    return `M${rx + arcR},${ry}h${lenBeforeArc}a${arcR},${arcR} 0 0,1 ${arcR},${arcR}v${lenBeforeArc}a${arcR},${arcR} 0 0,1 -${arcR},${arcR}h${-lenBeforeArc}a${arcR},${arcR} 0 0,1 -${arcR},-${arcR}v${-lenBeforeArc}a${arcR},${arcR} 0 0,1 ${arcR},-${arcR}z`
   }
 
   if (style.cornerCenter === DEFAULT_STYLE && style.dots !== DEFAULT_STYLE) {
