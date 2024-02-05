@@ -24,8 +24,8 @@
 
 .styled-qr-code2 {
     --qrcode-dot-style: dot;
-    --qrcode-corner-border-style: square;
-    --qrcode-corner-center-style: rounded;
+    --qrcode-corner-border-style: rounded;
+    --qrcode-corner-center-style: square;
 }
 
 .resizable {
