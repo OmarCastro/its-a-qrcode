@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- corner color support
+- `--qrcode-color` CSS property support
+- `--qrcode-corner-border-color` CSS property support
+- `--qrcode-corner-center-color` CSS property support
+- add style for body, corner border and center
+- `--qrcode-style` support CSS property support
+- `--qrcode-dot-style` CSS property support
+- `--qrcode-corner-border-style` CSS property support
+- `--qrcode-corner-center-style` CSS property support
+
 ## [0.3.0] - 2024-01-15
 
 ### Added
