@@ -11,7 +11,7 @@ const validStyles = /** @type {const} */([DEFAULT_STYLE, ROUNDED_STYLE, SQUARE_S
  * @returns {QRCodeCssStyle} validStyle
  */
 function getStyleOrElse (style, fallback) {
-  if(typeof style !== "string"){
+  if (typeof style !== 'string') {
     return fallback
   }
   const toLowerCaseStyle = /** @type {QRCodeCssStyle} */ (style.toLocaleLowerCase())
