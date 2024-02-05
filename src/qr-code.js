@@ -1,6 +1,7 @@
 import { ECBlocksInfo } from './error-correction/qr-ec-block.utils.js'
 import { fromString, CORRECTION_LEVEL_M } from './error-correction/ec-level.js'
-import { getPatternPosition, getBCHTypeInfo, getBCHTypeNumber, getMaskFunction } from './utils/qr-util.js'
+import { getPatternPositions } from './utils/alignment-pattern.util.js'
+import { getBCHTypeInfo, getBCHTypeNumber, getMaskFunction } from './utils/qr-util.js'
 import { createData } from './utils/create-data.util.js'
 import { QrKanji } from './modes/kanji.mode.js'
 import { Qr8BitByte } from './modes/byte.mode.js'
@@ -231,21 +232,8 @@ function getBestMaskPattern (qrcode) {
  * @param {QrCode} qrcode - qr code object
  */
 function setupPositionAdjustPattern (qrcode) {
-  const { modules } = qrcode
-
-  const pos = getPatternPosition(qrcode.typeNumber)
-
-  for (let i = 0; i < pos.length; i += 1) {
-    for (let j = 0; j < pos.length; j += 1) {
-      const row = pos[i]
-      const col = pos[j]
-
-      if (modules[row][col] != null) {
-        continue
-      }
-
-      paintAlignmentPattern(qrcode, row, col)
-    }
+  for (const [row, col] of getPatternPositions(qrcode.typeNumber)) {
+    paintAlignmentPattern(qrcode, row, col)
   }
 }
 

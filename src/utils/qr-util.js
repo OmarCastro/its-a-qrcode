@@ -1,5 +1,3 @@
-import { PATTERN_POSITION_TABLE } from './pattern-position-table.constants.js'
-
 /**
  * Get BCH code digit
  * @param {number} data - numeric data
@@ -41,12 +39,6 @@ export function getBCHTypeNumber (data) {
   }
   return (data << 12) | d
 };
-
-/**
- * @param {number} typeNumber - QR code version
- * @returns {readonly number[]} pattern positions
- */
-export const getPatternPosition = (typeNumber) => PATTERN_POSITION_TABLE[typeNumber - 1]
 
 /** @type {((i: number, j: number) => boolean)[]} */
 const maskPatternFunctions = [
