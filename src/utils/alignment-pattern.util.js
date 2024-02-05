@@ -36,7 +36,7 @@ export function calculateCoordinates (version) {
  * @param  {number} version - QR Code version
  * @returns {PatternPositions} list of pattern positions
  */
-export function getPatternPositions (version) {
+export function calculatePositions (version) {
   /** @type {Point[]} */
   const coords = []
   const pos = calculateCoordinates(version)
@@ -56,6 +56,24 @@ export function getPatternPositions (version) {
   }
 
   return Object.freeze(coords)
+}
+
+/**
+ * Used to memoize getPatternPosition calls
+ * @type {PatternPositions[]}
+ */
+const positionsCache = []
+
+/**
+ * @param {number} version - QR code version
+ * @returns {PatternPositions} pattern positions
+ */
+export function getPatternPositions (version) {
+  if (!Number.isInteger(version) || version < 1 || version > 40) {
+    throw Error(`invalid pattern @ version:${version}'`)
+  }
+  // eslint-disable-next-line sonarjs/no-empty-collection -- its a nullish coalesce assignment, it is expected
+  return (positionsCache[version - 1] ??= calculatePositions(version))
 }
 
 /**
