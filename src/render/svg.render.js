@@ -245,7 +245,7 @@ function finderCenterPath (cellSize, x, y, margin, qrcode, style) {
     const cy = ry + radius
     return circlePath(cx, cy, radius, 0)
   }
-  if (style.cornerBorder === ROUNDED_STYLE) {
+  if (style.cornerCenter === ROUNDED_STYLE) {
     const arcR = cellSize
     const lenBeforeArc = rectLenght - 2 * arcR
     return `M${rx + arcR},${ry}h${lenBeforeArc}a${arcR},${arcR} 0 0,1 ${arcR},${arcR}v${lenBeforeArc}a${arcR},${arcR} 0 0,1 -${arcR},${arcR}h${-lenBeforeArc}a${arcR},${arcR} 0 0,1 -${arcR},-${arcR}v${-lenBeforeArc}a${arcR},${arcR} 0 0,1 ${arcR},-${arcR}z`
