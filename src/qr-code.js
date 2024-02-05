@@ -89,34 +89,6 @@ export class QrCode {
   };
 
   /**
-   * @param {number} row - vertical position
-   * @param {number} col - horizontal position
-   * @returns {number} bitfields of block neighbo
-   */
-  blockArea (row, col) {
-    const { modules, moduleCount } = this
-
-    if (row < 0 || moduleCount <= row || col < 0 || moduleCount <= col) {
-      throw Error(`out of bounds row: ${row}, column: ${col}, module count: ${moduleCount}`)
-    }
-
-    let result = 0
-    const isStartRow = row === 0
-    const isEndRow = row === moduleCount - 1
-    if (!isStartRow) {
-      const upRow = modules[row - 1]
-      result |= (+upRow[col - 1] | 0) * NEIGHBOR_TOP_LEFT + (+upRow[col] | 0) * NEIGHBOR_TOP + (+upRow[col + 1] | 0) * NEIGHBOR_TOP_RIGHT
-    }
-    const midRow = modules[row]
-    result |= (+midRow[col - 1] | 0) * NEIGHBOR_LEFT + (+midRow[col] | 0) * NEIGHBOR_SELF + (+midRow[col + 1] | 0) * NEIGHBOR_RIGHT
-    if (!isEndRow) {
-      const downRow = modules[row + 1]
-      result |= (+downRow[col - 1] | 0) * NEIGHBOR_TOP_LEFT + (+downRow[col] | 0) * NEIGHBOR_TOP + (+downRow[col + 1] | 0) * NEIGHBOR_TOP_RIGHT
-    }
-    return result
-  }
-
-  /**
    *
    * @param {string} data - text data
    * @param {'Byte'|'Numeric'|'Alphanumeric'|'Kanji'} [mode] - qr mode to use, uses best mode if absent
