@@ -13,18 +13,10 @@
  */
 export function calculateCoordinates (version) {
   if (version === 1) return []
-
-  const positionCount = Math.floor(version / 7) + 2
-  const moduleCount = version * 4 + 17
-
-  const intervals = moduleCount === 145 ? 26 : Math.ceil((moduleCount - 13) / (2 * positionCount - 2)) * 2
-  const positions = [moduleCount - 7] // Last coordinate is always (size - 7)
-
-  for (let i = 1; i < positionCount - 1; i++) {
-    positions[i] = positions[i - 1] - intervals
-  }
-
-  return [6, ...positions.reverse()] // First coordinate is always 6
+  const intervals = Math.floor(version / 7) + 1
+  const distance = 4 * version + 4 // between first and last pattern
+  const step = version === 32 ? 26 : Math.ceil(distance / intervals / 2) * 2
+  return [6, ...Array.from({ length: intervals }, (_, index) => distance + 6 - (intervals - 1 - index) * step)]
 }
 
 /**
@@ -62,18 +54,20 @@ export function calculatePositions (version) {
  * Used to memoize getPatternPosition calls
  * @type {PatternPositions[]}
  */
-const positionsCache = []
+const positionsMemo = []
 
 /**
+ * Returns an array containing the positions of each alignment pattern.
+ * Each array's element represent the center point of the pattern as (x, y) coordinates
  * @param {number} version - QR code version
- * @returns {PatternPositions} pattern positions
+ * @returns {PatternPositions} list of pattern positions
  */
 export function getPatternPositions (version) {
   if (!Number.isInteger(version) || version < 1 || version > 40) {
     throw Error(`invalid pattern @ version:${version}'`)
   }
   // eslint-disable-next-line sonarjs/no-empty-collection -- its a nullish coalesce assignment, it is expected
-  return (positionsCache[version - 1] ??= calculatePositions(version))
+  return (positionsMemo[version - 1] ??= calculatePositions(version))
 }
 
 /**
