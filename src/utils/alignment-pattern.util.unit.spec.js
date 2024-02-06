@@ -1,7 +1,7 @@
 import { test } from '../../test-utils/unit/test.util.js'
 import { calculateCoordinates } from './alignment-pattern.util.js'
 
-const PATTERN_POSITION_TABLE = deepFreeze([
+const PATTERN_COORDINATES_TABLE = [
   [],
   [6, 18],
   [6, 22],
@@ -42,8 +42,8 @@ const PATTERN_POSITION_TABLE = deepFreeze([
   [6, 32, 58, 84, 110, 136, 162],
   [6, 26, 54, 82, 110, 138, 166],
   [6, 30, 58, 86, 114, 142, 170],
-])
+]
 
-test('validate Galois field exponent table', ({ expect }) => {
-  expect(new Array(40).fill(1).map((_, index) => calculateCoordinates(index + 1))).toEqual(PATTERN_POSITION_TABLE)
+test('validate calculateCoordinates coordinate table', ({ expect }) => {
+  expect(new Array(40).fill(1).map((_, index) => calculateCoordinates(index + 1))).toEqual(PATTERN_COORDINATES_TABLE)
 })
