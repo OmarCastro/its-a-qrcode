@@ -148,6 +148,7 @@ async function execTests () {
   const COVERAGE_DIR = 'reports/coverage'
   const REPORTS_TMP_DIR = 'reports/.tmp'
   const COVERAGE_TMP_DIR = `${REPORTS_TMP_DIR}/coverage`
+  const FINAL_COVERAGE_TMP_DIR = `${COVERAGE_TMP_DIR}/final`
   const COVERAGE_BACKUP_DIR = 'reports/coverage.bak'
 
   const COVERAGE_REPORTERS = '--reporter json-summary --reporter html --reporter lcov '
@@ -158,12 +159,12 @@ async function execTests () {
 
   await cmdSpawn(`TZ=UTC npx c8 --all ${UNIT_COVERAGE_INCLUDES} --temp-directory ".tmp/coverage" --report-dir reports/.tmp/coverage/unit ${COVERAGE_REPORTERS} playwright test`)
 
-  await rm_rf('reports/.tmp/coverage/final')
-  await mkdir_p('reports/.tmp/coverage/final')
-  await cp_R('.tmp/coverage', 'reports/.tmp/coverage/final/tmp')
+  await rm_rf(FINAL_COVERAGE_TMP_DIR)
+  await mkdir_p(FINAL_COVERAGE_TMP_DIR)
+  await cp_R('.tmp/coverage', `${FINAL_COVERAGE_TMP_DIR}/tmp`)
   const uiTestsExecuted = existsSync('reports/.tmp/coverage/ui/tmp')
   if (uiTestsExecuted) {
-    await cp_R('reports/.tmp/coverage/ui/tmp', 'reports/.tmp/coverage/final')
+    await cp_R('reports/.tmp/coverage/ui/tmp', FINAL_COVERAGE_TMP_DIR)
     await cmdSpawn(`TZ=UTC npx c8  --all ${UI_COVERAGE_INCLUDES} ${COVERAGE_REPORTERS} --report-dir reports/.tmp/coverage/ui report`)
     logStage('merge unit & ui coverage reports')
   }
