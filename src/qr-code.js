@@ -1,7 +1,8 @@
 import { ECBlocksInfo } from './error-correction/qr-ec-block.utils.js'
 import { fromString, CORRECTION_LEVEL_M } from './error-correction/ec-level.js'
 import { getPatternPositions } from './utils/alignment-pattern.util.js'
-import { getBCHTypeInfo, getBCHTypeNumber, getMaskFunction } from './utils/qr-util.js'
+import { getBCHTypeInfo, getBCHTypeNumber } from './utils/qr-util.js'
+import { getMaskPatternFunction } from './mask-pattern/qr-mask-pattern.util.js'
 import { createData } from './utils/create-data.util.js'
 import { QrKanji } from './modes/kanji.mode.js'
 import { Qr8BitByte } from './modes/byte.mode.js'
@@ -336,7 +337,7 @@ function mapData (data, maskPattern, qrcode) {
   let row = moduleCount - 1
   let bitIndex = 7
   let byteIndex = 0
-  const maskFunc = getMaskFunction(maskPattern)
+  const maskFunc = getMaskPatternFunction(maskPattern)
 
   for (let col = moduleCount - 1; col > 0; col -= 2) {
     if (col === 6) col -= 1

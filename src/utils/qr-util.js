@@ -39,27 +39,3 @@ export function getBCHTypeNumber (data) {
   }
   return (data << 12) | d
 };
-
-/** @type {((i: number, j: number) => boolean)[]} */
-const maskPatternFunctions = [
-  (i, j) => (i + j) % 2 === 0, // QRMaskPattern.PATTERN000
-  (i, _) => i % 2 === 0, // QRMaskPattern.PATTERN001
-  (_, j) => j % 3 === 0, // QRMaskPattern.PATTERN010
-  (i, j) => (i + j) % 3 === 0, // QRMaskPattern.PATTERN011
-  (i, j) => (Math.floor(i / 2) + Math.floor(j / 3)) % 2 === 0, // QRMaskPattern.PATTERN100
-  (i, j) => (i * j) % 2 + (i * j) % 3 === 0, // QRMaskPattern.PATTERN101
-  (i, j) => ((i * j) % 2 + (i * j) % 3) % 2 === 0, // QRMaskPattern.PATTERN110
-  (i, j) => ((i * j) % 3 + (i + j) % 2) % 2 === 0, // QRMaskPattern.PATTERN110
-]
-
-/**
- * @param {number} maskPattern - mask pattern value
- * @returns {((i: number, j: number) => boolean)} mask pattern function
- */
-export function getMaskFunction (maskPattern) {
-  const result = maskPatternFunctions[maskPattern]
-  if (!result) {
-    throw Error(`bad maskPattern: ${maskPattern}`)
-  }
-  return result
-};
