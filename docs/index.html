@@ -542,9 +542,12 @@
             </script>
             <script type="text/plain" class="css-example">
                 .example--color__qr {
-                    --qrcode-dark-color: rgba(0, 0, 200, 0.8);
-                    --qrcode-light-color: pink;
-                    --qrcode-corner-color: black #f00;
+
+                    --qrcode-dark-color: {{rgba(0, 0, 200, 0.8)¦qrcode-dark-color}};
+
+                    --qrcode-light-color: {{pink¦qrcode-light-color}};
+                    
+                    --qrcode-corner-color: {{black #f00¦qrcode-corner-color}};
                 }
             </script>
         </div>
