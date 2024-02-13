@@ -130,22 +130,13 @@
             <div ss:markdown>
                 To be easier to handle specific data types, the text content is processed before turning into a QR Code, mostly whitespace, as to be more flexible on where to put the content.
                 
-                The next examples in this section will show the QR Code content with visible whitespaces to get which symbol represents. The next table can be used as a guide
+                The next examples in this section will show the QR Code content with visible whitespaces to get which symbol represents. The next list can be used as a guide
                 to understand the symbols
 
-                <table class="whitespace-table">
-                    <caption>
-                        Visible whitespace symbol table
-                      </caption>
-                      <tr>
-                        <th scope="col">Symbol</th>
-                        <th scope="col">Description</th>
-                      </tr>
-                      <tr><td>⏎</td><td>Carriage Return (<code>\r</code>)</td></tr>
-                      <tr><td>¶</td><td>Line Feed (<code>\n</code>) </td></tr>
-                      <tr><td>⸱</td><td>Space character </td></tr>
-                      <tr><td>→</td><td>Tab character  (<code>\t</code>) </td></tr>
-                </table>
+                - **Carriage Return** (`\r`), will print `⏎`
+                - **Line Feed** (`\n`), will print `¶`
+                - **space** will print `⸱`
+                - **Tab** (`\t`) will print `→`
 
                 The next example shows that even with space and new lines the content is the trimmed text. This is the default behaviour
             </div>
@@ -546,7 +537,7 @@
                     --qrcode-dark-color: {{rgba(0, 0, 200, 0.8)¦qrcode-dark-color}};
 
                     --qrcode-light-color: {{pink¦qrcode-light-color}};
-                    
+
                     --qrcode-corner-color: {{black #f00¦qrcode-corner-color}};
                 }
             </script>
