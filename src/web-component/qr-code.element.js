@@ -84,10 +84,12 @@ function applyQrCode (element) {
 
   const colors = parseQrCodeColorsFromElement(element)
   const style = parseQrCodeStylesFromElement(element)
+  const marginComputedStyle = getComputedStyle(element).getPropertyValue('--qrcode-margin')
+  const margin = Number.isInteger(+marginComputedStyle) ? +marginComputedStyle : undefined
 
   const renderMode = getRenderMode(element)
   if (renderMode === 'svg') {
-    const svg = createSvgTag({ qrcode: qr, colors, scalable: isResizeEnabled(element), style })
+    const svg = createSvgTag({ qrcode: qr, colors, margin, scalable: isResizeEnabled(element), style })
     shadowRoot.innerHTML = svg
     return
   }
