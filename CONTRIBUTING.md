@@ -1,4 +1,4 @@
-# Contributing to its-a-qrcode
+# Contributing to "It's a QR Code"
 
 ## Code of conduct
 
@@ -8,12 +8,12 @@ will and will not be tolerated.
 
 ## Open Development
 
- All work on its-a-qrcode happens directly on GitHub. Both team members and contributors send pull
+ All work on "It's a QR Code" happens directly on GitHub. Both team members and contributors send pull
 requests which go through the same review process
 
 ## Versioning Policy
 
- its-a-qrcode follows semantic versioning. We release patch versions for critical bugfixes, minor
+ "It's a QR Code" follows semantic versioning. We release patch versions for critical bugfixes, minor
 versions for new features or non-essential changes, and major versions for any breaking changes.
  When we make breaking changes, we also introduce deprecation warnings in a minor version so that
 our users learn about the upcoming changes and migrate their code in advance.
@@ -43,7 +43,7 @@ problem does not already exist.
 
 ## Development Workflow
 
-After cloning its-a-color-wheel, you can run several commands, the first time you run any of the following commands, it will automatically install the dependencies.
+After cloning the project's code repository, you can run several commands, the first time you run any of the following commands, it will automatically install dependencies with `npm ci`.
 
 - `npm run lint` checks code style and validates assets.
 - `npm run linc` is like `npm run lint` but faster because it only checks files that differ in your branch.
