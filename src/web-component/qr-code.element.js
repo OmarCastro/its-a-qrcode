@@ -84,8 +84,8 @@ function applyQrCode (element) {
 
   const colors = parseQrCodeColorsFromElement(element)
   const style = parseQrCodeStylesFromElement(element)
-  const marginComputedStyle = getComputedStyle(element).getPropertyValue('--qrcode-margin')
-  const margin = Number.isInteger(+marginComputedStyle) ? +marginComputedStyle : undefined
+  const marginComputedStyle = getComputedStyle(element).getPropertyValue('--qrcode-margin').trim()
+  const margin = /^\d+$/.test(marginComputedStyle) ? +marginComputedStyle : undefined
 
   const renderMode = getRenderMode(element)
   if (renderMode === 'svg') {
