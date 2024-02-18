@@ -136,14 +136,18 @@ function handleInput (exampleElement, event) {
     reflectStyleOnElement(exampleElement, event, '--qrcode-corner-border-style')
   } else if (event.target.matches('.data-qrcode-corner-center-style-edit')) {
     reflectStyleOnElement(exampleElement, event, '--qrcode-corner-center-style')
-  } else if (event.target.matches('.data-whitespace-edit')) {
-    reflectAttributeOnElement(exampleElement, event, 'data-whitespace')
   } else if (event.target.matches('.data-qrcode-dark-color-edit')) {
     reflectStyleOnElement(exampleElement, event, '--qrcode-dark-color')
   } else if (event.target.matches('.data-qrcode-light-color-edit')) {
     reflectStyleOnElement(exampleElement, event, '--qrcode-light-color')
   } else if (event.target.matches('.data-qrcode-corner-color-edit')) {
     reflectStyleOnElement(exampleElement, event, '--qrcode-corner-color')
+  } else if (target.matches('.example-attribute-edit')) {
+    const attribute = target.getAttribute('data-attribute').trim()
+    reflectAttributeOnElement(exampleElement, event, attribute)
+  } else if (target.matches('.example-style-edit')) {
+    const cssProperty = target.getAttribute('data-style').trim()
+    reflectStyleOnElement(exampleElement, event, cssProperty)
   }
 }
 
