@@ -124,8 +124,6 @@ function handleInput (exampleElement, event) {
     if (node) { node.textContent = event.target.textContent }
   } else if (event.target.matches('.data-error-correction-level-edit')) {
     reflectAttributeOnElement(exampleElement, event, 'data-error-correction-level')
-  } else if (event.target.matches('.data-qrcode-corner-border-style-edit')) {
-    reflectStyleOnElement(exampleElement, event, '--qrcode-corner-border-style')
   } else if (event.target.matches('.data-qrcode-corner-center-style-edit')) {
     reflectStyleOnElement(exampleElement, event, '--qrcode-corner-center-style')
   } else if (event.target.matches('.data-qrcode-dark-color-edit')) {
