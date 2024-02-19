@@ -119,7 +119,7 @@
                 .resizable-qr-code {
                     width: 100%;
                     height: 100%;                
-                    --qrcode-resize: {{true¦qrcode-resize}};
+                    --qrcode-resize: {{true¦style¦--qrcode-resize}};
                 }
             </script>
             <p ss:markdown>To enable qr code resize, one of the values are supported: `true`, `yes`, `enable`, `enabled`. It is case insensitive (`Yes` equals to `yes`). Any other value disables it </p>
@@ -290,7 +290,7 @@
                     </qr-code>
                 </div>
                 <script type="text/plain" class="html-example">
-                    <{{elementName}} data-whitespace="{{vcard¦data-whitespace}}">{{
+                    <{{elementName}} data-whitespace="{{vcard¦attr¦data-whitespace}}">{{
                         BEGIN:VCARD
                         VERSION:4.0
                         FN:Lorem Ipsum

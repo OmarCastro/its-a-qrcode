@@ -54,8 +54,6 @@ const exampleCode = (strings, ...expr) => {
       .replace(/{{([^¦]+)¦style¦([^}]+)}}/g, '<span contenteditable="true" class="example-style-edit" data-style="$2">$1</span>')
       .replace(/{{([^¦]+)¦ec-level}}/g, '<span contenteditable="true" class="data-error-correction-level-edit">$1</span>')
       .replace(/{{([^¦]+)¦ec-level}}/g, '<span contenteditable="true" class="data-error-correction-level-edit">$1</span>')
-      .replace(/{{([^¦]+)¦qrcode-resize¦([^}]+)}}/g, '<span contenteditable="true" class="data-qrcode-resize-edit" data-bind-selector="$2">$1</span>')
-      .replace(/{{([^¦]+)¦qrcode-resize}}/g, '<span contenteditable="true" class="data-qrcode-resize-edit">$1</span>')
       .replace(/{{([^¦]+)¦qrcode-color}}/g, '<span contenteditable="true" class="data-qrcode-color-edit">$1</span>')
       .replace(/{{([^¦]+)¦qrcode-style}}/g, '<span contenteditable="true" class="data-qrcode-style-edit">$1</span>')
       .replace(/{{([^¦]+)¦qrcode-dot-style}}/g, '<span contenteditable="true" class="data-qrcode-dot-style-edit">$1</span>')
