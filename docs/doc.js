@@ -124,8 +124,6 @@ function handleInput (exampleElement, event) {
     if (node) { node.textContent = event.target.textContent }
   } else if (event.target.matches('.data-error-correction-level-edit')) {
     reflectAttributeOnElement(exampleElement, event, 'data-error-correction-level')
-  } else if (event.target.matches('.data-qrcode-light-color-edit')) {
-    reflectStyleOnElement(exampleElement, event, '--qrcode-light-color')
   } else if (event.target.matches('.data-qrcode-corner-color-edit')) {
     reflectStyleOnElement(exampleElement, event, '--qrcode-corner-color')
   } else if (target.matches('.example-attribute-edit')) {
