@@ -49,7 +49,6 @@ const exampleCode = (strings, ...expr) => {
       .replaceAll('{{elementNameEditable}}', '<span class="component-name-edit keep-markup" contenteditable="true">i18n-container</span>')
       .replace(/{{([^¦]+)¦text}}/g, '<span contenteditable="true" class="text-edit">$1</span>')
       .replace(/{{([^¦]+)¦text¦([^}]+)}}/g, '<span contenteditable="true" class="text-edit" data-bind-selector="$2">$1</span>')
-      .replace(/{{([^¦]+)¦lang¦([^}]+)}}/g, '<span contenteditable="true" class="lang-edit" data-bind-selector="$2">$1</span>')
       .replace(/{{([^¦]+)¦attr¦([^}]+)}}/g, '<span contenteditable="true" class="example-attribute-edit" data-attribute="$2">$1</span>')
       .replace(/{{([^¦]+)¦style¦([^}]+)}}/g, '<span contenteditable="true" class="example-style-edit" data-style="$2">$1</span>')
     statement += strings[i + 1]
