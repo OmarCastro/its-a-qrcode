@@ -85,16 +85,17 @@ function applyQrCode (element) {
   const colors = parseQrCodeColorsFromElement(element)
   const style = parseQrCodeStylesFromElement(element)
   const marginComputedStyle = getComputedStyle(element).getPropertyValue('--qrcode-margin').trim()
-  const margin = /^\d+$/.test(marginComputedStyle) ? +marginComputedStyle : undefined
+  const cellSize = 2
+  const margin = /^\d+$/.test(marginComputedStyle) ? +marginComputedStyle * cellSize : undefined
 
   const renderMode = getRenderMode(element)
   if (renderMode === 'svg') {
-    const svg = createSvgTag({ qrcode: qr, colors, margin, scalable: isResizeEnabled(element), style })
+    const svg = createSvgTag({ qrcode: qr, colors, cellSize, margin, scalable: isResizeEnabled(element), style })
     shadowRoot.innerHTML = svg
     return
   }
 
-  const imgHtml = createImgTag({ qrcode: qr, colors, style })
+  const imgHtml = createImgTag({ qrcode: qr, colors, cellSize, margin, style })
   const oldImgElement = shadowRoot.querySelector('img')
   if (oldImgElement) {
     const updated = updateImgElement(oldImgElement, imgHtml)
