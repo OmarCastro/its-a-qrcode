@@ -205,6 +205,10 @@ span[contenteditable="true"] {
     transition: all linear 300ms;
 }
 
+span[contenteditable="true"]:empty {
+    padding-right: 0.5em;
+}
+
 pre:hover code span[contenteditable="true"] { 
     border: 1px solid #000;
 }
