@@ -22,8 +22,8 @@ test('getBestMode - other chars will set best mode to byte', ({ expect }) => {
   expect(getBestMode("Lorem ipsum dolor sit amet").mode).toEqual(MODE_8BIT_BYTE)
 })
 
-test('getCharCountBitLength - invalid type will throw error', ({ expect }) => {
-  expect(() => getCharCountBitLength(MODE_NUMBER, 50)).toThrow(/invalid type: 50/);
+test('getCharCountBitLength - invalid version will throw error', ({ expect }) => {
+  expect(() => getCharCountBitLength(MODE_NUMBER, 50)).toThrow(/invalid version: 50/);
 })
 
 test('getCharCountBitLength - invalid mode will throw error', ({ expect }) => {
