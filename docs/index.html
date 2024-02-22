@@ -628,6 +628,40 @@
             </script>
         </div>
 
+        <h3> Margin </h3>
+
+        <p ss:markdown>
+
+        It is recommended to have a margin for QR code readers to indentify and parse QR Codes.
+
+        The default margin is 4 modules, or 4 cells in a QR code grid, you can define the amount of modules to define the QRCode margin by setting `--qrcode-margin`, 
+        only 0 and positive integers values are accepted, in case of invalid or absent `--qrcode-margin` value, the default margin is applied
+        </p>
+
+        <div class="example example--margin">
+
+            <div class="resizable">
+                <qr-code class="margin-qr-code">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua</qr-code>
+            </div>
+            <script type="text/plain" class="html-example">
+                <{{elementName}} class="margin-qr-code">{{Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua¦text}}</{{elementName}}>
+            </script>
+            <script type="text/plain" class="css-example">
+                .margin-qr-code {
+
+                    --qrcode-margin:{{4¦style¦--qrcode-margin}};
+
+                    width: 100%;
+                    height: 100%;        
+                    --qrcode-resize: true;
+
+                }
+            </script>
+        </div>
+
+    </div>
+
+
     </div>
         
     </body>
