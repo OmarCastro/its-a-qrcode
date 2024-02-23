@@ -8,6 +8,12 @@ const ECCharacteristics = [
   {
     version: 1,
     totalCodewordCount: 26,
+    counts: {
+      L: {totalDc: 1, totalEc: 7, maxDc: 3, maxEc: 5},
+      M: {totalDc: 1, totalEc: 7, maxDc: 3, maxEc: 5},
+      Q: {totalDc: 1, totalEc: 7, maxDc: 3, maxEc: 5},
+      H: {totalDc: 1, totalEc: 7, maxDc: 3, maxEc: 5}
+    }
     // totalECCodeWordCount: { L: 7, M: 10, Q: 13, H: 17 },
   }, {
     version: 2,
@@ -175,6 +181,22 @@ test('Error correction block - ECBlocksInfo is the same instance if equal (a.k.a
   const expeced = ECCharacteristics.map(() => [true, true, true, true])
   expect(checks).toEqual(expeced)
 })
+
+
+test('Error correction block - all blocks have the same total number of codewords in a version 2', ({ expect }) => {
+  const checks = ECCharacteristics.map((versionChar) => {
+    const {totalDcCount, totalEcCount, maxEcCount, maxDcCount} = ECBlocksInfo(versionChar.version, level.bit)
+
+    const {counts} = versionChar
+    if(!counts){
+      return null
+    }
+  })
+  const expeced = ECCharacteristics.map(() => [true, true, true, true])
+  expect(checks).toEqual(expeced)
+})
+
+
 
 test('Error correction block - ECBlocksInfo throws error on invalid inputs', ({ expect }) => {
   const checks = [
