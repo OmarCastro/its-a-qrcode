@@ -14,16 +14,24 @@ const ECCharacteristics = [
       Q: {totalDc: 13, totalEc: 13, maxDc: 13, maxEc: 13},
       H: {totalDc: 9, totalEc: 17, maxDc: 9, maxEc: 17},
     }
-
-    // totalECCodeWordCount: { L: 7, M: 10, Q: 13, H: 17 },
   }, {
     version: 2,
     totalCodewordCount: 44,
-    // totalECCodeWordCount: { L: 7, M: 10, Q: 13, H: 17 },
+    counts: {
+      L: {totalDc: 34, totalEc: 10, maxDc: 34, maxEc: 10},
+      M: {totalDc: 28, totalEc: 16, maxDc: 28, maxEc: 16},
+      Q: {totalDc: 22, totalEc: 22, maxDc: 22, maxEc: 22},
+      H: {totalDc: 16, totalEc: 28, maxDc: 16, maxEc: 28},
+    }
   }, {
     version: 3,
     totalCodewordCount: 70,
-    // totalECCodeWordCount: { L: 7, M: 10, Q: 13, H: 17 },
+    counts: {
+      L: {totalDc: 55, totalEc: 15, maxDc: 55, maxEc: 15},
+      M: {totalDc: 44, totalEc: 26, maxDc: 44, maxEc: 26},
+      Q: {totalDc: 34, totalEc: 36, maxDc: 17, maxEc: 18},
+      H: {totalDc: 26, totalEc: 44, maxDc: 13, maxEc: 22},
+    }
   }, {
     version: 4,
     totalCodewordCount: 100,
