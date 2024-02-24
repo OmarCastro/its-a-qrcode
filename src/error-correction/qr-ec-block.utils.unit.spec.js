@@ -9,11 +9,12 @@ const ECCharacteristics = [
     version: 1,
     totalCodewordCount: 26,
     counts: {
-      L: {totalDc: 1, totalEc: 7, maxDc: 3, maxEc: 5},
-      M: {totalDc: 1, totalEc: 7, maxDc: 3, maxEc: 5},
-      Q: {totalDc: 1, totalEc: 7, maxDc: 3, maxEc: 5},
-      H: {totalDc: 1, totalEc: 7, maxDc: 3, maxEc: 5}
+      L: {totalDc: 19, totalEc: 7, maxDc: 19, maxEc: 7},
+      M: {totalDc: 16, totalEc: 10, maxDc: 16, maxEc: 10},
+      Q: {totalDc: 13, totalEc: 13, maxDc: 13, maxEc: 13},
+      H: {totalDc: 9, totalEc: 17, maxDc: 9, maxEc: 17},
     }
+
     // totalECCodeWordCount: { L: 7, M: 10, Q: 13, H: 17 },
   }, {
     version: 2,
@@ -183,16 +184,18 @@ test('Error correction block - ECBlocksInfo is the same instance if equal (a.k.a
 })
 
 
-test('Error correction block - all blocks have the same total number of codewords in a version 2', ({ expect }) => {
+test('Error correction block - ECBlocksInfo EC and DC counts are valid', ({ expect }) => {
   const checks = ECCharacteristics.map((versionChar) => {
-    const {totalDcCount, totalEcCount, maxEcCount, maxDcCount} = ECBlocksInfo(versionChar.version, level.bit)
-
     const {counts} = versionChar
     if(!counts){
-      return null
+      return undefined
     }
+    return Object.fromEntries(ECLevels.map(level => {
+      const {totalDcCount, totalEcCount, maxEcCount, maxDcCount} = ECBlocksInfo(versionChar.version, level.bit)
+      return [level.name[0], {totalDc: totalDcCount, totalEc: totalEcCount, maxDc: maxDcCount, maxEc: maxEcCount}]
+    }))
   })
-  const expeced = ECCharacteristics.map(() => [true, true, true, true])
+  const expeced = ECCharacteristics.map((versionChar) => versionChar.counts)
   expect(checks).toEqual(expeced)
 })
 
