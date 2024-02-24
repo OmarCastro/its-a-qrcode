@@ -401,7 +401,7 @@ test('Error correction block - ECBlocksInfo is the same instance if equal (a.k.a
 })
 
 
-test('Error correction block - ECBlocksInfo EC and DC counts are valid', ({ expect }) => {
+test('Error correction block - ECBlocksInfo error correction codewords and data codewords counts are valid', ({ expect }) => {
   const checks = ECCharacteristics.map((versionChar) => {
     const {counts} = versionChar
     if(!counts){
