@@ -57,18 +57,10 @@ function buildECBlocksInfo (version, errorCorrectionLevel) {
   const totalEcCount = ecBlockSize * blockAmount
   const maxDcCount = dcBlockSize + (group2Blocks > 0 ? 1 : 0)
   const maxEcCount = ecBlockSize
-
-  const group1Block = ECBlock(totalBlockCount, dcBlockSize)
-  const group2Block = ECBlock(totalCount + 1, dcBlockSize + 1)
-
-  const blocks = []
-  for (let i = 0; i < group1Blocks; ++i) {
-    blocks.push(group1Block)
-  }
-  for (let i = 0; i < group2Blocks; ++i) {
-    blocks.push(group2Block)
-  }
-
+  const blocks = Object.freeze([
+    ...new Array(group1Blocks).fill(ECBlock(totalBlockCount, dcBlockSize)),
+    ...new Array(group2Blocks).fill(ECBlock(totalBlockCount + 1, dcBlockSize + 1)),
+  ])
   return Object.freeze({ blocks, totalCount, totalDcCount, totalEcCount, maxDcCount, maxEcCount })
 }
 
