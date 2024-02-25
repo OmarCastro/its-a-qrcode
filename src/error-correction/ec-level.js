@@ -15,7 +15,7 @@ const correctionLevelMap = correctionLevelNames.reduce((acc, name, bit) => {
  * Get error correction level from string
  * @param {string} string - correction level text
  * @throws error on invalid correction level
- * @returns {{ bit: number }} correction level object
+ * @returns {{ bit: number, name: string }} correction level object
  */
 export function fromString (string) {
   if (typeof string !== 'string') {
