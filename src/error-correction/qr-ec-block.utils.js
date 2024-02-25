@@ -9,49 +9,64 @@ import { CORRECTION_LEVEL_M, CORRECTION_LEVEL_Q } from './ec-level.js'
 const ECBlock = (totalCount, dataCount) => Object.freeze({ totalCount, dataCount, ecCount: totalCount - dataCount })
 
 /**
- * @param {number} typeNumber - qr code version
- * @param {number} errorCorrectionLevel - numeric value of error Correction Level
+ * gets how much actual space there is in a QR Code, i.e. codewords that can be used to store data and error correction information in a specific version.
+ *
+ * Version 1 has no alignment pattern, so the amount of available modules is:
+ *
+ * 21**2 (441, where 21 is the size of the QR Code)
+ * - 3⋅8⋅8 (192, for 3 finder patterns)
+ * - 2⋅5 (10, the timing patterns)
+ * - 1 (the dark module)
+ * - 2⋅15 (30, the error level and mask information)
+ *
+ *
+ * for a total of 208, i.e. 26 codewords.
+ *
+ * For larger versions, we have to compute this (let v the version number and n the number of alignment pattern coordinates):
+ *
+ * v2 (total modules)
+ * - 3⋅8⋅8 (finder patterns)
+ * - (n2 - 3)⋅5 (alignment patterns)
+ * - 2⋅(4‍v + 1) (timing patterns)
+ * + 2⋅(n - 2)⋅5 (readding the intersection of alignment and timing patterns)
+ * - 1 (dark module)
+ * - 2⋅3⋅6 (format data, only if v > 6)
+ * @param {number} version - qr code version
+ * @returns {number} total Count
  */
-const queryECBlocks = function (typeNumber, errorCorrectionLevel) {
-  const index = (typeNumber - 1) * 4 + errorCorrectionLevel
-  const rawEcBlock = EC_BLOCK_TABLE[index]
-
-  const length = rawEcBlock.length / 3
-
-  const list = []
-
-  for (let i = 0; i < length; i += 1) {
-    const count = rawEcBlock[i * 3 + 0]
-    const totalCount = rawEcBlock[i * 3 + 1]
-    const dataCount = rawEcBlock[i * 3 + 2]
-
-    for (let j = 0; j < count; j += 1) {
-      list.push(ECBlock(totalCount, dataCount))
-    }
-  }
-
-  return Object.freeze(list)
+function getAvailableModules (version) {
+  return version === 1 ? 208 : 16 * (version + 4) ** 2 - (5 * (Math.floor(version / 7) + 2) - 1) ** 2 - (version > 6 ? 172 : 136)
 }
 
 /**
- * @param {number} typeNumber - qr code version
+ * @param {number} version - qr code version
  * @param {number} errorCorrectionLevel - numeric value of error Correction Level
  * @returns {ECBlocksInfo} block info
  */
-function buildECBlocksInfo (typeNumber, errorCorrectionLevel) {
-  const blocks = queryECBlocks(typeNumber, errorCorrectionLevel)
-  let totalCount = 0
-  let totalDcCount = 0
-  let totalEcCount = 0
-  let maxDcCount = 0
-  let maxEcCount = 0
+function buildECBlocksInfo (version, errorCorrectionLevel) {
+  const totalCount = getAvailableModules(version) >> 3
+  const index = ((version - 1) * 4 + errorCorrectionLevel) * 2
+  const blockAmount = EC_BLOCK_TABLE[index + 1]
+  const group2Blocks = totalCount % blockAmount
+  const group1Blocks = blockAmount - group2Blocks
+  const totalBlockCount = Math.floor(totalCount / blockAmount)
+  const ecBlockSize = EC_BLOCK_TABLE[index]
+  const dcBlockSize = totalBlockCount - ecBlockSize
 
-  for (const block of blocks) {
-    totalCount += block.totalCount
-    totalDcCount += block.dataCount
-    totalEcCount += block.ecCount
-    maxDcCount = Math.max(maxDcCount, block.dataCount)
-    maxEcCount = Math.max(maxEcCount, block.ecCount)
+  const totalDcCount = dcBlockSize * group1Blocks + (dcBlockSize + 1) * group2Blocks
+  const totalEcCount = ecBlockSize * blockAmount
+  const maxDcCount = dcBlockSize + (group2Blocks > 0 ? 1 : 0)
+  const maxEcCount = ecBlockSize
+
+  const group1Block = ECBlock(totalBlockCount, dcBlockSize)
+  const group2Block = ECBlock(totalCount + 1, dcBlockSize + 1)
+
+  const blocks = []
+  for (let i = 0; i < group1Blocks; ++i) {
+    blocks.push(group1Block)
+  }
+  for (let i = 0; i < group2Blocks; ++i) {
+    blocks.push(group2Block)
   }
 
   return Object.freeze({ blocks, totalCount, totalDcCount, totalEcCount, maxDcCount, maxEcCount })

@@ -4,17 +4,7 @@ import { gexp } from '../utils/qr-math.util.js'
 import { getErrorCorrectPolynomial } from './ec-polynomial.js'
 import { EC_BLOCK_TABLE } from './qr-ec-block-table.constants.js'
 
-const maxEcWidth = Math.max(...EC_BLOCK_TABLE.flatMap(ecBlock => {
-  const length = ecBlock.length / 3
-  const list = []
-  for (let i = 0; i < length; i += 1) {
-    const totalCount = ecBlock[i * 3 + 1]
-    const dataCount = ecBlock[i * 3 + 2]
-    list.push(totalCount - dataCount)
-  }
-  return list
-}))
-
+const maxEcWidth = Math.max(...EC_BLOCK_TABLE.filter((_, i) => i % 2 === 0))
 const maxEcWidthRange = Object.freeze([...new Array(maxEcWidth).keys()])
 
 /** original and simplified implementation of getErrorCorrectPolynomial */
