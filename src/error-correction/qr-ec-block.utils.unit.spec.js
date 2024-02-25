@@ -435,9 +435,9 @@ test('Error correction block - ECBlocksInfo throws error on invalid inputs', ({ 
 
 
 
-test('Error correction block - all blocks have the same total number of codewords in a version', ({ expect }) => {
-  const checks = ECCharacteristics.map((versionChar) => ECLevels.map(level => ECBlocksInfo(versionChar.version, level.bit).totalCount === versionChar.totalCodewordCount))
-  const expeced = ECCharacteristics.map(() => [true, true, true, true])
+test('Error correction block - all blocks have the same valid number of codewords in a version', ({ expect }) => {
+  const checks = ECCharacteristics.map((versionChar) => ECLevels.map(level => ECBlocksInfo(versionChar.version, level.bit).totalCount))
+  const expeced = ECCharacteristics.map((versionChar) => new Array(4).fill(versionChar.totalCodewordCount))
   expect(checks).toEqual(expeced)
 })
 
