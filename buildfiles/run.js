@@ -269,6 +269,7 @@ async function buildTest () {
 
   const metafile = (await buildDocsDist).metafile
   await mkdir_p('reports')
+  logStage('generating module graph')
   await writeFile('reports/module-graph.json', JSON.stringify(metafile, null, 2))
   const svg = await createModuleGraphSvg(metafile)
   await writeFile('reports/module-graph.svg', svg)
@@ -1032,7 +1033,7 @@ async function createModuleGraphSvg (moduleGrapnJson) {
   const graph = new graphlib.Graph()
 
   // Set an object for the graph label
-  graph.setGraph({})
+  graph.setGraph({ rankdir: 'LR', edgesep: 30, ranksep: 60 })
 
   // Default to assigning a new object as a label for each new edge.
   graph.setDefaultEdgeLabel(function () { return {} })
@@ -1055,7 +1056,7 @@ async function createModuleGraphSvg (moduleGrapnJson) {
     imports.forEach(({ path }) => graph.setEdge(file, path))
   })
 
-  layout(graph, { rankdir: 'TB' })
+  layout(graph)
 
   let maxWidth = 0
   let maxHeight = 0
