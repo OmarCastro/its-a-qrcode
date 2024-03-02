@@ -16,6 +16,7 @@ let loadStyles = () => {
 /** @type {WeakMap<QRCodeElement, QrCode>} */
 const qrCodeData = new WeakMap()
 const EC_LEVEL_ATTR = 'data-error-correction-level'
+const DATA_WHITESPACE_ATTR = 'data-whitespace'
 
 export class QRCodeElement extends HTMLElement {
   constructor () {
@@ -30,8 +31,8 @@ export class QRCodeElement extends HTMLElement {
   }
 
   get qrCodeContent () {
-    const { textContent } = this
-    return textContent ? preProcess(textContent, this.getAttribute('data-whitespace') || '') : textContent
+    const content = queryQrContent(this)
+    return content && content.length === 1 ? content[0] : content
   }
 
   get errorCorrectionLevel () {
@@ -85,7 +86,9 @@ function applyQrCode (element) {
 
   const oldQr = qrCodeData.get(element)
   const qr = new QrCode(typeNumber, element.errorCorrectionLevel)
-  qr.addData(qrCodeContent)
+  for (const content of [qrCodeContent].flat()) {
+    qr.addData(content)
+  }
   qr.make()
   qrCodeData.set(element, qr)
 
@@ -120,9 +123,36 @@ function applyQrCode (element) {
 }
 
 /**
- * Updates the image element, replacing the element with another &lt;img> will make the browser flash and re-render twice,
+ * QR Code can have multiple data inside it, for that reason there are 2 structures this element supports:
+ *
+ * 1. Using textContent - gets the element text content, processes the whitespace and converts to a QR Code image
+ * 2. Using <data> child elements - each child element will be processed the join together before converting to a QR Code image
+ *
+ * It is possible to have both, but when it happens, <data> will take priority, and the text content in the element is to be ignored
+ * @param {QRCodeElement} element - target qr code element
+ * @returns {string[] | null} QR code contents
+ */
+function queryQrContent (element) {
+  const dataChildElements = element.querySelectorAll(':scope > data')
+  if (dataChildElements.length > 0) {
+    const contentArray = Array.from(dataChildElements).map(dataChild => {
+      const { textContent } = dataChild
+      if (!textContent) { return '' }
+      const preProcessAttr = dataChild.hasAttribute(DATA_WHITESPACE_ATTR) ? dataChild.getAttribute(DATA_WHITESPACE_ATTR) : element.getAttribute(DATA_WHITESPACE_ATTR)
+      return preProcess(textContent, preProcessAttr || '')
+    }).filter(content => content !== '')
+    return contentArray.length > 0 ? contentArray : null
+  }
+  const { textContent } = element
+  return textContent ? [preProcess(textContent, element.getAttribute(DATA_WHITESPACE_ATTR) || '')] : null
+}
+
+/**
+ * Updates the image element.
+ *
+ * Replacing the element with another &lt;img> will make the image flash and re-render twice,
  * one for the updated HTML without the previous image, as it is loading, and another time with the loaded image, this
- * will make it update once without flash
+ * will make it update once without making it flash
  * @param {HTMLImageElement} imageElement - target &lt;img> element
  * @param {string} imgHtml img rendered with {@link createImgTag}
  * @returns {boolean} true if updated correctly, false if something failed. If false, applyQrCode() will fallback to replace the &lt;img>
