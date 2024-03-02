@@ -27,6 +27,9 @@ test('error correction level reaction visual test', async ({ page, expect }) => 
 
   await qrCode.evaluate(node => node.setAttribute('data-error-correction-level', 'H'));
   await expect.soft(await qrCode.screenshot()).toMatchSnapshot('qr-code--ec-level-H.png');
+
+  await qrCode.evaluate(node => node.errorCorrectionLevel = 'Q');
+  await expect.soft(await qrCode.screenshot()).toMatchSnapshot('qr-code--ec-level-Q.png');
 });
 
 test('text content react testing', async ({ page, expect }) => {

@@ -15,6 +15,7 @@ let loadStyles = () => {
 }
 /** @type {WeakMap<QRCodeElement, QrCode>} */
 const qrCodeData = new WeakMap()
+const EC_LEVEL_ATTR = 'data-error-correction-level'
 
 export class QRCodeElement extends HTMLElement {
   constructor () {
@@ -34,8 +35,14 @@ export class QRCodeElement extends HTMLElement {
   }
 
   get errorCorrectionLevel () {
-    const errorCorrectionLevelAttr = this.getAttribute('data-error-correction-level')
+    const errorCorrectionLevelAttr = this.getAttribute(EC_LEVEL_ATTR)
     return errorCorrectionLevelAttr && isValid(errorCorrectionLevelAttr) ? errorCorrectionLevelAttr : 'Medium'
+  }
+
+  set errorCorrectionLevel (errorCorrectionLevel) {
+    if (isValid(errorCorrectionLevel)) {
+      this.setAttribute(EC_LEVEL_ATTR, errorCorrectionLevel)
+    }
   }
 }
 
