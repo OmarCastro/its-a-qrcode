@@ -9,7 +9,7 @@
             .qr-code--colors {
                 --qrcode-color: red rgba(244, 244, 244, 0.9) blue transparent;
             }
-            .qr-code--dot-style, .qr-code--rounded-style, .qr-code--body-dot-style {
+            .qr-code--dot-style, .qr-code--rounded-style, .qr-code--body-dot-style, .qr-code--multiple-data {
                 --qrcode-resize: true;
                 width: 300px;
                 height: 300px;
@@ -73,6 +73,15 @@
             <h2>Dot Style with pixel dots on corner</h2>
             <script type="text/plain" class="html-example"><qr-code class="qr-code--body-dot-style">12345</qr-code></script>
             <qr-code class="qr-code--body-dot-style">12345</qr-code>
+        </div>
+
+        <div>
+            <h2>Multiple data on QR Code</h2>
+            <script type="text/plain" class="html-example"><qr-code class="qr-code--body-dot-style">12345</qr-code></script>
+            <qr-code class="qr-code--multiple-data">
+                <data>hello world</data>
+                <data>123456</data>
+            </qr-code>
         </div>
     </body>
 </html>

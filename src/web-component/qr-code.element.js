@@ -61,7 +61,15 @@ const observer = new MutationObserver((records) => {
     const { target } = record
     if (target instanceof QRCodeElement) {
       updatedNodes.add(target)
-    } else if (target.nodeType === Node.TEXT_NODE && target.parentElement instanceof QRCodeElement) {
+    } else if (target.nodeType === Node.TEXT_NODE) {
+      const { parentElement } = target
+      if (parentElement instanceof QRCodeElement) {
+        updatedNodes.add(target.parentElement)
+      }
+      if (parentElement instanceof HTMLDataElement && parentElement.parentElement instanceof QRCodeElement) {
+        updatedNodes.add(parentElement.parentElement)
+      }
+    } else if (target instanceof HTMLDataElement && target.parentElement instanceof QRCodeElement) {
       updatedNodes.add(target.parentElement)
     }
   }
