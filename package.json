@@ -45,7 +45,7 @@
     "minimatch": "^9.0.4",
     "mkcert": "^3.2.0",
     "open": "^10.1.0",
-    "path2d-polyfill": "^2.0.1",
+    "path2d": "^0.2.0",
     "prismjs": "^1.29.0",
     "stylelint": "^16.4.0",
     "stylelint-config-standard": "^36.0.0",

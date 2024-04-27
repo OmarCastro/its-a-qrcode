@@ -8,7 +8,6 @@ let domResetFunction
 if ('Deno' in globalThis || globalThis.window == null) {
   // running in Deno or node
   const { JSDOM } = await import('jsdom')
-  const { polyfillPath2D } = await import('path2d-polyfill')
   const { CanvasRenderingContext2D } = await import('canvas')
   const jsdom = new JSDOM(
     '<!DOCTYPE html><html lang="en"><head></head><body></body></html>',
@@ -23,7 +22,7 @@ if ('Deno' in globalThis || globalThis.window == null) {
 
   windowObj = jsdom.window
   windowObj.CanvasRenderingContext2D = CanvasRenderingContext2D
-  polyfillPath2D(windowObj)
+  await polyfillPath2D(windowObj)
   globalThis.ShadowRoot = windowObj.ShadowRoot
   globalThis.MutationObserver = windowObj.MutationObserver
   globalThis.CustomEvent = windowObj.CustomEvent
@@ -47,6 +46,27 @@ if ('Deno' in globalThis || globalThis.window == null) {
 } else {
   windowObj = globalThis.window
   domResetFunction = () => {}
+}
+
+/**
+ * @param {Window} window - target window object
+ */
+async function polyfillPath2D (window) {
+  const {
+    Path2D,
+    applyPath2DToCanvasRenderingContext,
+    applyRoundRectToCanvasRenderingContext2D,
+    applyRoundRectToPath2D,
+  } = await import('path2d')
+  if (window) {
+    if (window.CanvasRenderingContext2D && !window.Path2D) {
+      // @ts-expect-error polyfilling
+      window.Path2D = Path2D
+      applyPath2DToCanvasRenderingContext(window.CanvasRenderingContext2D)
+    }
+    applyRoundRectToPath2D(window.Path2D)
+    applyRoundRectToCanvasRenderingContext2D(window.CanvasRenderingContext2D)
+  }
 }
 
 /** @type {Window} */
