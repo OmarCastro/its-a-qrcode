@@ -1,7 +1,7 @@
 /* eslint-disable camelcase, max-lines-per-function, jsdoc/require-jsdoc, jsdoc/require-param-description */
 import Prism from 'prismjs'
 import { minimatch } from 'minimatch'
-import { minify } from 'html-minifier'
+import { minify } from 'html-minifier-terser'
 import { imageSize } from 'image-size'
 import { JSDOM } from 'jsdom'
 import { marked } from 'marked'
@@ -210,7 +210,7 @@ queryAll('[ss:toc]').forEach(element => {
   element.replaceWith(ol)
 })
 
-const minifiedHtml = minify('<!DOCTYPE html>' + document.documentElement?.outerHTML || '', {
+const minifiedHtml = await minify('<!DOCTYPE html>' + document.documentElement?.outerHTML || '', {
   removeAttributeQuotes: true,
   useShortDoctype: true,
   collapseWhitespace: false,
