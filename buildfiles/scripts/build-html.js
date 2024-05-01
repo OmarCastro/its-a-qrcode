@@ -1,7 +1,6 @@
 /* eslint-disable camelcase, max-lines-per-function, jsdoc/require-jsdoc, jsdoc/require-param-description */
 import Prism from 'prismjs'
 import { minimatch } from 'minimatch'
-import { minify } from 'html-minifier-terser'
 import { imageSize } from 'image-size'
 import { JSDOM } from 'jsdom'
 import { marked } from 'marked'
@@ -19,6 +18,7 @@ const DOMParser = window.DOMParser
 
 globalThis.window = dom.window
 globalThis.document = document
+const Node = dom.window.Node
 
 if (document == null) {
   throw new Error('error parsing document')
@@ -210,13 +210,9 @@ queryAll('[ss:toc]').forEach(element => {
   element.replaceWith(ol)
 })
 
-const minifiedHtml = await minify('<!DOCTYPE html>' + document.documentElement?.outerHTML || '', {
-  removeAttributeQuotes: true,
-  useShortDoctype: true,
-  collapseWhitespace: false,
-})
+minifyDOM(document.documentElement)
 
-fs.writeFileSync(`${docsOutputPath}/${process.argv[2]}`, minifiedHtml)
+fs.writeFileSync(`${docsOutputPath}/${process.argv[2]}`, document.documentElement?.outerHTML)
 
 function dedent (templateStrings, ...values) {
   const matches = []
@@ -251,6 +247,27 @@ async function * getFiles (dir) {
       yield * getFiles(res)
     } else {
       yield res
+    }
+  }
+}
+
+function minifyDOM (domElement) {
+  // we have to make a copy of the iterator for traversal, because we cannot
+  // iterate through what we'll be modifying at the same time
+  const values = [...domElement?.childNodes?.values()]
+  for (const node of values) {
+    if (node.nodeType === Node.COMMENT_NODE) {
+      // remove comments node
+      domElement.removeChild(node)
+    } else if (node.nodeType === Node.TEXT_NODE) {
+      // test for pure whitespace node (not containing characters other than whitespaces)
+      if (!/[^\s]/.test(node.nodeValue)) {
+        // remove pure whitespace node
+        domElement.removeChild(node)
+      }
+    } else {
+      // process child node recursively
+      minifyDOM(node)
     }
   }
 }
