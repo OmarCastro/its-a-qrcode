@@ -7,6 +7,7 @@ import { marked } from 'marked'
 import { existsSync } from 'node:fs'
 import { readdir, readFile } from 'node:fs/promises'
 import { resolve, relative } from 'node:path'
+import { minify } from 'html-minifier-terser'
 
 const dom = new JSDOM('', {
   url: import.meta.url,
@@ -18,7 +19,6 @@ const DOMParser = window.DOMParser
 
 globalThis.window = dom.window
 globalThis.document = document
-const Node = dom.window.Node
 
 if (document == null) {
   throw new Error('error parsing document')
@@ -214,9 +214,13 @@ queryAll('[ss:toc]').forEach(element => {
   element.replaceWith(ol)
 })
 
-minifyDOM(document.documentElement)
+const minifiedHtml = await minify('<!DOCTYPE html>' + document.documentElement?.outerHTML || '', {
+  removeAttributeQuotes: true,
+  useShortDoctype: true,
+  collapseWhitespace: false,
+})
 
-fs.writeFileSync(`${docsOutputPath}/${process.argv[2]}`, document.documentElement?.outerHTML)
+fs.writeFileSync(`${docsOutputPath}/${process.argv[2]}`, minifiedHtml)
 
 function dedent (templateStrings, ...values) {
   const matches = []
@@ -251,27 +255,6 @@ async function * getFiles (dir) {
       yield * getFiles(res)
     } else {
       yield res
-    }
-  }
-}
-
-function minifyDOM (domElement) {
-  // we have to make a copy of the iterator for traversal, because we cannot
-  // iterate through what we'll be modifying at the same time
-  const values = [...domElement?.childNodes?.values()]
-  for (const node of values) {
-    if (node.nodeType === Node.COMMENT_NODE) {
-      // remove comments node
-      domElement.removeChild(node)
-    } else if (node.nodeType === Node.TEXT_NODE) {
-      // test for pure whitespace node (not containing characters other than whitespaces)
-      if (!/[^\s]/.test(node.nodeValue)) {
-        // remove pure whitespace node
-        domElement.removeChild(node)
-      }
-    } else {
-      // process child node recursively
-      minifyDOM(node)
     }
   }
 }
