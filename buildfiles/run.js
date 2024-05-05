@@ -689,18 +689,104 @@ async function validateFiles ({ patterns, onlyChanged, validation }) {
 // @section 7 minifiers
 
 async function minifyHtml (htmlText) {
-  const { minify } = await import('html-minifier')
-  return minify(htmlText, {
-    removeAttributeQuotes: true,
-    useShortDoctype: true,
-    collapseWhitespace: true,
-  })
+  const { DOMParser } = await loadDom()
+  const parsed = new DOMParser().parseFromString(htmlText, 'text/html')
+  await minifyDOM(parsed.documentElement)
+  return parsed.documentElement.outerHTML
 }
 
 async function minifyCss (cssText) {
   const esbuild = await import('esbuild')
   const result = await esbuild.transform(cssText, { loader: 'css', minify: true })
   return result.code
+}
+
+/**
+ * Minifies the DOM tree
+ * @param {Element} domElement - target DOM tree root element
+ * @returns {Element} root element of the minified DOM
+ */
+async function minifyDOM (domElement) {
+  const { window } = await loadDom()
+  const { TEXT_NODE, ELEMENT_NODE, COMMENT_NODE } = window.Node
+
+  /** @typedef {"remove-blank" | "1-space" | "pre"} WhitespaceMinify */
+  /**
+   * @typedef {object} MinificationState
+   * @property {WhitespaceMinify} whitespaceMinify - current whitespace minification method
+   */
+
+  /**
+   * Minify the text node based con current minification status
+   * @param {ChildNode} node - current text node
+   * @param {WhitespaceMinify} whitespaceMinify - whitespace minification removal method
+   */
+  function minifyTextNode (node, whitespaceMinify) {
+    if (whitespaceMinify === 'pre') {
+      return
+    }
+    // blank node is empty or contains whitespace only, so we remove it
+    const isBlankNode = !/[^\s]/.test(node.nodeValue)
+    if (isBlankNode && whitespaceMinify === 'remove-blank') {
+      node.remove()
+      return
+    }
+    if (whitespaceMinify === '1-space') {
+      node.nodeValue = node.nodeValue.replace(/\s\s+/g, ' ')
+    }
+  }
+
+  const defaultMinificationState = { whitespaceMinify: '1-space' }
+
+  /**
+   * @param {Element} element
+   * @param {MinificationState} minificationState
+   * @returns {MinificationState} update minification State
+   */
+  function updateMinificationStateForElement (element, minificationState) {
+    const tag = element.tagName.toLowerCase()
+    // by default, <pre> renders whitespace as is, so we do not want to minify in this case
+    if (['pre'].includes(tag)) {
+      return { ...minificationState, whitespaceMinify: 'pre' }
+    }
+    // <html> and <head> are not rendered in the viewport, so we remove it
+    if (['html', 'head'].includes(tag)) {
+      return { ...minificationState, whitespaceMinify: 'remove-blank' }
+    }
+    // in the <body>, the default whitespace behaviour is to merge multiple whitespaces to 1,
+    // there will stil have some whitespace that will be merged, but at this point, there is
+    // little benefit to remove even more duplicated whitespace
+    if (['body'].includes(tag)) {
+      return { ...minificationState, whitespaceMinify: '1-space' }
+    }
+    return minificationState
+  }
+
+  /**
+   * @param {Element} currentElement - current element to minify
+   * @param {MinificationState} minificationState - current minificationState
+   */
+  function walkElementMinification (currentElement, minificationState) {
+    const { whitespaceMinify } = minificationState
+    // we have to make a copy of the iterator for traversal, because we cannot
+    // iterate through what we'll be modifying at the same time
+    const values = [...currentElement?.childNodes?.values()]
+    for (const node of values) {
+      if (node.nodeType === COMMENT_NODE) {
+      // remove comments node
+        currentElement.removeChild(node)
+      } else if (node.nodeType === TEXT_NODE) {
+        minifyTextNode(node, whitespaceMinify)
+      } else if (node.nodeType === ELEMENT_NODE) {
+        // process child elements recursively
+        const updatedState = updateMinificationStateForElement(node, minificationState)
+        walkElementMinification(node, updatedState)
+      }
+    }
+  }
+  const initialMinificationState = updateMinificationStateForElement(domElement, defaultMinificationState)
+  walkElementMinification(domElement, initialMinificationState)
+  return domElement
 }
 
 // @section 8 exec utilities
