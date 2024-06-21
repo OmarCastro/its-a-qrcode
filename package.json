@@ -47,8 +47,8 @@
     "path2d": "^0.2.0",
     "prismjs": "^1.29.0",
     "stylelint": "^16.6.1",
-    "stylelint-config-standard": "^36.0.0",
-    "typescript": "^5.4.5",
+    "stylelint-config-standard": "^36.0.1",
+    "typescript": "^5.5.2",
     "wonton": "^2.3.0"
   }
 }
