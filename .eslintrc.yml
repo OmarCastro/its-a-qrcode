@@ -4,7 +4,7 @@ env:
   node: true
 extends: 
   - standard
-  - plugin:sonarjs/recommended
+  - plugin:sonarjs/recommended-legacy
   - plugin:jsdoc/recommended-typescript-flavor
 parserOptions:
   ecmaVersion: latest
