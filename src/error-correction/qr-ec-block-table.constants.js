@@ -1,4 +1,4 @@
-/* eslint-disable no-multi-spaces -- tabular view of data present */
+/* eslint @stylistic/no-multi-spaces: 0 -- tabular view of data present */
 /**
  * The error correction block table.
  *
@@ -10,7 +10,7 @@
 export const EC_BLOCK_TABLE = Object.freeze([
   // EC          M (bit 00)  L (bit 01)  H (bit 10)  Q (bit 11 )
   /* Version */
-  /*    1    */  10, 1,       7, 1,      17, 1,        13, 1,
+  /*    1    */  10, 1,       7,  1,     17, 1,        13, 1,
   /*    2    */  16, 1,       10, 1,     28, 1,        22, 1,
   /*    3    */  26, 1,       15, 1,     22, 2,        18, 2,
   /*    4    */  18, 2,       20, 1,     16, 4,        26, 2,

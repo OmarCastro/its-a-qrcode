@@ -10,7 +10,6 @@ import { ByteArrayOutputStream } from '../utils/bite-array-output-stream'
  * @param {number} height - image height
  * @returns {BWGIFImage} Black and white GIF image
  */
-// eslint-disable-next-line max-lines-per-function
 export function gifImage (width, height) {
   const _width = width
   const _height = height
@@ -195,7 +194,7 @@ function lzwTable () {
     },
     get size () { return _size },
     indexOf: (key) => _map[key],
-    contains:  (key) => typeof _map[key] !== 'undefined',
+    contains: (key) => typeof _map[key] !== 'undefined',
   })
 
   return _this

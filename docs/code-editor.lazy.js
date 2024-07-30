@@ -86,15 +86,15 @@ export const theme = EditorView.theme({
 // Use a class highlight style, so we can handle things in CSS.
 
 export const highlightStyle = HighlightStyle.define([
-  { tag: tags.atom,      class: 'cmt-atom'      },
-  { tag: tags.comment,   class: 'cmt-comment'   },
-  { tag: tags.keyword,   class: 'cmt-keyword'   },
-  { tag: tags.literal,   class: 'cmt-literal'   },
-  { tag: tags.number,    class: 'cmt-number'    },
-  { tag: tags.operator,  class: 'cmt-operator'  },
+  { tag: tags.atom, class: 'cmt-atom' },
+  { tag: tags.comment, class: 'cmt-comment' },
+  { tag: tags.keyword, class: 'cmt-keyword' },
+  { tag: tags.literal, class: 'cmt-literal' },
+  { tag: tags.number, class: 'cmt-number' },
+  { tag: tags.operator, class: 'cmt-operator' },
   { tag: tags.separator, class: 'cmt-separator' },
-  { tag: tags.string,    class: 'cmt-string'    },
-  { tag: tags.name,      class: 'cmt-name'      },
+  { tag: tags.string, class: 'cmt-string' },
+  { tag: tags.name, class: 'cmt-name' },
 ])
 
 const baseExtensions = [
