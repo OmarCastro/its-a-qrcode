@@ -9,11 +9,6 @@
         <source srcset="https://img.shields.io/github/v/release/OmarCastro/its-a-qrcode?style=for-the-badge&logo=github&logoColor=%23ccc&color=%2306A" media="(prefers-color-scheme: dark)"> 
         <img src="https://img.shields.io/github/v/release/OmarCastro/its-a-qrcode?style=for-the-badge&logo=github&logoColor=%23333&labelColor=%23ccc">
         </picture>
-</a><a href="https://github.com/OmarCastro/its-a-qrcode" aria-label="go to Github" title="go to Github">
-    <picture>
-        <source srcset="https://img.shields.io/github/stars/OmarCastro/its-a-qrcode?style=for-the-badge&logo=github&logoColor=%23ccc&color=%2306A" media="(prefers-color-scheme: dark)"> 
-        <img src="https://img.shields.io/github/stars/OmarCastro/its-a-qrcode?style=for-the-badge&logo=github&logoColor=%23333&labelColor=%23ccc">
-        </picture>
 </a><a href="https://github.com/OmarCastro/its-a-qrcode" aria-label="go to Github repository" title="go to Github repository">
 <picture>
     <img src="https://omarcastro.github.io/its-a-qrcode/reports/license-badge-a11y.svg">

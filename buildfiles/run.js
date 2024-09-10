@@ -189,6 +189,7 @@ async function execTests () {
     makeBadgeForTestResult(pathFromProject('reports/test-results')),
     makeBadgeForLicense(pathFromProject('reports')),
     makeBadgeForNPMVersion(pathFromProject('reports')),
+    makeBadgeForRepo(pathFromProject('reports')),
     ...(uiTestsExecuted ? [makeBadgeForCoverages(pathFromProject('reports/coverage/ui'))] : []),
   ])
 
@@ -1090,6 +1091,18 @@ async function makeBadgeForNPMVersion (path) {
 
   const badgeWrite = writeFile(`${path}/npm-version-badge.svg`, svg)
   const a11yBadgeWrite = writeFile(`${path}/npm-version-badge-a11y.svg`, await applyA11yTheme(svg))
+  await Promise.all([badgeWrite, a11yBadgeWrite])
+}
+
+async function makeBadgeForRepo (path) {
+  const svg = await makeBadge({
+    label: 'Code Repository',
+    message: 'Github',
+    color: getBadgeColors().blue,
+    logo: asciiIconSvg('❮❯'),
+  })
+  const badgeWrite = writeFile(`${path}/repo-badge.svg`, svg)
+  const a11yBadgeWrite = writeFile(`${path}/repo-badge-a11y.svg`, await applyA11yTheme(svg, { replaceIconToText: '❮❯' }))
   await Promise.all([badgeWrite, a11yBadgeWrite])
 }
 
