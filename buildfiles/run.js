@@ -518,47 +518,14 @@ function logStartStage (jobname, stage) {
 // @section 5 Dev server
 
 async function openDevServer ({ openBrowser = false } = {}) {
-  const { default: serve } = await import('wonton')
-
-  const certFilePath = '.tmp/dev-server/cert.crt'
-  const keyFilePath = '.tmp/dev-server/cert.key'
-
-  if (!existsSync(certFilePath) || !existsSync(keyFilePath)) {
-    const { default: mkcert } = await import('mkcert')
-    await mkdir_p('.tmp/dev-server')
-    const ca = await mkcert.createCA({
-      organization: 'Hello CA',
-      countryCode: 'NP',
-      state: 'Bagmati',
-      locality: 'Kathmandu',
-      validity: 365,
-    })
-
-    const cert = await mkcert.createCert({
-      domains: ['127.0.0.1', 'localhost'],
-      validity: 365,
-      ca,
-    })
-
-    await fs.writeFile(certFilePath, `${cert.cert}\n${ca.cert}`)
-    await fs.writeFile(keyFilePath, cert.key)
-  }
+  const { Server } = await import('./scripts/dev-server.js')
 
   const host = 'localhost'
   const port = 8181
 
-  const params = {
-    host,
-    port,
-    live: true,
-    root: pathFromProject('.'),
-    tls: {
-      cert: certFilePath,
-      key: keyFilePath,
-    },
-  }
-  serve.start(params)
-  updateDevServer = serve.update
+  const server = Server()
+  server.listen(port)
+  updateDevServer = server.update
 
   if (openBrowser) {
     const { default: open } = await import('open')
@@ -567,19 +534,11 @@ async function openDevServer ({ openBrowser = false } = {}) {
 }
 
 async function openTestServer () {
-  const { default: serve } = await import('wonton')
+  const { TestServer } = await import('./scripts/dev-server.js')
 
-  const host = 'localhost'
   const port = 8182
 
-  const params = {
-    host,
-    port,
-    fallback: 'index.html',
-    live: false,
-    root: pathFromProject('.'),
-  }
-  serve.start(params)
+  TestServer().listen(port)
 }
 
 function wait (ms) {
