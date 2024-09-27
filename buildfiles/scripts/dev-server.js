@@ -1,5 +1,6 @@
 /** @import {IncomingMessage, ServerResponse} from 'node:http' */
 import https from 'node:https'
+import http from 'node:http'
 import { readFileSync, statSync, existsSync } from 'node:fs'
 import { writeFile, mkdir } from 'node:fs/promises'
 import path from 'node:path'
@@ -89,8 +90,7 @@ export function Server () {
 
       // No need to ensure the route can't access other local files,
       // since this is for development only.
-      const route = path.normalize(path.join(rootPath, req.url))
-      if (serveStaticPageIfExists(route, req.url, res)) {
+      if (serveStaticPageIfExists(req.url, res, true)) {
         return
       }
     }
@@ -110,31 +110,64 @@ export function Server () {
 }
 
 /**
+ * @returns {Pick<Server, ["listen"]>} server ready to start listening
+ */
+export function TestServer () {
+  /**
+   * General request handler and router
+   * @param {IncomingMessage} req - incoming request
+   * @param {ServerResponse} res - response api
+   */
+  function requestHandler (req, res) {
+    const method = req.method.toLowerCase()
+    // No need to ensure the route can't access other local files,
+    // since this is for development only.
+
+    if (method === 'get' && serveStaticPageIfExists(req, res, false)) {
+      return
+    }
+    res.writeHead(404)
+    res.end()
+  }
+
+  const server = http.createServer(requestHandler)
+
+  return {
+    listen: (port) => { server.listen(port) },
+  }
+}
+
+/**
  * Use classic server-logic to serve a static file (e.g. default to 'index.html' etc)
- * @param {string} route - route
- * @param {string} reqUrl - route
+ * @param {IncomingMessage} req - incoming request
  * @param {ServerResponse} res - response api
+ * @param {boolean} livereload - flag to enable/disable livereload
+ * @param {string} [route] - route
  * @returns {boolean} Whether or not the page exists and was served
  */
-function serveStaticPageIfExists (route, reqUrl, res) {
+function serveStaticPageIfExists (req, res, livereload, route) {
+  const { url } = req
+  if (!url) { return false }
+  if (!route) {
+    const urlPath = new URL(url, `http://${req.headers.host}`).pathname
+    route = path.normalize(path.join(rootPath, urlPath))
+  }
   // We don't care about performance for a dev server, so sync functions are fine.
   // If the route exists it's either the exact file we want or the path to a directory
   // in which case we'd serve up the 'index.html' file.
-  if (!existsSync(route)) {
-    return false
-  }
+  if (!existsSync(route)) { return false }
   if (statSync(route).isDirectory()) {
-    if (existsSync(path.join(route, 'index.html')) && !reqUrl.endsWith('/')) {
-      res.setHeader('location', reqUrl + '/')
+    if (existsSync(path.join(route, 'index.html')) && !url.endsWith('/')) {
+      res.setHeader('location', url + '/')
       res.writeHead(303)
       res.end()
       return true
     }
-    return serveStaticPageIfExists(path.join(route, 'index.html'), reqUrl, res)
+    return serveStaticPageIfExists(req, res, livereload, path.join(route, 'index.html'))
   } else if (statSync(route).isFile()) {
     /** @type {string|Buffer} */
     let file = readFileSync(route)
-    if (route.endsWith('.html')) {
+    if (route.endsWith('.html') && livereload) {
       // Inject the client-side websocket code.
       // This sounds fancier than it is; simply
       // append the script to the end since
