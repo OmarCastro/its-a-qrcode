@@ -20,8 +20,8 @@ function decompressUtf8ToJisTable (compressedTable) {
     const utf8Vals = decompressUtf8ValsStr(compressedUtf8ValsStr).split(',')
     let charIterator = xInt(jisChar)
     for (const utf8Value of utf8Vals) {
-      if (utf8Value.includes(':')) {
-        utf8Value.split(':').map(b64Int).forEach(key => { result[key] = charIterator })
+      if (utf8Value.includes('|')) {
+        utf8Value.split('|').map(b64Int).forEach(key => { result[key] = charIterator })
         charIterator++
       } else if (utf8Value.includes('>')) {
         const kv = utf8Value.split('>')
@@ -43,7 +43,19 @@ function decompressUtf8ToJisTable (compressedTable) {
  * @param {string} compressedVals - compressed utf8-to-jis-table.constants.js field value
  */
 function decompressUtf8ValsStr (compressedVals) {
-  const commaSeparatedVals = compressedVals.replace(/;[a-zA-Z0-9+/]+;/g, match => match.slice(1, -1).split('').join(','))
+  /** @type {(str: string, amount: number) => string} */
+  const join = (str, amount) => str.slice(1, -1).split('').reduce((val, ch, i) => val + (i % amount ? '' : ',') + ch)
+  /** @type {(match: string) => string} */
+  const joinGroup = match => match.slice(0, -1).split('').reduce((acc, ch) => acc + ch + '[')
+
+  const commaSeparatedVals = compressedVals
+    .replace(/_[^_]+_/g, match => join(match, 3))
+    .replace(/#[^#]+#/g, match => join(match, 2))
+    .replace(/;[^;]+;/g, match => join(match, 1))
+    .replace(/...\{/g, joinGroup)
+    .replace(/..\(/g, joinGroup)
+    .replace(/}/g, ']]]')
+    .replace(/\)/g, ']]')
   let result = ''
   let prefix = ''
   let initPrefix = ''

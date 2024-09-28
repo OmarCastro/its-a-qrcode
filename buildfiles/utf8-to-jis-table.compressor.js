@@ -6,9 +6,7 @@ import { gzipSync, brotliCompressSync } from 'node:zlib'
 import pkg from 'deep-diff'
 const { diff } = pkg
 
-const SAME_VALUE_SEPARATOR = ':'
-const CSCHARLIST = ';'
-
+const SAME_VALUE_SEPARATOR = '|'
 
 export function toTableMap () {
   const inverseTable = Object.entries(getNonCompressedTable()).reduce((acc, [key, value]) => {
@@ -186,8 +184,23 @@ export function tob64CompressedListMap () {
 
     }
 
-    values = values.replace(/[a-zA-Z0-9+/](,[a-zA-Z0-9+/]){2,}/g, (match) => CSCHARLIST+match.replaceAll(",", "")+CSCHARLIST)
     result[key] = values
+  }
+  return result
+}
+
+export function tob64CompressedListMapWithReducedRepetitions () {
+  const tableMap = tob64CompressedListMap()
+  const result = {}
+  for (const [key, value] of Object.entries(tableMap)) {
+    result[key] = value
+    .replace(/[a-zA-Z0-9+/](,[a-zA-Z0-9+/]){2,}/g, (match) => `;${match.replaceAll(",", "")};`)
+    .replace(/[a-zA-Z0-9+/]{2}(,[a-zA-Z0-9+/]{2}){2,}/g, (match) => `#${match.replaceAll(",", "")}#`)
+    .replace(/[a-zA-Z0-9+/]{3}(,[a-zA-Z0-9+/]{3}){2,}/g, (match) => `_${match.replaceAll(",", "")}_`)
+    .replace(/([a-zA-Z0-9+/]\[){3}/g, (match) => `${match.replaceAll("[", "")}{`)
+    .replace(/]]]/g, '}')
+    .replace(/([a-zA-Z0-9+/]\[){2}/g, (match) => `${match.replaceAll("[", "")}(`)
+    .replace(/]]/g, ')')
   }
   return result
 }
@@ -246,8 +259,10 @@ function logCompressionStage({ stageNumber, stageName, resultingObject, previous
 
 const stage2Results = logCompressionStage({stageNumber: 2, stageName: "compress table map", resultingObject: toCompressedMap(), previousSizes: { original: tableMapSize, gzip: tableMapGZipSize, brotli: tableMapBrotliSize}})
 const stage3Results = logCompressionStage({stageNumber: 3, stageName: "hex to base64 on compressed table map", resultingObject: tob64CompressedMap(), previousSizes: stage2Results.sizes})
-const compressedTable = tob64CompressedListMap()
-const stage4Results = logCompressionStage({stageNumber: 4, stageName: "minify value list on each property", resultingObject: compressedTable, previousSizes: stage3Results.sizes})
+const stage4Results = logCompressionStage({stageNumber: 4, stageName: "minify value list on each property", resultingObject: tob64CompressedListMap(), previousSizes: stage3Results.sizes})
+const compressedTable = tob64CompressedListMapWithReducedRepetitions()
+const stage5Results = logCompressionStage({stageNumber: 5, stageName: "minify repetitions", resultingObject: compressedTable, previousSizes: stage4Results.sizes})
+
 
 
 const compressionDiff = diff(usingTable(compressedTable).Utf8ToJisTable(), table)?.map(n => {
@@ -259,7 +274,7 @@ const compressionDiff = diff(usingTable(compressedTable).Utf8ToJisTable(), table
 
 console.log(compressionDiff || '[INFO] Compression and decompression OK')
 
-console.log(diff(getUtf8ToJisTable(), table) ? '[WARN] Code not compatible with table' : '[INFO] Code OK')
+// console.log(diff(getUtf8ToJisTable(), table) ? '[WARN] Code not compatible with table' : '[INFO] Code OK')
 
 if (!compressionDiff) {
   const code = `export default ${JSON.stringify(compressedTable, null, 2)}`
