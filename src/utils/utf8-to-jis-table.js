@@ -43,19 +43,19 @@ function decompressUtf8ToJisTable (compressedTable) {
  * @param {string} compressedVals - compressed utf8-to-jis-table.constants.js field value
  */
 function decompressUtf8ValsStr (compressedVals) {
-  /** @type {(str: string, amount: number) => string} */
-  const join = (str, amount) => str.slice(1, -1).split('').reduce((val, ch, i) => val + (i % amount ? '' : ',') + ch)
-  /** @type {(match: string) => string} */
-  const joinGroup = match => match.slice(0, -1).split('').reduce((acc, ch) => acc + ch + '[')
+  /** @type {(amount: number) => (str: string) => string} */
+  const join = amount => str => str.slice(1, -1).split('').reduce((val, ch, i) => val + (i % amount ? '' : ',') + ch)
 
-  const commaSeparatedVals = compressedVals
-    .replace(/_[^_]+_/g, match => join(match, 3))
-    .replace(/#[^#]+#/g, match => join(match, 2))
-    .replace(/;[^;]+;/g, match => join(match, 1))
-    .replace(/...\{/g, joinGroup)
-    .replace(/..\(/g, joinGroup)
-    .replace(/}/g, ']]]')
-    .replace(/\)/g, ']]')
+  const commaSeparatedVals = [
+    [/{/g, '[;'],
+    [/}/g, ';]'],
+    [/]([^\]])/g, '],$1'], // @ts-ignore
+    [/[a-zA-z0-9+/]{2,3}\[/g, match => match.split('').join('[').slice(0, -1)], // @ts-ignore
+    [/_[^_]+_/g, join(3)], // @ts-ignore
+    [/#[^#]+#/g, join(2)], // @ts-ignore
+    [/;[^;]+;/g, join(1)],    // @ts-ignore
+  ].reduce((acc, args) => acc.replace(...args), compressedVals)
+
   let result = ''
   let prefix = ''
   let initPrefix = ''

@@ -106,85 +106,88 @@ export function tob64CompressedMap () {
   return result
 }
 
+function minifyValueList(str){
+  const areAllEqual = (a, ...rest) => rest.every(val => val === a)
+
+  let values = ""
+  let level = []
+  let previous
+  let current
+  for (const valStr of [...str.split(','), "*end-of-line", "*extra-token"]) {
+    let initialLevel = level.length
+    if(!current){
+      current = valStr
+      continue
+    }
+    if(!previous){
+      previous = current
+      current = valStr
+      continue
+    }
+    if(level.length === 0){
+      if(areAllEqual(previous[0], current[0], valStr[0])){
+        values += current[0] + "["
+        level.push(current[0])
+      }
+    }
+    if(level.length === 1){
+      if(areAllEqual(previous.substring(0, 2), current.substring(0, 2), valStr.substring(0, 2))){
+        values += current[1] + "["
+        level.push(current[1])
+      } else if(previous[0] !== current[0]){
+        values +=  previous.substring(level.length) + "]"
+        level.pop()
+      }
+    }
+
+    if(level.length === 2){
+      if(areAllEqual(previous.substring(0, 3), current.substring(0, 3), valStr.substring(0, 3))){
+        values += current[2] + "["
+        level.push(current[2])
+      } else if(previous[0] !== current[0]){
+        values +=  previous.substring(level.length) + "]]"
+        level.length = 0
+      } else if(previous[1] !== current[1]){
+        values += previous.substring(level.length) + "]"
+        level.pop()
+      }
+    }
+
+    if(level.length === 3){
+      if(previous[0] !== current[0]){
+        values +=  previous.substring(level.length) + "]]]"
+        level.length = 0
+      } else if(previous[1] !== current[1]){
+        values += previous.substring(level.length) + "]]"
+        level.length = 1
+      } else if(previous[2] !== current[2]){
+        values += previous.substring(level.length) + "]"
+        level.length = 2
+      }
+    }
+    
+    if(initialLevel <= level.length){
+      values+=previous.substring(level.length)
+    }
+    if(current === "*end-of-line"){
+      values+="]".repeat(level.length)
+      break
+    } else {
+      values+=","
+    }
+    previous = current
+    current = valStr
+
+  }
+  return values
+}
 
 export function tob64CompressedListMap () {
   const tableMap = tob64CompressedMap()
-  const areAllEqual = (a, ...rest) => rest.every(val => val === a)
 
   const result = {}
   for (const [key, value] of Object.entries(tableMap)) {
-    let values = ""
-    let level = []
-    let previous
-    let current
-    for (const valStr of [...value.split(','), "*end-of-line", "*extra-token"]) {
-      let initialLevel = level.length
-      if(!current){
-        current = valStr
-        continue
-      }
-      if(!previous){
-        previous = current
-        current = valStr
-        continue
-      }
-      if(level.length === 0){
-        if(areAllEqual(previous[0], current[0], valStr[0])){
-          values += current[0] + "["
-          level.push(current[0])
-        }
-      }
-      if(level.length === 1){
-        if(areAllEqual(previous.substring(0, 2), current.substring(0, 2), valStr.substring(0, 2))){
-          values += current[1] + "["
-          level.push(current[1])
-        } else if(previous[0] !== current[0]){
-          values +=  previous.substring(level.length) + "]"
-          level.pop()
-        }
-      }
-
-      if(level.length === 2){
-        if(areAllEqual(previous.substring(0, 3), current.substring(0, 3), valStr.substring(0, 3))){
-          values += current[2] + "["
-          level.push(current[2])
-        } else if(previous[0] !== current[0]){
-          values +=  previous.substring(level.length) + "]]"
-          level.length = 0
-        } else if(previous[1] !== current[1]){
-          values += previous.substring(level.length) + "]"
-          level.pop()
-        }
-      }
-
-      if(level.length === 3){
-        if(previous[0] !== current[0]){
-          values +=  previous.substring(level.length) + "]]]"
-          level.length = 0
-        } else if(previous[1] !== current[1]){
-          values += previous.substring(level.length) + "]]"
-          level.length = 1
-        } else if(previous[2] !== current[2]){
-          values += previous.substring(level.length) + "]"
-          level.length = 2
-        }
-      }
-      
-      if(initialLevel <= level.length){
-        values+=previous.substring(level.length)
-      }
-      if(current === "*end-of-line"){
-        values+="]".repeat(level.length)
-        break
-      } else {
-        values+=","
-      }
-      previous = current
-      current = valStr
-
-    }
-
-    result[key] = values
+    result[key] = minifyValueList(value)
   }
   return result
 }
@@ -197,10 +200,10 @@ export function tob64CompressedListMapWithReducedRepetitions () {
     .replace(/[a-zA-Z0-9+/](,[a-zA-Z0-9+/]){2,}/g, (match) => `;${match.replaceAll(",", "")};`)
     .replace(/[a-zA-Z0-9+/]{2}(,[a-zA-Z0-9+/]{2}){2,}/g, (match) => `#${match.replaceAll(",", "")}#`)
     .replace(/[a-zA-Z0-9+/]{3}(,[a-zA-Z0-9+/]{3}){2,}/g, (match) => `_${match.replaceAll(",", "")}_`)
-    .replace(/([a-zA-Z0-9+/]\[){3}/g, (match) => `${match.replaceAll("[", "")}{`)
-    .replace(/]]]/g, '}')
-    .replace(/([a-zA-Z0-9+/]\[){2}/g, (match) => `${match.replaceAll("[", "")}(`)
-    .replace(/]]/g, ')')
+    .replace(/([a-zA-Z0-9+/]\[){2,3}/g, (match) => `${match.replaceAll("[", "")}[`)
+    .replace(/\],/g, ']')
+    .replace(/\[;/g, '{')
+    .replace(/;\]/g, '}')
   }
   return result
 }
@@ -263,7 +266,28 @@ const stage4Results = logCompressionStage({stageNumber: 4, stageName: "minify va
 const compressedTable = tob64CompressedListMapWithReducedRepetitions()
 const stage5Results = logCompressionStage({stageNumber: 5, stageName: "minify repetitions", resultingObject: compressedTable, previousSizes: stage4Results.sizes})
 
+/**
+ * 
+ * @param {string} str 
+ */
+function maxrepeats(str, amount){
+  const map = {}
+  for(let i = 0, e = str.length - amount; i < e; ++i){
+    const slice = str.slice(i, i+amount)
+    if(!map[slice]){
+      map[slice] = 0
+    }
+    map[slice] += 1
+  }
+  const result = Object.entries(map).sort((a, b) => b[1] - a[1])
+  return result.slice(0,2)
+}
 
+const json_test = JSON.stringify(compressedTable, null, 2)
+console.log(maxrepeats(json_test, 2))
+console.log(maxrepeats(json_test, 3))
+console.log(maxrepeats(json_test, 4))
+console.log(maxrepeats(json_test, 5))
 
 const compressionDiff = diff(usingTable(compressedTable).Utf8ToJisTable(), table)?.map(n => {
   return {
