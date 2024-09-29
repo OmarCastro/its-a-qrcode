@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `--qrcode-color` CSS property support
 - set error correction level via JS API
 - improve README
+- add another compression stage for utf8 to JIS table, reducing the table by 17% compared to previous stage (final minified + gzipped package reduced by 1kB)
 
 ### Changed
 
