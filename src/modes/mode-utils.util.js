@@ -26,7 +26,7 @@ const LENGTH_BITS_MATRIX = Object.freeze([
 ])
 
 /**
- * @param {number} mode - mode balue
+ * @param {number} mode - mode value
  * @param {number} version - qr version
  * @returns {number} the number of bits in character count indicator
  */

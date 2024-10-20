@@ -33,7 +33,7 @@ export function fromString (string) {
 /**
  * Checks if error correction level is valid.
  *
- * Error corection is valid if `string` is one of the following values (case insensitive): `L`,`Low`,`M`,`Medium`,`Q`,`Quartile`,`H` and `High`
+ * Error correction is valid if `string` is one of the following values (case insensitive): `L`,`Low`,`M`,`Medium`,`Q`,`Quartile`,`H` and `High`
  * @param {string} string - target string
  * @returns {boolean} true if correction level is valid, false otherwise
  */

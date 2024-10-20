@@ -12,11 +12,11 @@ export class QrBitBuffer {
     const byteBuffer = this.#byteBuffer
     const bitLength = this.#bitLength
     const newBitLength = bitLength + length
-    const newBufferLenght = (newBitLength + 7) >> 3
+    const newBufferLength = (newBitLength + 7) >> 3
 
     let restBits = Math.min((byteBuffer.length << 3) - bitLength, length)
     let bufIndex = bitLength >> 3
-    while (byteBuffer.length < newBufferLenght) {
+    while (byteBuffer.length < newBufferLength) {
       byteBuffer.push(0)
     }
     let i = 0
@@ -24,7 +24,7 @@ export class QrBitBuffer {
       restBits = Math.min(8, length)
     }
     while (i < length) {
-      const shiftLeft = bufIndex === newBufferLenght - 1 ? (8 - restBits) : 0
+      const shiftLeft = bufIndex === newBufferLength - 1 ? (8 - restBits) : 0
       byteBuffer[bufIndex] |= (num << shiftLeft >>> (length - i - restBits)) & (0xff)
       i += restBits
       bufIndex++

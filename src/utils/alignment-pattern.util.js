@@ -5,7 +5,7 @@
  * The alignment patterns are positioned symmetrically on either side of the diagonal
  * running from the top left corner of the symbol to the bottom right corner.
  *
- * Since positions are simmetrical only half of the coordinates are returned.
+ * Since positions are symmetrical only half of the coordinates are returned.
  * Each item of the array will represent in turn the x and y coordinate.
  * @see {@link getPositions}
  * @param  {number} version - QR Code version

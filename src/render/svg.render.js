@@ -45,7 +45,7 @@ export function createSvgTag ({ cellSize, margin, alt, title, qrcode, scalable, 
 };
 
 /**
- * @param {object} opts - funtion parameters
+ * @param {object} opts - function parameters
  * @param {number} opts.cellSize - cell size in pixels
  * @param {number} opts.margin - margin in pixels
  * @param {import('../qr-code.js').QrCode} opts.qrcode - QR Code data
@@ -63,7 +63,7 @@ export function getPathData ({ cellSize, margin, qrcode, style = getDefaultStyle
 }
 
 /**
- * @param {object} opts - funtion parameters
+ * @param {object} opts - function parameters
  * @param {number} opts.cellSize - cell size in pixels
  * @param {number} opts.margin - margin in pixels
  * @param {import('../qr-code.js').QrCode} opts.qrcode - QR Code data
@@ -88,7 +88,7 @@ function dotPathData ({ cellSize, margin, qrcode, style }) {
 }
 
 /**
- * @param {object} opts - funtion parameters
+ * @param {object} opts - function parameters
  * @param {number} opts.cellSize - cell size in pixels
  * @param {number} opts.margin - margin in pixels
  * @param {import('../qr-code.js').QrCode} opts.qrcode - QR Code data
@@ -136,18 +136,18 @@ const dotRenders = {
     }
     const isTopDark = row > 0 && qrcode.isDark(row - 1, col)
     const isLeftDark = col > 0 && qrcode.isDark(row, col - 1)
-    const isBottonDark = row < moduleCount - 1 && qrcode.isDark(row + 1, col)
+    const isBottomDark = row < moduleCount - 1 && qrcode.isDark(row + 1, col)
     const isRightDark = col < moduleCount - 1 && qrcode.isDark(row, col + 1)
     const half = cellSize / 2
 
-    if (!isTopDark && !isLeftDark && !isBottonDark && !isRightDark) {
+    if (!isTopDark && !isLeftDark && !isBottomDark && !isRightDark) {
       return circlePath(x + half, y + half, half, 0)
     }
 
     return `M${x + half},${y}` +
     (isTopDark || isRightDark ? `h${half}v${half}` : `a${half},${half} 0 0,1 ${half},${half}`) +
-    (isRightDark || isBottonDark ? `v${half}h-${half}` : `a${half},${half} 0 0,1 -${half},${half}`) +
-    (isBottonDark || isLeftDark ? `h-${half}v-${half}` : `a${half},${half} 0 0,1 -${half},-${half}`) +
+    (isRightDark || isBottomDark ? `v${half}h-${half}` : `a${half},${half} 0 0,1 -${half},${half}`) +
+    (isBottomDark || isLeftDark ? `h-${half}v-${half}` : `a${half},${half} 0 0,1 -${half},-${half}`) +
     (isLeftDark || isTopDark ? `v-${half}h${half}` : `a${half},${half} 0 0,1 ${half},-${half}`) +
     'z'
   },
@@ -155,7 +155,7 @@ const dotRenders = {
 }
 
 /**
- * @param {object} opts - funtion parameters
+ * @param {object} opts - function parameters
  * @param {number} opts.cellSize - cell size in pixels
  * @param {number} opts.margin - margin in pixels
  * @param {import('../qr-code.js').QrCode} opts.qrcode - QR Code data
@@ -181,10 +181,10 @@ function finderCornerPathData ({ cellSize, margin, qrcode, style }) {
 function finderCornerPath (cellSize, x, y, margin, qrcode, style) {
   const rx = x * cellSize + margin
   const ry = y * cellSize + margin
-  const rectLenght = 7 * cellSize
+  const rectLength = 7 * cellSize
   const innerRecLength = 5 * cellSize
   if (style.cornerBorder === DOT_STYLE) {
-    const radius = rectLenght / 2
+    const radius = rectLength / 2
     const cx = rx + radius
     const cy = ry + radius
     const innerRadius = innerRecLength / 2
@@ -192,11 +192,11 @@ function finderCornerPath (cellSize, x, y, margin, qrcode, style) {
   }
   if (style.cornerBorder === ROUNDED_STYLE) {
     const outerR = 2.5 * cellSize
-    const lenBeforeArc = rectLenght - 2 * outerR
+    const lenBeforeArc = rectLength - 2 * outerR
     const outerRect = `M${rx + outerR},${ry}h${lenBeforeArc}a${outerR},${outerR} 0 0,1 ${outerR},${outerR}v${lenBeforeArc}a${outerR},${outerR} 0 0,1 -${outerR},${outerR}h${-lenBeforeArc}a${outerR},${outerR} 0 0,1 -${outerR},-${outerR}v${-lenBeforeArc}a${outerR},${outerR} 0 0,1 ${outerR},-${outerR}z`
     const innerR = 1.5 * cellSize
-    const innerlenBeforeArc = rectLenght - 2 * outerR
-    const innerRect = `M${rx + outerR + innerlenBeforeArc},${ry + cellSize}h-${innerlenBeforeArc}a${innerR},${innerR} 0 0,0 -${innerR},${innerR}v${innerlenBeforeArc}a${innerR},${innerR} 0 0,0 ${innerR},${innerR}h${innerlenBeforeArc}a${innerR},${innerR} 0 0,0 ${innerR},-${innerR}v${-innerlenBeforeArc}a${innerR},${innerR} 0 0,0 -${innerR},-${innerR}z`
+    const innerLenBeforeArc = rectLength - 2 * outerR
+    const innerRect = `M${rx + outerR + innerLenBeforeArc},${ry + cellSize}h-${innerLenBeforeArc}a${innerR},${innerR} 0 0,0 -${innerR},${innerR}v${innerLenBeforeArc}a${innerR},${innerR} 0 0,0 ${innerR},${innerR}h${innerLenBeforeArc}a${innerR},${innerR} 0 0,0 ${innerR},-${innerR}v${-innerLenBeforeArc}a${innerR},${innerR} 0 0,0 -${innerR},-${innerR}z`
     return outerRect + innerRect
   }
   if (style.cornerBorder === DEFAULT_STYLE && style.dots !== DEFAULT_STYLE) {
@@ -208,11 +208,11 @@ function finderCornerPath (cellSize, x, y, margin, qrcode, style) {
     ])
     return drawRects.map(rect => renderQrCodeDotArea({ cellSize, margin, qrcode, style, rect })).join('')
   }
-  return `M${rx},${ry}h${rectLenght}v${rectLenght}h-${rectLenght}zM${rx + cellSize},${ry + cellSize}v${innerRecLength}h${innerRecLength}v-${innerRecLength}z`
+  return `M${rx},${ry}h${rectLength}v${rectLength}h-${rectLength}zM${rx + cellSize},${ry + cellSize}v${innerRecLength}h${innerRecLength}v-${innerRecLength}z`
 }
 
 /**
- * @param {object} opts - funtion parameters
+ * @param {object} opts - function parameters
  * @param {number} opts.cellSize - cell size in pixels
  * @param {number} opts.margin - margin in pixels
  * @param {import('../qr-code.js').QrCode} opts.qrcode - QR Code data
@@ -238,16 +238,16 @@ function finderCenterPathData ({ cellSize, margin, qrcode, style }) {
 function finderCenterPath (cellSize, x, y, margin, qrcode, style) {
   const rx = x * cellSize + margin
   const ry = y * cellSize + margin
-  const rectLenght = 3 * cellSize
+  const rectLength = 3 * cellSize
   if (style.cornerCenter === DOT_STYLE) {
-    const radius = rectLenght / 2
+    const radius = rectLength / 2
     const cx = rx + radius
     const cy = ry + radius
     return circlePath(cx, cy, radius, 0)
   }
   if (style.cornerCenter === ROUNDED_STYLE) {
     const arcR = cellSize
-    const lenBeforeArc = rectLenght - 2 * arcR
+    const lenBeforeArc = rectLength - 2 * arcR
     return `M${rx + arcR},${ry}h${lenBeforeArc}a${arcR},${arcR} 0 0,1 ${arcR},${arcR}v${lenBeforeArc}a${arcR},${arcR} 0 0,1 -${arcR},${arcR}h${-lenBeforeArc}a${arcR},${arcR} 0 0,1 -${arcR},-${arcR}v${-lenBeforeArc}a${arcR},${arcR} 0 0,1 ${arcR},-${arcR}z`
   }
 
@@ -255,13 +255,13 @@ function finderCenterPath (cellSize, x, y, margin, qrcode, style) {
     return renderQrCodeDotArea({ cellSize, margin, qrcode, style, rect: [x, y, x + 3, y + 3] })
   }
 
-  return `M${rx},${ry}h${rectLenght}v${rectLenght}h-${rectLenght}z`
+  return `M${rx},${ry}h${rectLength}v${rectLength}h-${rectLength}z`
 }
 
 /**
  * @param {Required<SvgProp>} title - qr code title
  * @param {Required<SvgProp>} alt - qr code alt
- * @returns {string} acessibility attributes or empty string if empty `title` and `alt`
+ * @returns {string} accessibility attributes or empty string if empty `title` and `alt`
  */
 const a11yAttributes = (title, alt) => (title.text || alt.text) ? ' role="img" aria-labelledby="' + escapeXml([title.id, alt.id].join(' ').trim()) + '"' : ''
 
@@ -289,7 +289,7 @@ const normalizeTitle = (title) => {
 /**
  * Create a circle svg path
  * @param {number} cx - horizontal position of the circle center point
- * @param {number} cy - vericak position of the circle center point
+ * @param {number} cy - vertical position of the circle center point
  * @param {number} r - circle radius
  * @param {0|1} d -  to invert direction
  * @returns {string} &lt;path> `d` attribute value
@@ -316,7 +316,7 @@ function circlePath (cx, cy, r, d) {
  * @callback DotPathRender
  * @param {number} x - top left x position of the square area to render
  * @param {number} y - top left y position of the square area to render
- * @param {number} cellSize - lenght of square area to render
+ * @param {number} cellSize - length of square area to render
  * @param {import('../qr-code.js').QrCode} qrcode - QR Code data
  * @param {number} row - QR Code dot row position to draw
  * @param {number} col - QR Code dot column position to draw

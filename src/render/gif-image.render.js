@@ -8,7 +8,7 @@ import { ByteArrayOutputStream } from '../utils/bite-array-output-stream'
  *
  * @param {number} width - image width
  * @param {number} height - image height
- * @returns {BWGIFImage} Black and white GIF image
+ * @returns {BlackWhiteGIFImage} Black and white GIF image
  */
 export function gifImage (width, height) {
   const _width = width
@@ -155,7 +155,7 @@ function bitOutputStream (out) {
   return {
   /**
    * @param {number} data - numeric data
-   * @param {number} length - data bit lenght
+   * @param {number} length - data bit length
    */
     write (data, length) {
       if ((data >>> length) !== 0) {
@@ -209,7 +209,7 @@ function lzwTable () {
  */
 
 /**
- * @typedef {object} BWGIFImage
+ * @typedef {object} BlackWhiteGIFImage
  * Black and white GIF image
  * @property {(x: number, y: number, pixel: number) => void} setPixel - set pixel in position
  * @property {(out: import('../utils/bite-array-output-stream').ByteArrayOutputStream) => void} write - write to output stream

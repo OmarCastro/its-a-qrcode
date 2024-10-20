@@ -5,7 +5,7 @@ class QRPolynomial {
   array
 
   /**
-   * @param {ArrayLike<number>} num - polinomial value
+   * @param {ArrayLike<number>} num - polynomial value
    * @param {number} shift - shift value
    */
   constructor (num, shift = 0) {

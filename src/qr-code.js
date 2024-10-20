@@ -119,7 +119,7 @@ export class QrCode {
 
 /**
  * Gets the position of position detection pattern for the QR Code and draws them
- * @see drawPositionProbePattern to get more infomation about position detection pattern
+ * @see drawPositionProbePattern to get more information about position detection pattern
  * @param {QrCode} qrcode - qr code object
  */
 function setupPositionProbePatterns (qrcode) {
@@ -229,7 +229,7 @@ function getBestMaskPattern (qrcode) {
 
 /**
  * Gets the position of alignment patterns for the QR Code and draws them (the small rectangles in the rectangles in the QR Code)
- * @see paintAlignmentPattern to get more infomation about alignment patterns
+ * @see paintAlignmentPattern to get more information about alignment patterns
  * @param {QrCode} qrcode - qr code object
  */
 function setupPositionAdjustPattern (qrcode) {

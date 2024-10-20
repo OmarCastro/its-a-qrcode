@@ -32,7 +32,7 @@ export class ByteArrayOutputStream {
 
   /**
    *
-   * @param {string} str - charcode list
+   * @param {string} str - char code list
    */
   writeString (str) {
     for (let i = 0, e = str.length; i < e; i += 1) {

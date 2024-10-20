@@ -28,7 +28,7 @@ const ECBlock = (totalCount, dataCount) => Object.freeze({ totalCount, dataCount
  * - 3⋅8⋅8 (finder patterns)
  * - (n2 - 3)⋅5 (alignment patterns)
  * - 2⋅(4‍v + 1) (timing patterns)
- * + 2⋅(n - 2)⋅5 (readding the intersection of alignment and timing patterns)
+ * + 2⋅(n - 2)⋅5 (reading the intersection of alignment and timing patterns)
  * - 1 (dark module)
  * - 2⋅3⋅6 (format data, only if v > 6)
  * @param {number} version - qr code version
