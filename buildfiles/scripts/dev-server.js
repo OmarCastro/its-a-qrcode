@@ -90,7 +90,7 @@ export function Server () {
 
       // No need to ensure the route can't access other local files,
       // since this is for development only.
-      if (serveStaticPageIfExists(req.url, res, true)) {
+      if (serveStaticPageIfExists(req, res, true)) {
         return
       }
     }
