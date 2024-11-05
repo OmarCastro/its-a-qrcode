@@ -3,6 +3,7 @@ import neostandard from 'neostandard'
 import sonarjs from 'eslint-plugin-sonarjs'
 import jsdoc from 'eslint-plugin-jsdoc'
 import cspellESLintPluginRecommended from '@cspell/eslint-plugin/recommended'
+import eslintPluginUnicorn from 'eslint-plugin-unicorn'
 
 export default [
   {
@@ -19,6 +20,7 @@ export default [
   jsdoc.configs['flat/recommended-typescript-flavor'],
   sonarjs.configs.recommended,
   cspellESLintPluginRecommended,
+  eslintPluginUnicorn.configs['flat/recommended'],
   {
     languageOptions: {
       globals: {
@@ -30,7 +32,9 @@ export default [
       sourceType: 'module',
     },
     rules: {
-
+      'unicorn/prevent-abbreviations': 0,
+      'unicorn/no-null': 0,
+      'unicorn/import-style': 0,
       'jsdoc/valid-types': 0,
       'jsdoc/require-returns': ['warn', { publicOnly: true }],
       'sonarjs/cognitive-complexity': ['error', 15],
