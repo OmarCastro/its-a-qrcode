@@ -14,14 +14,17 @@ export default [
       '**/build',
       '**/node_modules',
       '**/dist',
+      'reports/'
     ],
   },
   ...neostandard(),
   jsdoc.configs['flat/recommended-typescript-flavor'],
   sonarjs.configs.recommended,
   cspellESLintPluginRecommended,
-  eslintPluginUnicorn.configs['flat/recommended'],
   {
+    plugins: {
+      unicorn: eslintPluginUnicorn,
+    },
     languageOptions: {
       globals: {
         ...globals.browser,
@@ -32,10 +35,14 @@ export default [
       sourceType: 'module',
     },
     rules: {
-      'unicorn/prevent-abbreviations': 0,
-      'unicorn/no-null': 0,
-      'unicorn/import-style': 0,
-      'jsdoc/valid-types': 0,
+      'unicorn/prefer-code-point': ['warn'],
+      'unicorn/prefer-string-slice': ['warn'],
+      'unicorn/prefer-dom-node-dataset': ['warn'],
+      'unicorn/prefer-at': ['warn'],
+      'unicorn/prefer-modern-dom-apis': ['warn'],
+      'unicorn/no-array-push-push': ['warn'],
+      'unicorn/prefer-node-protocol': ['error'],
+      'unicorn/prefer-array-find': ['error'],
       'jsdoc/require-returns': ['warn', { publicOnly: true }],
       'sonarjs/cognitive-complexity': ['error', 15],
       'max-lines-per-function': ['warn', 75],
@@ -52,6 +59,12 @@ export default [
           words: ['untick', 'millis', 'qrcode', 'sonarjs', 'dcdata', 'ecdata', 'crfl', 'vcard', 'vevent', 'Chaudhuri', 'Hocquenghem', 'glog', 'gexp'],
         }
       }]
+    }
+  },
+  {
+    files: ['test-utils/**/*.js'],
+    rules: {
+      'unicorn/prefer-global-this': 0
     }
   }
 ]
