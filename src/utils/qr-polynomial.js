@@ -1,7 +1,7 @@
 import { gexp, glog } from './qr-math.util.js'
 
 class QRPolynomial {
-  /** @type {readonly number[]} */
+  /** @type {Readonly<number[]>} */
   array
 
   /**

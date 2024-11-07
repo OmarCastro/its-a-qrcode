@@ -36,7 +36,7 @@ export class ByteArrayOutputStream {
    */
   writeString (str) {
     for (let i = 0, e = str.length; i < e; i += 1) {
-      this.writeByte(str.charCodeAt(i))
+      this.writeByte(/** @type {number} */(str.codePointAt(i)))
     }
   };
 

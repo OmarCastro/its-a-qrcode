@@ -71,9 +71,9 @@ export function getPatternPositions (version) {
 }
 
 /**
- * @typedef {readonly [number, number]} Point
+ * @typedef {Readonly<[number, number]>} Point
  */
 
 /**
- * @typedef {readonly Point[]} PatternPositions
+ * @typedef {Readonly<Point[]>} PatternPositions
  */

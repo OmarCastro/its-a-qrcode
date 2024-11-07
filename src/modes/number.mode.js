@@ -53,9 +53,9 @@ function strToNum (s) {
  */
 function charToNum (c) {
   if (c >= '0' && c <= '9') {
-    return c.charCodeAt(0) - zeroCharCode
+    return /** @type {number} */(c.codePointAt(0)) - zeroCodePoint
   }
-  throw Error(`illegal char: ${c}`)
+  throw new Error(`illegal char: ${c}`)
 };
 
-const zeroCharCode = '0'.charCodeAt(0)
+const zeroCodePoint = /** @type {number} */('0'.codePointAt(0))

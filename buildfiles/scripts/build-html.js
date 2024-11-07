@@ -32,7 +32,7 @@ const projectPath = new URL('../../', import.meta.url)
 const docsPath = new URL('docs', projectPath).pathname
 const docsOutputPath = new URL('build/docs', projectPath).pathname
 
-const fs = await import('fs')
+const fs = await import('node:fs')
 
 const data = fs.readFileSync(`${docsPath}/${process.argv[2]}`, 'utf8')
 
@@ -62,8 +62,6 @@ const exampleCode = (strings, ...expr) => {
 const queryAll = (selector) => [...document.documentElement.querySelectorAll(selector)]
 
 const readFileImport = (file) => existsSync(`${docsOutputPath}/${file}`) ? fs.readFileSync(`${docsOutputPath}/${file}`, 'utf8') : fs.readFileSync(`${docsPath}/${file}`, 'utf8')
-
-const promises = []
 
 queryAll('script.html-example').forEach(element => {
   const pre = document.createElement('pre')
@@ -120,7 +118,7 @@ queryAll('img[ss:size]').forEach(element => {
   element.setAttribute('height', `${size.height}`)
 })
 
-promises.push(...queryAll('img[ss:badge-attrs]').map(async (element) => {
+const ssBadgeAttributesTasks = queryAll('img[ss:badge-attrs]').map(async (element) => {
   const imageSrc = element.getAttribute('src')
   const svgText = await readFile(`${docsOutputPath}/${imageSrc}`, 'utf8')
   const div = document.createElement('div')
@@ -134,19 +132,19 @@ promises.push(...queryAll('img[ss:badge-attrs]').map(async (element) => {
 
   const title = svg.querySelector('title')?.textContent
   if (title) { element.setAttribute('title', title) }
-}))
+})
 
-promises.push(...queryAll('style').map(async element => {
+const minifyStylesTasks = queryAll('style').map(async element => {
   element.innerHTML = await minifyCss(element.innerHTML)
-}))
+})
 
-promises.push(...queryAll('link[href][rel="stylesheet"][ss:inline]').map(async element => {
+const inlineCSSTasks = queryAll('link[href][rel="stylesheet"][ss:inline]').map(async element => {
   const href = element.getAttribute('href')
   const cssText = readFileImport(href)
   element.outerHTML = `<style>${await minifyCss(cssText)}</style>`
-}))
+})
 
-promises.push(...queryAll('link[href][ss:repeat-glob]').map(async (element) => {
+const repeatGlobLinksTask = queryAll('link[href][ss:repeat-glob]').map(async (element) => {
   const href = element.getAttribute('href')
   if (!href) { return }
   for await (const filename of getFiles(docsOutputPath)) {
@@ -161,7 +159,14 @@ promises.push(...queryAll('link[href][ss:repeat-glob]').map(async (element) => {
     element.insertAdjacentElement('afterend', link)
   }
   element.remove()
-}))
+})
+
+await Promise.all([
+  ...ssBadgeAttributesTasks,
+  ...minifyStylesTasks,
+  ...inlineCSSTasks,
+  ...repeatGlobLinksTask
+])
 
 const tocUtils = {
   getOrCreateId: (element) => {
@@ -196,8 +201,6 @@ const tocUtils = {
     return null
   },
 }
-
-await Promise.all(promises)
 
 queryAll('[ss:toc]').forEach(element => {
   const ol = document.createElement('ol')
@@ -332,7 +335,7 @@ function minifyDOM (domElement) {
     const values = [...currentElement?.childNodes?.values()]
     for (const node of values) {
       if (node.nodeType === COMMENT_NODE) {
-      // remove comments node
+        // remove comments node
         currentElement.removeChild(node)
       } else if (node.nodeType === TEXT_NODE) {
         minifyTextNode(node, whitespaceMinify)

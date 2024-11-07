@@ -3,6 +3,8 @@ import { ECBlocksInfo } from '../error-correction/qr-ec-block.utils.js'
 import { getCharCountBitLength } from '../modes/mode-utils.util.js'
 import { getErrorCorrectPolynomial } from '../error-correction/ec-polynomial.js'
 import { QrPolynomial } from './qr-polynomial.js'
+/** @import {ModeObject} from '../modes/mode-bits.constants.js' */
+/** @import {ECBlocks} from '../error-correction/qr-ec-block.utils.js' */
 
 const PAD0 = 0xEC
 const PAD1 = 0x11
@@ -11,7 +13,7 @@ const PAD1 = 0x11
  *
  * @param {number} typeNumber - qr code version
  * @param {number} errorCorrectionLevel - error correction level
- * @param {readonly import ("../modes/mode-bits.constants.js").ModeObject[]} dataList - qr code raw data
+ * @param {Readonly<ModeObject[]>} dataList - qr code raw data
  * @returns {number[]} qr code byte data
  */
 export function createData (typeNumber, errorCorrectionLevel, dataList) {
@@ -58,7 +60,7 @@ export function createData (typeNumber, errorCorrectionLevel, dataList) {
 
 /**
  * @param {QrBitBuffer} buffer - data buffer
- * @param {import('../error-correction/qr-ec-block.utils.js').ECBlocksInfo} blocksInfo - error correction blocks info
+ * @param {ECBlocksInfo} blocksInfo - error correction blocks info
  */
 function createBytes (buffer, blocksInfo) {
   const { maxDcCount, maxEcCount, blocks: ecBlocks, totalCount: totalCodeCount } = blocksInfo
@@ -91,7 +93,7 @@ function createBytes (buffer, blocksInfo) {
 
 /**
  * @param {QrBitBuffer} buffer - - data buffer
- * @param {import('../error-correction/qr-ec-block.utils.js').ECBlocks} ecBlocks - error correction blocks
+ * @param {ECBlocks} ecBlocks - error correction blocks
  */
 function createCodewordsData (buffer, ecBlocks) {
   let offset = 0

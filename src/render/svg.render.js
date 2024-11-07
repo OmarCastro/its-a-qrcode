@@ -93,7 +93,7 @@ function dotPathData ({ cellSize, margin, qrcode, style }) {
  * @param {number} opts.margin - margin in pixels
  * @param {import('../qr-code.js').QrCode} opts.qrcode - QR Code data
  * @param {import('../utils/css-qrcode-style.util.js').QRCodeCssStyles} opts.style - qr code colors
- * @param {readonly [number, number,number,number]} opts.rect - qr code colors area to render, values are [minCol, minRow, maxCol, maxRow]
+ * @param {Readonly<[number, number,number,number]>} opts.rect - qr code colors area to render, values are [minCol, minRow, maxCol, maxRow]
  * @returns {string} &lt;path> `d` attribute value
  */
 function renderQrCodeDotArea ({ cellSize, margin, qrcode, style, rect }) {

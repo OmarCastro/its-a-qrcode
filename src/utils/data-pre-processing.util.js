@@ -44,7 +44,7 @@ const dedent = (data) => {
     return data
   }
   const minIndentation = Math.min(...indentationsLevelsToCheck)
-  const unindentedLines = lines.map((line, lineNumber) => line.substring(Math.min(indentationsByLine[lineNumber].level, minIndentation)))
+  const unindentedLines = lines.map((line, lineNumber) => line.slice(Math.max(0, Math.min(indentationsByLine[lineNumber].level, minIndentation))))
   return unindentedLines.join('\n')
 }
 
@@ -60,7 +60,7 @@ const dedentFromFirstLine = (data) => {
     return data
   }
   const charAmountToDedent = firstNonBlankLineIndentation.level
-  const unindentedLines = lines.map((line, lineNumber) => line.substring(Math.min(indentationsByLine[lineNumber].level, charAmountToDedent)))
+  const unindentedLines = lines.map((line, lineNumber) => line.slice(Math.max(0, Math.min(indentationsByLine[lineNumber].level, charAmountToDedent))))
   return unindentedLines.join('\n')
 }
 

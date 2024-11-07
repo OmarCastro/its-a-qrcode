@@ -129,5 +129,5 @@ function versionEcCheck (typeNumber, errorCorrectionLevel) {
  */
 
 /**
- * @typedef {readonly ECBlock[]} ECBlocks Error Correction blocks
+ * @typedef {Readonly<ECBlock[]>} ECBlocks Error Correction blocks
  */

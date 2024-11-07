@@ -179,8 +179,7 @@ function getBestTypeNumber (qrcode) {
     const ecBlocksInfo = ECBlocksInfo(typeNumber, errorCorrectionLevel)
     const buffer = new QrBitBuffer()
 
-    for (let i = 0; i < dataList.length; i++) {
-      const data = dataList[i]
+    for (const data of dataList) {
       buffer.put(data.mode, 4)
       buffer.put(data.length, getCharCountBitLength(data.mode, typeNumber))
       data.write(buffer)

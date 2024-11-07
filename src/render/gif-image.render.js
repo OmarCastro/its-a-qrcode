@@ -99,10 +99,10 @@ function getLZWRaster (data, lzwMinCodeSize) {
   const table = lzwTable()
 
   for (let i = 0; i < clearCode; i += 1) {
-    table.add(String.fromCharCode(i))
+    table.add(String.fromCodePoint(i))
   }
-  table.add(String.fromCharCode(clearCode))
-  table.add(String.fromCharCode(endCode))
+  table.add(String.fromCodePoint(clearCode))
+  table.add(String.fromCodePoint(endCode))
 
   const byteOut = new ByteArrayOutputStream()
   const bitOut = bitOutputStream(byteOut)
@@ -112,11 +112,11 @@ function getLZWRaster (data, lzwMinCodeSize) {
 
   let dataIndex = 0
 
-  let s = String.fromCharCode(data[dataIndex])
+  let s = String.fromCodePoint(data[dataIndex])
   dataIndex += 1
 
   while (dataIndex < data.length) {
-    const c = String.fromCharCode(data[dataIndex])
+    const c = String.fromCodePoint(data[dataIndex])
     dataIndex += 1
 
     if (table.contains(s + c)) {
@@ -194,7 +194,7 @@ function lzwTable () {
     },
     get size () { return _size },
     indexOf: (key) => _map[key],
-    contains: (key) => typeof _map[key] !== 'undefined',
+    contains: (key) => _map[key] != null,
   })
 
   return _this

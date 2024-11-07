@@ -32,6 +32,9 @@ function writeDataToBitBuffer (data, buffer) {
   }
 }
 
+const zeroCodePoint = /** @type {number} */('0'.codePointAt(0))
+const capitalACodePoint = /** @type {number} */('A'.codePointAt(0))
+
 /**
  * Get value for character `c`
  * @param {string} c - target character
@@ -39,9 +42,9 @@ function writeDataToBitBuffer (data, buffer) {
  */
 function getCode (c) {
   if (c >= '0' && c <= '9') {
-    return c.charCodeAt(0) - '0'.charCodeAt(0)
+    return /** @type {number} */(c.codePointAt(0)) - zeroCodePoint
   } else if (c >= 'A' && c <= 'Z') {
-    return c.charCodeAt(0) - 'A'.charCodeAt(0) + 10
+    return /** @type {number} */(c.codePointAt(0)) - capitalACodePoint + 10
   } else {
     switch (c) {
       case ' ' : return 36

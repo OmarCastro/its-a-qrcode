@@ -59,7 +59,7 @@ export const base64ToHex = (base64) => bytesToHex(base64ToBytes(base64))
 export function hexToBytes (hex) {
   const bytes = []
   for (let c = 0, e = hex.length; c < e; c += 2) {
-    bytes.push(parseInt(hex.substring(c, c + 2), 16))
+    bytes.push(Number.parseInt(hex.slice(c, c + 2), 16))
   }
   return Uint8Array.from(bytes)
 }
@@ -93,7 +93,7 @@ function UTF8ToSJIS (data) {
 
   /** @type {number[]} */
   const results = []
-  const len = data && data.length
+  const len = data?.length
   let b1, b2, utf8, jis
 
   for (let i = 0; i < len; i++) {
@@ -136,12 +136,7 @@ function UTF8ToSJIS (data) {
             } else {
               b1 -= 0x4F
             }
-
-            if (b2 > 0x5F) {
-              b2 += 0x20
-            } else {
-              b2 += 0x1F
-            }
+            b2 += b2 > 0x5F ? 0x20 : 0x1F
           } else {
             b1 >>= 1
             if (b1 <= 0x2F) {
