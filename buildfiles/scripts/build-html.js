@@ -156,7 +156,7 @@ const repeatGlobLinksTask = queryAll('link[href][ss:repeat-glob]').map(async (el
     }
     link.removeAttribute('ss:repeat-glob')
     link.setAttribute('href', filename)
-    element.insertAdjacentElement('afterend', link)
+    element.after(link)
   }
   element.remove()
 })
@@ -222,7 +222,7 @@ fs.writeFileSync(`${docsOutputPath}/${process.argv[2]}`, minifiedHtml)
 function dedent (templateStrings, ...values) {
   const matches = []
   const strings = typeof templateStrings === 'string' ? [templateStrings] : templateStrings.slice()
-  strings[strings.length - 1] = strings[strings.length - 1].replace(/\r?\n([\t ]*)$/, '')
+  strings[strings.length - 1] = strings.at(-1).replace(/\r?\n([\t ]*)$/, '')
   for (const string of strings) {
     const match = string.match(/\n[\t ]+/g)
     match && matches.push(...match)

@@ -37,7 +37,6 @@ export default [
     rules: {
       'unicorn/prefer-code-point': ['warn'],
       'unicorn/prefer-string-slice': ['warn'],
-      'unicorn/prefer-dom-node-dataset': ['warn'],
       'unicorn/prefer-at': ['warn'],
       'unicorn/prefer-modern-dom-apis': ['warn'],
       'unicorn/no-array-push-push': ['warn'],

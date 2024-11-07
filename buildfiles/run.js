@@ -910,10 +910,7 @@ async function getLatestReleasedVersion () {
       }
       return { version: match[1], releaseDate: match[2] }
     }).filter(version => !!version)
-  const releasedVersions = versions.filter(version => {
-    return version.releaseDate.match(/[0-9]{4}-[0-9]{2}-[0-9]{2}/)
-  })
-  return releasedVersions[0]
+  return versions.find(({ releaseDate }) => releaseDate.match(/[0-9]{4}-[0-9]{2}-[0-9]{2}/))
 }
 
 // @section 12 badge utilities

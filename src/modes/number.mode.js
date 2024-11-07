@@ -19,17 +19,18 @@ export const QrNumber = (data) => Object.freeze({
  */
 function writeDataToBitBuffer (data, buffer) {
   let i = 0
+  const { length } = data
 
-  while (i + 2 < data.length) {
-    buffer.put(strToNum(data.substring(i, i + 3)), 10)
+  while (i + 2 < length) {
+    buffer.put(strToNum(data.slice(i, i + 3)), 10)
     i += 3
   }
 
-  if (i < data.length) {
-    if (data.length - i === 1) {
-      buffer.put(strToNum(data.substring(i, i + 1)), 4)
-    } else if (data.length - i === 2) {
-      buffer.put(strToNum(data.substring(i, i + 2)), 7)
+  if (i < length) {
+    if (length - i === 1) {
+      buffer.put(strToNum(data.slice(i, i + 1)), 4)
+    } else if (length - i === 2) {
+      buffer.put(strToNum(data.slice(i, i + 2)), 7)
     }
   }
 }

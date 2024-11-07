@@ -44,7 +44,7 @@ export function renderASCII ({ cellSize = 1, margin, qrcode }) {
     }
   }
 
-  return ascii.substring(0, ascii.length - 1)
+  return ascii.slice(0, -1)
 }
 
 /**
@@ -94,8 +94,8 @@ function _createHalfASCII ({ margin = 2, qrcode }) {
   }
 
   if (size % 2 && margin > 0) {
-    return ascii.substring(0, ascii.length - size - 1) + Array(size + 1).join('▀')
+    return ascii.slice(0, -size - 1) + Array(size + 1).join('▀')
   }
 
-  return ascii.substring(0, ascii.length - 1)
+  return ascii.slice(0, -1)
 }
