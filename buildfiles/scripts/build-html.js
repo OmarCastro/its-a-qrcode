@@ -1,4 +1,4 @@
-/* eslint-disable max-lines-per-function, jsdoc/require-jsdoc, jsdoc/require-param-description */
+/* eslint-disable jsdoc/require-jsdoc, jsdoc/require-param-description */
 import Prism from 'prismjs'
 import { minimatch } from 'minimatch'
 import { imageSize } from 'image-size'
@@ -332,7 +332,7 @@ function minifyDOM (domElement) {
     const { whitespaceMinify } = minificationState
     // we have to make a copy of the iterator for traversal, because we cannot
     // iterate through what we'll be modifying at the same time
-    const values = [...currentElement?.childNodes?.values()]
+    const values = [...currentElement?.childNodes?.values() || []]
     for (const node of values) {
       if (node.nodeType === COMMENT_NODE) {
         // remove comments node

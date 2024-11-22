@@ -66,7 +66,6 @@ export function getPatternPositions (version) {
   if (!Number.isInteger(version) || version < 1 || version > 40) {
     throw Error(`invalid pattern @ version:${version}'`)
   }
-  // eslint-disable-next-line sonarjs/no-empty-collection -- its a nullish coalesce assignment, it is expected
   return (positionsMemo[version - 1] ??= calculatePositions(version))
 }
 

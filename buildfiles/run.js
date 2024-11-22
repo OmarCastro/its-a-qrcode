@@ -1,5 +1,5 @@
 #!/usr/bin/env -S node --input-type=module
-/* eslint-disable camelcase, max-lines-per-function, jsdoc/require-jsdoc, jsdoc/require-param-description */
+/* eslint-disable camelcase, jsdoc/require-jsdoc, jsdoc/require-param-description */
 /*
 This file is purposely large to easily move the code to multiple projects, its build code, not production.
 To help navigate this file is divided by sections:
@@ -732,7 +732,7 @@ async function minifyDOM (domElement) {
     const { whitespaceMinify } = minificationState
     // we have to make a copy of the iterator for traversal, because we cannot
     // iterate through what we'll be modifying at the same time
-    const values = [...currentElement?.childNodes?.values()]
+    const values = [...currentElement?.childNodes?.values() || []]
     for (const node of values) {
       if (node.nodeType === COMMENT_NODE) {
       // remove comments node

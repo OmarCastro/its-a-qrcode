@@ -328,7 +328,6 @@ function setupTypeNumber (test, qrcode) {
  * @param {number} maskPattern - mask pattern number
  * @param {QrCode} qrcode - qr code object
  */
-// eslint-disable-next-line sonarjs/cognitive-complexity -- it's low level and simple enough
 function mapData (data, maskPattern, qrcode) {
   const { moduleCount, modules } = qrcode
 
@@ -404,7 +403,6 @@ function mapData (data, maskPattern, qrcode) {
  * @param {QrCode} qrcode - qr code object
  * @returns {number} calculated penalty points
  */
-// eslint-disable-next-line max-lines-per-function, sonarjs/cognitive-complexity -- even it we split one function per level, we would have to use eslint-disable in them anyway
 export function getLostPoint (qrcode) {
   const { moduleCount, modules } = qrcode
   /** @type {(r:number, c:number) => boolean} */
