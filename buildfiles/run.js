@@ -1046,10 +1046,11 @@ async function makeBadgeForTestResult (path) {
   const testAmount = tests.length
   const passedAmount = passedTests.length
   const passed = passedAmount === testAmount
+  const { green, red } = getBadgeColors()
   const svg = await makeBadge({
     label: 'tests',
     message: `${passedAmount} / ${testAmount}`,
-    color: passed ? '#007700' : '#aa0000',
+    color: passed ? green : red,
     logo: asciiIconSvg('✔'),
     logoWidth: 16,
   })
@@ -1064,7 +1065,7 @@ async function makeBadgeForLicense (path) {
   const svg = await makeBadge({
     label: ' license',
     message: pkg.license,
-    color: '#007700',
+    color: getBadgeColors().green,
     logo: asciiIconSvg('🏛'),
   })
 
