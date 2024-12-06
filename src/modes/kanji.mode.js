@@ -53,22 +53,20 @@ function writeDataToBitBuffer (bytes, buffer) {
 export function getValidQrKanjiOrNull (text) {
   const modeObject = QrKanji(text)
   const { bytes } = modeObject
-
+  if (bytes.length % 2 === 1) {
+    return null
+  }
   let i = 0
 
   while (i + 1 < bytes.length) {
-    let c = ((0xff & bytes[i]) << 8) | (0xff & bytes[i + 1])
-
-    if (c >= 0x8140 && c <= 0x9FFC) {
-      c -= 0x8140
-    } else if (c >= 0xE040 && c <= 0xEBBF) {
-      c -= 0xC140
-    } else {
+    const c = ((0xff & bytes[i]) << 8) | (0xff & bytes[i + 1])
+    if (!(
+      (c >= 0x8140 && c <= 0x9FFC) ||
+      (c >= 0xE040 && c <= 0xEBBF)
+    )) {
       return null
     }
-
-    c = ((c >>> 8) & 0xff) * 0xC0 + (c & 0xff)
     i += 2
   }
-  return i >= bytes.length ? modeObject : null
+  return modeObject
 }
