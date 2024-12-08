@@ -244,11 +244,15 @@ async function buildTest () {
    */
   const buildDistFromEsm = esbuild.build({
     ...commonBuildParams,
-    entryPoints: [`${esmDistPath}/entrypoint/browser.js`],
-    outfile: `${minDistPath}/qrcode.element.min.js`,
+    entryPoints: {
+      'qrcode.element.min.js': `${esmDistPath}/entrypoint/browser.js`
+    },
+    outdir: minDistPath,
     format: 'esm',
     sourcemap: true,
+    splitting: true,
     minify: true,
+    chunkNames: '[name]'
   })
 
   /**
@@ -259,12 +263,15 @@ async function buildTest () {
    */
   const buildDocsDist = esbuild.build({
     ...commonBuildParams,
-    entryPoints: ['src/entrypoint/browser.js'],
-    outfile: `${docsDistPath}/qrcode.element.min.js`,
+    entryPoints: {
+      'qrcode.element.min.js': 'src/entrypoint/browser.js'
+    },
+    outdir: docsDistPath,
     format: 'esm',
     sourcemap: true,
     metafile: true,
     minify: true,
+    chunkNames: '[name]',
     plugins: [await getESbuildPlugin()],
   })
 

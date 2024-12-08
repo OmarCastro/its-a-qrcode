@@ -1,18 +1,6 @@
-import { QrCode } from '../qr-code.js'
-import { createImgTag } from '../render/img-tag.render.js'
-import { createSvgTag } from '../render/svg.render.js'
-import { isValid } from '../error-correction/ec-level.js'
+/** @import { QrCode } from '../qr-code.js' */
 import { preProcess } from '../utils/data-pre-processing.util.js'
-import { parseQrCodeColorsFromElement } from '../utils/css-colors.util.js'
-import { parseQrCodeStylesFromElement } from '../utils/css-qrcode-style.util.js'
-import css from './qr-code.element.css'
 
-let loadStyles = () => {
-  const sheet = new CSSStyleSheet()
-  sheet.replaceSync(css)
-  loadStyles = () => sheet
-  return sheet
-}
 /** @type {WeakMap<QRCodeElement, QrCode>} */
 const qrCodeData = new WeakMap()
 const EC_LEVEL_ATTR = 'data-error-correction-level'
@@ -22,7 +10,9 @@ export class QRCodeElement extends HTMLElement {
   constructor () {
     super()
     const shadowRoot = this.attachShadow({ mode: 'open' })
-    shadowRoot.adoptedStyleSheets = [loadStyles()]
+    import('./qr-code.async-loader.js').then(({ loadStyles }) => {
+      shadowRoot.adoptedStyleSheets = [loadStyles()]
+    })
     observer.observe(this, observerOptions)
   }
 
@@ -37,11 +27,11 @@ export class QRCodeElement extends HTMLElement {
 
   get errorCorrectionLevel () {
     const errorCorrectionLevelAttr = this.getAttribute(EC_LEVEL_ATTR)
-    return errorCorrectionLevelAttr && isValid(errorCorrectionLevelAttr) ? errorCorrectionLevelAttr : 'Medium'
+    return errorCorrectionLevelAttr && isValidECLevel(errorCorrectionLevelAttr) ? errorCorrectionLevelAttr : 'Medium'
   }
 
   set errorCorrectionLevel (errorCorrectionLevel) {
-    if (isValid(errorCorrectionLevel)) {
+    if (isValidECLevel(errorCorrectionLevel)) {
       this.setAttribute(EC_LEVEL_ATTR, errorCorrectionLevel)
     }
   }
@@ -79,7 +69,8 @@ const observer = new MutationObserver((records) => {
 /**
  * @param {QRCodeElement} element - target QRCodeElement component element
  */
-function applyQrCode (element) {
+async function applyQrCode (element) {
+  const { QrCode, parseQrCodeColorsFromElement, parseQrCodeStylesFromElement, createSvgTag, createImgTag } = await import('./qr-code.async-loader.js')
   const typeNumber = 0
 
   const { shadowRoot } = element
@@ -128,6 +119,14 @@ function applyQrCode (element) {
     const customEvent = new CustomEvent('qrcode-content-change', { detail: { previousQRCode: oldQr, qrCode: qr } })
     element.dispatchEvent(customEvent)
   }
+}
+
+const correctionLevelNames = new Set(['Medium', 'Low', 'High', 'Quartile'].flatMap(ec => [ec.toUpperCase(), ec[0]]))
+/**
+ * @param {string} ecLevel - Error correction level to validate
+ */
+function isValidECLevel (ecLevel) {
+  return correctionLevelNames.has(ecLevel.toUpperCase())
 }
 
 /**
