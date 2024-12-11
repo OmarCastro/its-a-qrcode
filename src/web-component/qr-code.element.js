@@ -16,6 +16,10 @@ export class QRCodeElement extends HTMLElement {
     observer.observe(this, observerOptions)
   }
 
+  static async loadJsAPI () {
+    return await import('./qr-code.async-loader.js')
+  }
+
   connectedCallback () {
     applyQrCode(this)
   }

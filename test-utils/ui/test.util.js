@@ -3,7 +3,6 @@ import { test as base, expect } from '@playwright/test'
 import { mkdir, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
 
-/** @type {any} */
 export const test = base.extend({
   step: async ({}, use) => {
     await use(test.step)
