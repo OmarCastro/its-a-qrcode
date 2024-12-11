@@ -245,7 +245,7 @@ async function buildTest () {
   const buildDistFromEsm = esbuild.build({
     ...commonBuildParams,
     entryPoints: {
-      'qrcode.element.min.js': `${esmDistPath}/entrypoint/browser.js`
+      'qrcode.element.min': `${esmDistPath}/entrypoint/browser.js`
     },
     outdir: minDistPath,
     format: 'esm',
@@ -264,7 +264,7 @@ async function buildTest () {
   const buildDocsDist = esbuild.build({
     ...commonBuildParams,
     entryPoints: {
-      'qrcode.element.min.js': 'src/entrypoint/browser.js'
+      'qrcode.element.min': 'src/entrypoint/browser.js'
     },
     outdir: docsDistPath,
     format: 'esm',
