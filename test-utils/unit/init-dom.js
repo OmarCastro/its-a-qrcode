@@ -28,7 +28,6 @@ if ('Deno' in globalThis || globalThis.window == null) {
   globalThis.Document = windowObj.Document
   globalThis.window = windowObj
   globalThis.DOMParser = windowObj.DOMParser
-  globalThis.Path2D = windowObj.Path2D
   globalThis.requestAnimationFrame = windowObj.requestAnimationFrame
   globalThis.cancelAnimationFrame = windowObj.cancelAnimationFrame
   globalThis.requestIdleCallback = windowObj.requestIdleCallback
