@@ -31,7 +31,7 @@
     "codemirror": "^6.0.1",
     "deep-diff": "^1.0.2",
     "esbuild": "^0.25.0",
-    "eslint": "^9.20.1",
+    "eslint": "^9.21.0",
     "eslint-plugin-jsdoc": "^50.6.3",
     "eslint-plugin-unicorn": "^57.0.0",
     "expect": "^29.7.0",
