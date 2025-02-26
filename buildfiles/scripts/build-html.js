@@ -1,7 +1,7 @@
 /* eslint-disable jsdoc/require-jsdoc, jsdoc/require-param-description */
 import Prism from 'prismjs'
 import { minimatch } from 'minimatch'
-import { imageSize } from 'image-size'
+import { imageSizeFromFile } from 'image-size/fromFile'
 import { JSDOM } from 'jsdom'
 import { marked } from 'marked'
 import { existsSync } from 'node:fs'
@@ -112,7 +112,7 @@ queryAll('code').forEach(element => {
 
 queryAll('img[ss:size]').forEach(element => {
   const imageSrc = element.getAttribute('src')
-  const size = imageSize(`${docsOutputPath}/${imageSrc}`)
+  const size = imageSizeFromFile(`${docsOutputPath}/${imageSrc}`)
   element.removeAttribute('ss:size')
   element.setAttribute('width', `${size.width}`)
   element.setAttribute('height', `${size.height}`)
