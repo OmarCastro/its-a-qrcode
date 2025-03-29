@@ -308,7 +308,7 @@ function minifyDOM (domElement) {
   function updateMinificationStateForElement (element, minificationState) {
     const tag = element.tagName.toLowerCase()
     // by default, <pre> renders whitespace as is, so we do not want to minify in this case
-    if (['pre'].includes(tag)) {
+    if (['pre', 'qr-code'].includes(tag)) {
       return { ...minificationState, whitespaceMinify: 'pre' }
     }
     // <html> and <head> are not rendered in the viewport, so we remove it
