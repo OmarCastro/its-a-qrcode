@@ -23,7 +23,7 @@
   "devDependencies": {
     "@codemirror/lang-javascript": "^6.2.3",
     "@codemirror/lang-json": "^6.0.1",
-    "@cspell/eslint-plugin": "^8.19.2",
+    "@cspell/eslint-plugin": "^8.19.3",
     "@dagrejs/dagre": "^1.1.4",
     "@playwright/test": "^1.52.0",
     "badge-maker": "^4.1.0",
@@ -33,7 +33,7 @@
     "esbuild": "^0.25.3",
     "eslint": "^9.25.1",
     "eslint-plugin-jsdoc": "^50.6.11",
-    "eslint-plugin-unicorn": "^58.0.0",
+    "eslint-plugin-unicorn": "^59.0.0",
     "expect": "^29.7.0",
     "image-size": "^2.0.2",
     "js-yaml": "^4.1.0",
