@@ -23,7 +23,7 @@
   "devDependencies": {
     "@codemirror/lang-javascript": "^6.2.4",
     "@codemirror/lang-json": "^6.0.1",
-    "@cspell/eslint-plugin": "^9.0.1",
+    "@cspell/eslint-plugin": "^9.0.2",
     "@dagrejs/dagre": "^1.1.4",
     "@playwright/test": "^1.52.0",
     "badge-maker": "^4.1.0",
@@ -38,7 +38,7 @@
     "image-size": "^2.0.2",
     "js-yaml": "^4.1.0",
     "jsdom": "^26.1.0",
-    "marked": "^15.0.11",
+    "marked": "^15.0.12",
     "minimatch": "^10.0.1",
     "mkcert": "^3.2.0",
     "neostandard": "^0.12.1",
