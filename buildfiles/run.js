@@ -948,10 +948,12 @@ function asciiIconSvg (asciicode) {
 }
 
 async function makeBadge (params) {
-  const { default: libMakeBadge } = await import('badge-maker/lib/make-badge.js')
+  const { makeBadge: libMakeBadge } = await import('badge-maker')
+  const { logo, ...otherParams } = params
   return libMakeBadge({
     style: 'for-the-badge',
-    ...params,
+    logoBase64: logo,
+    ...otherParams,
   })
 }
 
