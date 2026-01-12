@@ -9,8 +9,8 @@
         <script type="module" src="doc.js" async></script>
 
         <meta name="viewport" content="width=device-width">
-        <link rel="stylesheet" href="doc.css" ss:inline>
-        <link rel="stylesheet" href="doc-qrcode.css" ss:inline>
+        <link rel="stylesheet" href="doc.css" p-inline>
+        <link rel="stylesheet" href="doc-qrcode.css" p-inline>
     </head>
     <body>
         <div class="sidebar">
@@ -18,7 +18,7 @@
         <div class="toc">
             <div class="toc">
                 <p><strong>Documentation</strong></p>
-                <template ss:toc></template>
+                <template p-toc></template>
                 <p><strong><a href="contributing">How to contribute</a></strong></p>        
             </div>
         </div>
@@ -30,23 +30,23 @@
         </h1>
 
         <section class="section section--badge">
-            <a href="https://github.com/OmarCastro/its-a-qrcode/releases/latest" title="View release notes" ss:aria-label></a>
-                <img src="reports/repo-release-a11y.svg" ss:size ss:badge-attrs="-title"></img>
+            <a href="https://github.com/OmarCastro/its-a-qrcode/releases/latest" title="View release notes" p-aria-label></a>
+                <img src="reports/repo-release-a11y.svg" p-size p-badge-attrs="-title"></img>
             </a>
-            <a href="https://www.npmjs.com/package/its-a-qrcode" title="View NPM package" ss:aria-label>
-                <img src="reports/npm-version-badge-a11y.svg" ss:size ss:badge-attrs="-title"></img>
+            <a href="https://www.npmjs.com/package/its-a-qrcode" title="View NPM package" p-aria-label>
+                <img src="reports/npm-version-badge-a11y.svg" p-size p-badge-attrs="-title"></img>
             </a>
-            <a href="https://github.com/OmarCastro/its-a-qrcode" title="View code repository" ss:aria-label>
-                <img src="reports/repo-badge-a11y.svg" ss:size ss:badge-attrs="-title"></img>
+            <a href="https://github.com/OmarCastro/its-a-qrcode" title="View code repository" p-aria-label>
+                <img src="reports/repo-badge-a11y.svg" p-size p-badge-attrs="-title"></img>
             </a>
-            <a href="https://github.com/OmarCastro/its-a-qrcode/blob/main/LICENSE" title="View license on repository" ss:aria-label>
-                <img src="reports/license-badge-a11y.svg" ss:size ss:badge-attrs="-title"></img>
+            <a href="https://github.com/OmarCastro/its-a-qrcode/blob/main/LICENSE" title="View license on repository" p-aria-label>
+                <img src="reports/license-badge-a11y.svg" p-size p-badge-attrs="-title"></img>
             </a>
-            <a href="reports/playwright-report" title="Show test results" ss:aria-label>
-                <img src="reports/test-results/test-results-badge-a11y.svg" ss:size ss:badge-attrs="-title"></img>
+            <a href="reports/playwright-report" title="Show test results" p-aria-label>
+                <img src="reports/test-results/test-results-badge-a11y.svg" p-size p-badge-attrs="-title"></img>
             </a>
-            <a href="reports/coverage/final" title="Show test code coverage information" ss:aria-label>
-                <img src="reports/coverage/final/coverage-badge-a11y.svg" ss:size ss:badge-attrs="-title"></img>
+            <a href="reports/coverage/final" title="Show test code coverage information" p-aria-label>
+                <img src="reports/coverage/final/coverage-badge-a11y.svg" p-size p-badge-attrs="-title"></img>
             </a>
         </section>
 
@@ -59,7 +59,7 @@
 
         
 
-        <section class="section section--getting-started" ss:markdown>
+        <section class="section section--getting-started" p-markdown>
             ## Getting started
             
             ### CDN
@@ -81,11 +81,11 @@
             customElements.define('<span class="component-name-edit" contenteditable="true">qr-code</span>', element)</code></pre>
         </section>
 
-        <section class="section section--getting-started" ss:markdown>
+        <section class="section section--getting-started" p-markdown>
           
 
         </section>
-        <section class="section section--js" ss:markdown>
+        <section class="section section--js" p-markdown>
            
         </section>
         <section class="section section--examples">
@@ -113,13 +113,13 @@
                     --qrcode-resize: {{true¦style¦--qrcode-resize}};
                 }
             </script>
-            <p ss:markdown>To enable qr code resize, one of the values are supported: `true`, `yes`, `enable`, `enabled`. It is case insensitive (`Yes` equals to `yes`). Any other value disables it </p>
+            <p p-markdown>To enable qr code resize, one of the values are supported: `true`, `yes`, `enable`, `enabled`. It is case insensitive (`Yes` equals to `yes`). Any other value disables it </p>
         </div>
 
         <div class="section--whitespace-process">
             <h3> Whitespace processing </h3>
         
-            <div ss:markdown>
+            <div p-markdown>
                 To be easier to handle specific data types, the text content is processed before turning into a QR Code, mostly whitespace, as to be more flexible on where to put the content.
                 
                 The next examples in this section will show the QR Code content with visible whitespaces to get which symbol represents. The next list can be used as a guide
@@ -151,7 +151,7 @@
                 </script>
             </div>
 
-            <div ss:markdown>
+            <div p-markdown>
                 For specific data types the content is processed differently. One example is VCARD content.
                 
                 If the element text content begins with "BEGIN:VCARD", it will apply de vcard preprocessor which does the following actions:
@@ -203,7 +203,7 @@
 
             <h4>Custom process</h4>
 
-            <p ss:markdown>
+            <p p-markdown>
                 As you can see, the objective of the processing the whitespace is to simply write the content without needing to deal with specific details, as well to reduce the QRCode size.
                 You can choose a custom process before converting to QR code by setting `data-whitespace` attribute, the next list shows the supported processes    
             </p>
@@ -263,7 +263,7 @@
                 </li>
             </ul>
 
-            <div ss:markdown>
+            <div p-markdown>
                 The next example can be used to test the data-pre-processing, multiple pre processes can be applied by adding them to the `data-data-whitespace` attibute separated by space
                 (e.g. `data-whitespace="trim dedent"`) the order of execution will be from left to right
             </div>
@@ -316,11 +316,11 @@
             </script>
         </div>
 
-        <div class="example example--mail-to" ss:markdown>
+        <div class="example example--mail-to" p-markdown>
             #### E-mail address
 
             > To encode an e-mail address like `sean@example.com`, one could simply encode `sean@example.com`. However to ensure it is recognized as an e-mail address,
-            > it is advisable to create a proper mailto: URL from the address: `mailto:sean@example.com`.
+            > it is advisable to create a proper mailto: URL from the addrep- `mailto:sean@example.com`.
             > All of the standard mailto: tricks/links should work here as well. Readers should open a blank e-mail message to the given address.
             >
             > -- <cite>Barcode Contents Wiki, https://github.com/zxing/zxing/wiki/Barcode-Contents#e-mail-address, last read: 2023/10/29</cite>
@@ -332,7 +332,7 @@
             <script type="text/plain" class="html-example"><{{elementName}}>{{mailto:someone@yoursite.com¦text}}</{{elementName}}></script>
         </div>
 
-        <div class="example example--telephone" ss:markdown>
+        <div class="example example--telephone" p-markdown>
             #### Telephone
 
             > A `tel` URI should be used to encode a telephone number, to ensure that the digits are understood as a telephone number. Further, you should
@@ -351,7 +351,7 @@
         <div class="example example--vcard">
             <h4> vCard </h4>
 
-            <p  ss:markdown>
+            <p  p-markdown>
                 As written previously on previously on [data-pre-process](#data-pre-process) section, QR code has support for vCard without worrying much about the specifics
                 as it does some pre-processing to make it tolerant to the vCard specification.
             </p>
@@ -385,7 +385,7 @@
         <div class="example example--vevent">
             <h4> Calendar Events </h4>
 
-            <p  ss:markdown>
+            <p  p-markdown>
                 There is also another process that is executed when the content starts with "BEGIN:VEVENT" to create calendar events
             </p>
             
@@ -408,7 +408,7 @@
             </script>
         </div>
 
-        <div class="section--error-correction-level" ss:markdown>
+        <div class="section--error-correction-level" p-markdown>
             ### Error correction level
 
             When generating a QR Code, you can choose between different levels of error correction (EC). 
@@ -467,7 +467,7 @@
 
         <h3> Color </h3>
 
-        <p  ss:markdown>
+        <p  p-markdown>
             To customize the QR code color you can use the `--qrcode-color` CSS property. This property has support to various value groups
 
             ```css
@@ -503,7 +503,7 @@
         </div>
        
 
-        <p ss:markdown>
+        <p p-markdown>
             It is possible to use separate CSS properties to define the color of a specific part of the QR Code. The next code shows the supported CSS properties
 
             ```css
@@ -549,7 +549,7 @@
 
         <h3> Shape style </h3>
 
-        <p  ss:markdown>
+        <p  p-markdown>
             It is possible to defined the shape of the dark spots of the QR Code by setting the style. There are the following supported style values, they are case insensitive
 
             - **default** - the default square style
@@ -592,7 +592,7 @@
             </script>
         </div>
 
-        <p ss:markdown>
+        <p p-markdown>
             Like color styling, it is possible to use separate CSS properties to define the style of a specific part of the QR Code. The next code shows the supported CSS properties
 
             ```css
@@ -633,7 +633,7 @@
 
         <h3> Margin </h3>
 
-        <p ss:markdown>
+        <p p-markdown>
 
         It is recommended to have a margin for QR code readers to indentify and parse QR Codes.
 
