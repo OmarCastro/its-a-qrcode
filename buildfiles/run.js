@@ -131,17 +131,20 @@ async function execDevEnvironment ({ openBrowser = false } = {}) {
     console.log(`files "${filenames}" changed`)
     let tasks = []
     if (filenames.some(name => name.endsWith('test-page.html') || name.startsWith(srcPath))) {
-      tasks = [buildTest, execTests, buildDocs]
+      tasks = [execlintCodeOnChanged, buildTest, execTests, buildDocs]
     } else {
-      tasks = [buildDocs]
+      tasks = [execlintCodeOnChanged, buildTest, buildDocs]
     }
 
     for (const task of tasks) {
-      await task()
+      try {
+        await task()
+      } catch (e) {
+        console.error(e)
+        break
+      }
     }
-
     updateDevServer()
-    await execlintCodeOnChanged()
   }
 }
 
