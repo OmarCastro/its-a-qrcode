@@ -128,9 +128,9 @@ async function execDevEnvironment ({ openBrowser = false } = {}) {
 
   for await (const change of watcher) {
     const { filenames } = change
-    console.log(`files "${filenames}" changed`)
+    console.log(`\n[watcher] files changed: ${JSON.stringify(filenames, null, 2)}\n\n`)
     let tasks = []
-    if (filenames.some(name => name.endsWith('test-page.html') || name.startsWith(srcPath))) {
+    if (Object.keys(filenames).some(name => name.endsWith('test-page.html') || name.startsWith(srcPath))) {
       tasks = [execlintCodeOnChanged, buildTest, execTests, buildDocs]
     } else {
       tasks = [execlintCodeOnChanged, buildTest, buildDocs]
@@ -814,30 +814,34 @@ async function getFilesAsArray (dir) {
  */
 async function * watchDirs (...dirs) {
   const { watch } = await import('node:fs')
+  const { join } = await import('node:path')
   const nothingResolver = () => {}
   let currentResolver = nothingResolver
-  let batch = []
+  let batch = {}
   console.log(`watching ${dirs}`)
 
-  /** @type {import('node:fs').WatchListener<string>} */
-  const handler = (eventType, filename) => {
+  /** @type {(dir:string) => import('node:fs').WatchListener<string>} */
+  const handler = (dir) => (eventType, filename) => {
     if (eventType !== 'change' || filename == null) { return }
-    batch.push(filename)
+    const fileFullPath = join(dir, filename)
+    const changeInfo = batch[fileFullPath] ?? []
+    changeInfo.push({ changeTime: new Date() })
+    batch[fileFullPath] = changeInfo
     if (currentResolver !== nothingResolver) {
       currentResolver({ filenames: batch })
-      batch = []
+      batch = {}
       currentResolver = nothingResolver
     }
   }
   for (const dir of dirs) {
-    watch(dir, { recursive: true }, handler)
+    watch(dir, { recursive: true }, handler(dir))
   }
 
   while (true) {
     yield new Promise(resolve => {
       if (batch.length > 0) {
         resolve({ filenames: batch })
-        batch = []
+        batch = {}
       } else {
         currentResolver = resolve
       }
