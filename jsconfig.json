@@ -15,6 +15,7 @@
         "noImplicitThis": false,
         "esModuleInterop": true,
         "skipLibCheck": true,
+        "maxNodeModuleJsDepth": 1,
         "forceConsistentCasingInFileNames": true,  
         "lib": [
             "DOM",
