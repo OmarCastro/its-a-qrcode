@@ -1,6 +1,10 @@
-:host {
+:host, .container {
   display: inline-flex;
   justify-content: center;
+}
+
+.container {
+  flex: 1
 }
 
 svg, img {

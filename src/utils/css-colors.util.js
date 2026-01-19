@@ -18,7 +18,7 @@ function getTempDiv () {
  * @param {string} fallback - fallback color if `color` is invalid
  */
 function getCssColorOrElse (color, fallback) {
-  if(typeof color !== "string" || color.trim() === ''){
+  if (typeof color !== 'string' || color.trim() === '') {
     return fallback
   }
   const ele = getTempDiv()

@@ -13,6 +13,13 @@ export class QRCodeElement extends HTMLElement {
     import('./qr-code.async-loader.js').then(({ loadStyles }) => {
       shadowRoot.adoptedStyleSheets = [loadStyles()]
     })
+
+    const span = this.ownerDocument.createElement('span')
+    span.classList.add('container')
+    span.addEventListener('transitionstart', () => {
+      applyQrCode(this)
+    })
+    shadowRoot.append(span)
     observer.observe(this, observerOptions)
   }
 
@@ -47,6 +54,7 @@ const observerOptions = {
   characterDataOldValue: true,
   childList: true,
   attributes: true,
+  attributeFilter: [EC_LEVEL_ATTR, DATA_WHITESPACE_ATTR],
   subtree: true,
 }
 const observer = new MutationObserver((records) => {
@@ -104,7 +112,7 @@ async function applyQrCode (element) {
   const renderMode = getRenderMode(element)
   if (renderMode === 'svg') {
     const svg = createSvgTag({ qrcode: qr, colors, cellSize, margin, scalable: isResizeEnabled(element), style })
-    shadowRoot.innerHTML = svg
+    shadowRoot.children[0].innerHTML = svg
     return
   }
 
@@ -113,10 +121,10 @@ async function applyQrCode (element) {
   if (oldImgElement) {
     const updated = updateImgElement(oldImgElement, imgHtml)
     if (!updated) {
-      shadowRoot.innerHTML = imgHtml
+      shadowRoot.children[0].innerHTML = imgHtml
     }
   } else {
-    shadowRoot.innerHTML = imgHtml
+    shadowRoot.children[0].innerHTML = imgHtml
   }
 
   if (oldQr && (oldQr.dataList.length !== qr.dataList.length || oldQr.dataList.some((val, index) => val.data !== qr.dataList[index].data))) {
