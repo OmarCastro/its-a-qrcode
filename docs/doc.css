@@ -14,15 +14,13 @@
     font-family: -apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji";
 }
 
-qr-code {
-    .example--basic & {  min-height: 70px;}
-    .example--url-link & {  min-height: 80px;}
-    .example--mail-to  & {  min-height: 75px;}
-    .example--telephone & {  min-height: 70px;}
-    &:not(:defined){
-        display: inline-flex;  
-        opacity: 0;      
-    }
+iframe.test-frame {
+    border: none;
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    pointer-events:none;
+    opacity: 0
 }
 
 @media (prefers-color-scheme: dark) {
@@ -40,6 +38,17 @@ qr-code {
 
     a { color: #6ad; }
     a:visited { color: #d8d;}
+}
+
+qr-code {
+    .example--basic & {  min-height: 70px;}
+    .example--url-link & {  min-height: 80px;}
+    .example--mail-to  & {  min-height: 75px;}
+    .example--telephone & {  min-height: 70px;}
+    &:not(:defined){
+        display: inline-flex;  
+        opacity: 0;      
+    }
 }
 
 body {

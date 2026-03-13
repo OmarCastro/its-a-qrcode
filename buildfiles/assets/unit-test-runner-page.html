@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+  <head>
+  <title>unit test page</title>
+  <style>
+  body {
+    background-color: #e5e5e5;
+    color: #303540;
+    font-family: Arial;
+  }
+  @media (prefers-color-scheme: dark) {
+    body {background-color: #202530;color: #dddcdf;}
+    a { color: #6ad; }
+    a:visited { color: #d8d;}
+  }
+  </style>
+  <script type="module" src="{{test-run-script}}" defer></script>
+</head>
+<body></body>
+  <script>
+  const reportType = new URLSearchParams(window.location.search).get('report-type') || 'text'
+  const reportInfo = {
+    reportType,
+    badgeUrl: new URL("{{badge-img-href}}", window.location.href)
+  }
+  globalThis[Symbol.for("unit-test-info")] = reportInfo
+  const styleElement = document.head.querySelector('style')
+  new CSSStyleSheet().replace(styleElement.innerHTML).then(stylesheet => {
+    document.adoptedStyleSheets.push(stylesheet)
+    styleElement.remove()
+  })
+  </script>
+</html>

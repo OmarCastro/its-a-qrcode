@@ -1,0 +1,26 @@
+
+language: en
+ignorePaths: 
+  - "**/*.spec.js"
+  - "**/buildfiles/**"
+  - "**/docs/doc.js"
+  - "**/docs/*.css"
+  - "**/dropdown-i18n.js"
+  - "**/package.json"
+  - "**/.gitignore"
+words:
+  - hrefs # hyperlinks
+  - buildfiles # buildfiles location
+  - linc # lint changed files only
+  - selectbox
+  - datafetch
+  - templater
+
+dictionaries:
+  - "softwareTerms"
+  - "misc"
+  - "en-gb"
+  - "css"
+  - "html"
+  - "js"
+  - "lorem-ipsum"

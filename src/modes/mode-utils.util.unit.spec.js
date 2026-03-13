@@ -23,11 +23,11 @@ test('getBestMode - other chars will set best mode to byte', ({ expect }) => {
 })
 
 test('getCharCountBitLength - invalid version will throw error', ({ expect }) => {
-  expect(() => getCharCountBitLength(MODE_NUMBER, 50)).toThrow(/invalid version: 50/);
+  expect(() => getCharCountBitLength(MODE_NUMBER, 50)).toThrow(Error("invalid version: 50"));
 })
 
 test('getCharCountBitLength - invalid mode will throw error', ({ expect }) => {
-  expect(() => getCharCountBitLength(3, 2)).toThrow(/invalid mode: 3/);
+  expect(() => getCharCountBitLength(3, 2)).toThrow(Error("invalid mode: 3"));
 })
 
 test('getCharCountBitLength - validate result respects character count bit length table', ({ expect }) => {

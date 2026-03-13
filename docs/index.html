@@ -48,6 +48,10 @@
             <a href="reports/coverage/final" title="Show test code coverage information" p-aria-label>
                 <img src="reports/coverage/final/coverage-badge-a11y.svg" p-size p-badge-attrs="-title"></img>
             </a>
+            <a href="tests/unit-tests" title="Run unit tests in the browser" p-aria-label>
+              <svg p-include="tests/unit-tests.badge.svg"></svg>
+              <iframe class="test-frame" src="tests/unit-tests?report-type=badge"></iframe>
+            </a>
         </section>
 
         <section class="section section--introduction">

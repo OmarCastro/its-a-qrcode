@@ -1,14 +1,6 @@
-/* eslint-disable no-empty-pattern */
-// @ts-nocheck
-/**
- * this file adapts the test to their own environment
- *
- * on Deno uses Deno API
- * on Node it uses playwright
- * on browser it uses a custom api
- */
+/** @import {ExpectApi} from './simple-expect.js' */
 
-// thee 2 lines are to prevent esbuild to bundle the await imports
+// these 2 lines are to prevent esbuild to bundle the await imports
 /**
  * @param {string} str - import path
  * @returns {Promise<any>} import result
@@ -17,80 +9,46 @@ const importModule = (str) => import(str)
 let importStr
 
 /**
- * @returns {Promise<Test>} adapted tests
+ * @returns {Promise<{test: Test, expect: ExpectApi}>} adapted tests
  */
 const fn = async () => {
-  if (globalThis.Deno != null) {
-    // init unit tests for deno
-
-    importStr = 'https://deno.land/x/expect/mod.ts'
-    const { expect } = await importModule(importStr)
-
-    importStr = './init-dom'
-    const { window } = await importModule(importStr)
-
-    return (description, test) => {
-      globalThis.Deno.test(`${description}`, async (t) => {
-        await test({
-          step: t.step,
-          expect,
-          dom: window,
-        })
-      })
-    }
-  }
-
-  if (globalThis.window == null) {
+  const customTestSetup = globalThis[Symbol.for('custom-unit-test-setup')]
+  if (customTestSetup) {
+    const { test, expect } = await customTestSetup()
+    return { test, expect }
+  } else {
     // init unit tests for Playwright
 
-    importStr = '@playwright/test'
-    const { test: base, expect } = await import(importStr)
-
-    importStr = './init-dom'
-    const { window, resetDom } = await importModule(importStr)
-
-    /** @type {any} */
-    const test = base.extend({
-      step: async ({}, use) => {
-        await use(test.step)
-      },
-      dom: async ({}, use) => {
-        resetDom()
-        await use(window)
-      },
-      expect: async ({}, use) => {
-        await use(expect)
-      },
-    })
-
-    return test
-  } else {
-    // init unit tests to be run in browser
-
-    const { expect } = await import('expect')
-
-    return async (description, test) => {
-      console.log('-' + description)
-
-      return test({
-
-        step: async (description, test) => {
-          console.log('--' + description)
-          await test()
-        },
-        dom: window,
-        expect,
-      })
-    }
+    importStr = './setup-unit-test-playwright.js'
+    const { test, expect } = await importModule(importStr)
+    return { test, expect }
   }
 }
 
-export const test = await fn()
+export const { test, expect } = await fn()
+const inspect = (await import('object-inspect')).default
+
+export const formatted = (strings, ...values) => String.raw(
+  { raw: strings },
+  ...values.map((value) => inspect(value)),
+)
+
+/** @type {(target: unknown) => asserts target} */
+export const assert = (target) => {
+  if (!target) {
+    throw Error('assertion failed')
+  }
+}
 
 /**
- * @callback Test
- * @param {string} description
- * @param {TestCall} test
+ * @typedef {(description: string, fn: TestCall, info: TestInfo) => any} Test
+ */
+
+/**
+ * @typedef {{
+ *  skip(skipMessage: string): void
+ *  skip(invariant: boolean, skipMessage: string): void
+ * }} TestInfo
  */
 
 /**
@@ -99,15 +57,18 @@ export const test = await fn()
  */
 
 /**
- * @typedef {object} TestAPI
- * @property {typeof import('expect').expect} expect - expect API
- * @property {TestAPICall} step - test step
- * @property {Window} dom - dom fixture
- */
-
-/**
  * @callback TestAPICall
  * @param {string} description
  * @param {() => any} step
  * @returns {Promise<any>}
+ */
+
+/**
+ * @typedef {object} TestAPI
+ * @property {ExpectApi} expect - expect API
+ * @property {TestAPICall} step - test step
+ * @property {Window} dom - dom fixture
+ * @property {import('./fixtures/fetch.unit.fixture.js').MockApi} fetch - dom fixture
+ * @property {import('./fixtures/timezone.unit.fixture.js').MockApi} timezone - dom fixture
+ * @property {import('./fixtures/garbage-collector.unit.fixture.js').gc} gc - dom fixture
  */

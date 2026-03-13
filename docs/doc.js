@@ -1,3 +1,19 @@
+const testFrame = document.querySelector('iframe.test-frame')
+if (testFrame) {
+  const childWindow = testFrame.contentWindow
+  window.addEventListener('message', (message) => {
+    if (message.source !== childWindow) {
+      return
+    }
+    if (message.data.message === 'unit test report' && message.data.badgeSvg) {
+      var parser = new DOMParser()
+      var doc = parser.parseFromString(message.data.badgeSvg, 'image/svg+xml')
+      const svg = doc.querySelector('svg')
+      testFrame.previousElementSibling.replaceWith(svg)
+    }
+  })
+}
+
 /**
  * @param {Record<string, any>} exampleObject - example object data
  * @param {Element} codeView - element container
@@ -174,7 +190,7 @@ function reactElementNameChange (event) {
   const componentName = event.target.closest('.component-name-edit')
   if (componentName == null) { return }
   const newText = componentName.textContent
-  document.body.querySelectorAll('.component-name-edit').forEach(ref => { if (componentName !== ref) ref.textContent = newText })
+  document.body.querySelectorAll('.component-name-edit').forEach(ref => { if (componentName !== ref) {ref.textContent = newText} })
   document.body.querySelectorAll('.component-name-ref').forEach(ref => { ref.textContent = newText })
 }
 
