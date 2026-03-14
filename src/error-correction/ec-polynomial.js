@@ -1,5 +1,5 @@
-import { QrPolynomial } from '../utils/qr-polynomial'
-import { gexp } from '../utils/qr-math.util'
+import { QrPolynomial } from '../utils/qr-polynomial.js'
+import { gexp } from '../utils/qr-math.util.js'
 
 /**
  * memoize getErrorCorrectPolynomial as it is called multiple times when generating QR Code

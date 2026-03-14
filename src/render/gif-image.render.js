@@ -1,4 +1,4 @@
-import { ByteArrayOutputStream } from '../utils/bite-array-output-stream'
+import { ByteArrayOutputStream } from '../utils/bite-array-output-stream.js'
 
 // ---------------------------------------------------------------------
 // gifImage (B/W)
