@@ -12,7 +12,7 @@
  * @returns {number[]} Array of coordinate
  */
 export function calculateCoordinates (version) {
-  if (version === 1) return []
+  if (version === 1) {return []}
   const intervals = Math.floor(version / 7) + 1
   const distance = 4 * version + 4 // between first and last pattern
   const step = version === 32 ? 26 : Math.ceil(distance / intervals / 2) * 2

@@ -15,7 +15,7 @@ let tableMemo
  *
  */
 function createUtf8ToSJisTable () {
-  if (tableMemo) return tableMemo
+  if (tableMemo) { return tableMemo }
   const additionalUtf8ToSjisIndexEntries = {
     0xC2AC: 0x224C, // "¬" to "￢"
     0xE28096: 0x2142, // "‖" to "∥"

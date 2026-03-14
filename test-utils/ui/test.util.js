@@ -1,4 +1,3 @@
-/* eslint-disable no-empty-pattern */
 import { test as base, expect } from '@playwright/test'
 import { mkdir, writeFile } from 'node:fs/promises'
 import { join } from 'node:path'
@@ -32,9 +31,9 @@ export const test = base.extend({
     })
 
     for (const entry of coverage) {
-      const filetoWrite = join(process.cwd(), `reports/.tmp/coverage/ui/tmp/coverage-ui-${Date.now()}-${entry.scriptId}.json`)
+      const fileToWrite = join(process.cwd(), `reports/.tmp/coverage/ui/tmp/coverage-ui-${Date.now()}-${entry.scriptId}.json`)
       const fileContent = JSON.stringify({ result: [entry] })
-      await writeFile(filetoWrite, fileContent)
+      await writeFile(fileToWrite, fileContent)
     }
   },
 })

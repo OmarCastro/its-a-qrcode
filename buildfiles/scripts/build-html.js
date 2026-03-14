@@ -1,4 +1,4 @@
-/* eslint-disable jsdoc/require-jsdoc, jsdoc/require-param-description */
+/* eslint-disable jsdoc/require-param-description */
 import Prism from 'prismjs'
 import { minimatch } from 'minimatch'
 import { imageSizeFromFile } from 'image-size/fromFile'

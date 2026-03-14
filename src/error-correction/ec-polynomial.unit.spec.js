@@ -7,8 +7,11 @@ import { EC_BLOCK_TABLE } from './qr-ec-block-table.constants.js'
 const maxEcWidth = Math.max(...EC_BLOCK_TABLE.filter((_, i) => i % 2 === 0))
 const maxEcWidthRange = Object.freeze([...new Array(maxEcWidth).keys()])
 
-/** original and simplified implementation of getErrorCorrectPolynomial */
-export function getErrorCorrectPolynomialOriginal (errorCorrectLength) {
+/**
+ * original and simplified implementation of getErrorCorrectPolynomial
+ * @param {number} errorCorrectLength - error correction codeword count
+ */
+function getErrorCorrectPolynomialOriginal (errorCorrectLength) {
   let polynomial = QrPolynomial([1], 0)
   for (let i = 0; i < errorCorrectLength; i += 1) {
     polynomial = polynomial.multiply(QrPolynomial([1, gexp(i)], 0))

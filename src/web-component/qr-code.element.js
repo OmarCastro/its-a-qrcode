@@ -196,9 +196,9 @@ function updateImgElement (imageElement, imgHtml) {
  */
 function getRenderMode (element) {
   const renderModeCss = (getComputedStyle(element).getPropertyValue('--qrcode-render') || '').trim().toLowerCase()
-  if (renderModeCss === 'svg') return 'svg'
-  if (renderModeCss === 'raster') return 'raster'
-  if (isResizeEnabled(element)) return 'svg'
+  if (renderModeCss === 'svg') {return 'svg'}
+  if (renderModeCss === 'raster') {return 'raster'}
+  if (isResizeEnabled(element)) {return 'svg'}
   return 'raster'
 }
 
