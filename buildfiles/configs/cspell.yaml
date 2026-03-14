@@ -4,17 +4,35 @@ ignorePaths:
   - "**/*.spec.js"
   - "**/buildfiles/**"
   - "**/docs/doc.js"
+  - "**/docs/code-editor.lazy.js"
   - "**/docs/*.css"
-  - "**/dropdown-i18n.js"
+  - "**/utf8-to-jis-table.constants.js"
   - "**/package.json"
+  - "**/dist/**"
+  - "**/smoke-test/**"
   - "**/.gitignore"
 words:
   - hrefs # hyperlinks
   - buildfiles # buildfiles location
   - linc # lint changed files only
-  - selectbox
-  - datafetch
-  - templater
+  - webcomponents
+  - untick
+  - qrcode
+  - dcdata
+  - ecdata
+  - crfl
+  - vcard
+  - vevent
+  - glog
+  - gexp
+  - alphanum # short of apha numeric
+  - DTSTART # VEVENT "date time start" property name
+  - DTEND # VEVENT "date time end" property name
+  # names and surnames
+  - Chaudhuri
+  - Hocquenghem
+  - Perreault
+
 
 dictionaries:
   - "softwareTerms"
