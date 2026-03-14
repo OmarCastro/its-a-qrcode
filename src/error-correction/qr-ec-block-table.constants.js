@@ -1,4 +1,3 @@
-/* eslint @stylistic/no-multi-spaces: 0 -- tabular view of data present */
 /**
  * The error correction block table.
  *

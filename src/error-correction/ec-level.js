@@ -14,12 +14,12 @@ const correctionLevelMap = correctionLevelNames.reduce((acc, name, bit) => {
 /**
  * Get error correction level from string
  * @param {string} string - correction level text
- * @throws error on invalid correction level
+ * @throws {Error} error on invalid correction level
  * @returns {{ bit: number, name: string }} correction level object
  */
 export function fromString (string) {
   if (typeof string !== 'string') {
-    throw new Error(`expected string instead of ${typeof string}`)
+    throw new TypeError(`expected string instead of ${typeof string}`)
   }
 
   const result = correctionLevelMap[string.toUpperCase()]

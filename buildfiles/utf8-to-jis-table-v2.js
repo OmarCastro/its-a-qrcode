@@ -81,8 +81,8 @@ console.log(bytesToText(a1))
 console.log(bytesToText(c))
 
 /**
- * @param {number} jis
- * @returns {number}
+ * @param {number} jis - SJIS index
+ * @returns {number} - SJIS code
  */
 function sjisIndexToCode (jis) {
   let b1, b2

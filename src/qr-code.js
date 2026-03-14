@@ -403,7 +403,7 @@ function mapData (data, maskPattern, qrcode) {
  * @param {QrCode} qrcode - qr code object
  * @returns {number} calculated penalty points
  */
-export function getLostPoint (qrcode) {
+export function getLostPoint (qrcode) {  // eslint-disable-line max-lines-per-function -- it is meant to be big
   const { moduleCount, modules } = qrcode
   /** @type {(r:number, c:number) => boolean} */
   const isDark = (r, c) => modules[r][c]
