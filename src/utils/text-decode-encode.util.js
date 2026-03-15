@@ -64,11 +64,12 @@ export function hexToBytes (hex) {
   return Uint8Array.from(bytes)
 }
 
+const byteToHex = Array.from({ length: 0xff }, (_, i) => i.toString(16).padStart(2, "0"));
 /**
  * @param {Uint8Array} bytes - byte array
  * @returns {string} hex string
  */
-export const bytesToHex = (bytes) => Array.from(bytes).map(byte => ((byte + 256) & 0xff).toString(16)).join('')
+export const bytesToHex = (bytes) => bytes.reduce((result, byte) => result + byteToHex[byte], '')
 
 /**
  * @param {string} str - input text
