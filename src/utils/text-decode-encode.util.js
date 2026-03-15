@@ -56,13 +56,7 @@ export const base64ToHex = (base64) => bytesToHex(base64ToBytes(base64))
  * @param {string} hex - hex string
  * @returns {Uint8Array} byte array
  */
-export function hexToBytes (hex) {
-  const bytes = []
-  for (let c = 0, e = hex.length; c < e; c += 2) {
-    bytes.push(Number.parseInt(hex.slice(c, c + 2), 16))
-  }
-  return Uint8Array.from(bytes)
-}
+export const hexToBytes = (hex) => Uint8Array.from({ length: hex.length >> 1 }, (_, i) => Number.parseInt(hex.slice(i, i + 2), 16));
 
 const byteToHex = Array.from({ length: 0xff }, (_, i) => i.toString(16).padStart(2, "0"));
 /**
