@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+### Fixed
+
+- Add missing padding when converting bytes to hex string
+
 
 ## [0.6.0] - Unreleased
 
