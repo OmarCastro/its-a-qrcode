@@ -689,7 +689,7 @@ async function cleanRelease () {
 
 async function alignTestFrameworkVersion () {
   const playwrightVersion = await getPlayWrightVersion()
-  const files = await listNonIgnoredFiles({ patterns: ['.github/workflows/*.yaml'] })
+  const files = await listNonIgnoredFiles({ patterns: ['.github/workflows/*.yaml', '.github/workflows/*.yml'] })
   const regexp = /(?<=mcr\.microsoft\.com\/playwright:v)(?<version>[.0-9]+)/g
   const result = await Array.fromAsync(files.map(async (file) => {
     const data = await readFile(file)
