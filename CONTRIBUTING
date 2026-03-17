@@ -45,7 +45,7 @@ problem does not already exist.
 
 After cloning the project's code repository, you can run several commands, the first time you run any of the following commands, it will automatically install dependencies with `npm ci`.
 
-- `npm run lint` checks code style and validates assets.
+- `npm run lint` lints the code, checks spelling mistakes, type checks the code and validates assets.
 - `npm run linc` is like `npm run lint` but faster because it only checks files that differ in your branch.
 - `npm test` runs all unit tests.
 - `npm run build` creates a build folder with dist and documentation.
