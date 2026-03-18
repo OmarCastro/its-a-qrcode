@@ -1,5 +1,5 @@
 import { MODE_KANJI } from './mode-bits.constants.js'
-import { textToSjisBytes } from '../utils/text-decode-encode.util.js'
+import { textToSjisBytes } from '../utils/sjis-decode-encode.util.js'
 
 /**
  * Create QR code Kanji mode object
