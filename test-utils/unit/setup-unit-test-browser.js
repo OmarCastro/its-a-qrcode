@@ -173,7 +173,12 @@ const createSVGResponse = async (report) => {
   const { badgeUrl } = globalThis[Symbol.for('unit-test-info')]
   badgeFetch ??= fetch(badgeUrl).then((response) => response.text())
   const badgeSvg = await badgeFetch
-  return badgeSvg
-    .replaceAll('RUNNING...', label)
-    .replaceAll('--dark-fill: #05a; --light-fill: #acf;', `--dark-fill: ${color.dark}; --light-fill: ${color.light};`)
+  console.log(badgeSvg)
+
+  const result = badgeSvg
+    .replaceAll('IN BROWSER TESTS: RUNNING...', `IN BROWSER TESTS: ${label}`)
+    .replaceAll(/textLength="[0-9]+" ([^>]+)>RUNNING.../g, `letter-spacing="30" $1>${label}`)
+    .replaceAll(/--dark-fill: #[0-9a-fA-f]+; --light-fill: #[0-9a-fA-f]+;/g, `--dark-fill: ${color.dark}; --light-fill: ${color.light};`)
+  console.log(result)
+  return result
 }
