@@ -183,8 +183,9 @@ async function execDevEnvironment ({ openBrowser = false } = {}) {
 
   const srcPath = pathFromProject('src')
   const docsPath = pathFromProject('docs')
+  const testUtilsPath = pathFromProject('test-utils')
 
-  const watcher = watchDirs(srcPath, docsPath)
+  const watcher = watchDirs(srcPath, docsPath, testUtilsPath)
 
   for await (const change of watcher) {
     const { filenames } = change
