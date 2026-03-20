@@ -25,6 +25,7 @@
     "@codemirror/lang-json": "^6.0.2",
     "@dagrejs/dagre": "^2.0.4",
     "@playwright/test": "^1.58.2",
+    "@stylistic/eslint-plugin": "^5.10.0",
     "badge-maker": "^5.0.2",
     "c8": "^11.0.0",
     "codemirror": "^6.0.2",
