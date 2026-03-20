@@ -23,7 +23,7 @@
   "devDependencies": {
     "@codemirror/lang-javascript": "^6.2.5",
     "@codemirror/lang-json": "^6.0.2",
-    "@dagrejs/dagre": "^1.1.8",
+    "@dagrejs/dagre": "^2.0.4",
     "@playwright/test": "^1.58.2",
     "badge-maker": "^5.0.2",
     "c8": "^11.0.0",
