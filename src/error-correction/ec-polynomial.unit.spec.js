@@ -21,14 +21,13 @@ function getErrorCorrectPolynomialOriginal (errorCorrectLength) {
 
 
 test('Error Correction Polynomial - values are memoized', ({ expect }) => {
-  const checks = maxEcWidthRange.map((index) => getErrorCorrectPolynomial(index) === getErrorCorrectPolynomial(index))
+  const checks = maxEcWidthRange.map(index => getErrorCorrectPolynomial(index) === getErrorCorrectPolynomial(index))
   const expeced = maxEcWidthRange.map(() => true)
   expect(checks).toEqual(expeced)
 })
 
 test(`memoized shows the same value as the original from 0 to max possible ECC count (${maxEcWidth}) `, ({ expect }) => {
-  const originalVals = maxEcWidthRange.map((index) => getErrorCorrectPolynomialOriginal(index))
-  const updatedVals = maxEcWidthRange.map((index) => getErrorCorrectPolynomial(index))
+  const originalVals = maxEcWidthRange.map(index => getErrorCorrectPolynomialOriginal(index))
+  const updatedVals = maxEcWidthRange.map(index => getErrorCorrectPolynomial(index))
   expect(originalVals).toEqual(updatedVals)
 })
-

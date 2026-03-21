@@ -338,7 +338,7 @@ function mapData (data, maskPattern, qrcode) {
   const maskFunc = getMaskPatternFunction(maskPattern)
 
   for (let col = moduleCount - 1; col > 0; col -= 2) {
-    if (col === 6) {col -= 1}
+    if (col === 6) { col -= 1 }
 
     while (true) {
       for (let c = 0; c < 2; c += 1) {
@@ -447,10 +447,10 @@ export function getLostPoint (qrcode) {  // eslint-disable-line max-lines-per-fu
   for (let row = 0; row < moduleCount - 1; row += 1) {
     for (let col = 0; col < moduleCount - 1; col += 1) {
       let count = 0
-      if (isDark(row, col)) {count += 1}
-      if (isDark(row + 1, col)) {count += 1}
-      if (isDark(row, col + 1)) {count += 1}
-      if (isDark(row + 1, col + 1)) {count += 1}
+      if (isDark(row, col)) { count += 1 }
+      if (isDark(row + 1, col)) { count += 1 }
+      if (isDark(row, col + 1)) { count += 1 }
+      if (isDark(row + 1, col + 1)) { count += 1 }
       if (count === 0 || count === 4) {
         lostPoint += 3
       }

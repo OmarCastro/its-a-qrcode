@@ -8,7 +8,7 @@ export default [
       '**/node_modules',
       '**/dist',
       // project specific
-      '**/qr-math.util.unit.spec.js'
+      '**/qr-math.util.unit.spec.js',
     ],
   },
   {
@@ -43,7 +43,6 @@ export default [
       '@stylistic/js/keyword-spacing': 'error',
       '@stylistic/js/linebreak-style': 'error',
       '@stylistic/js/new-parens': ['error', 'always'],
-      '@stylistic/js/no-confusing-arrow': 'error',
       '@stylistic/js/no-extra-parens': ['error', 'functions'],
       '@stylistic/js/no-multiple-empty-lines': ['error', { max: 2, maxEOF: 0, maxBOF: 0 }],
       '@stylistic/js/no-tabs': 'error',
@@ -150,7 +149,6 @@ function customPlugin () {
                   message: 'Expected to enclose this argument with parentheses.',
                   fix (fixer) {
                     const id = node.params[0]
-
                     return fixer.replaceText(id, `(${id.name})`)
                   },
                 })
@@ -159,7 +157,6 @@ function customPlugin () {
           }
         },
       },
-
     },
   }
 }

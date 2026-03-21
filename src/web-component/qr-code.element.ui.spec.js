@@ -1,57 +1,57 @@
 import { test } from '../../test-utils/ui/test.util.js'
 
 test('qr-code element visual test', async ({ page, expect }) => {
-  await page.goto('./build/docs/test-page.html');
+  await page.goto('./build/docs/test-page.html')
   const qrCode = page.locator('.qr-code--hello-world')
-  await expect.soft(await qrCode.screenshot()).toMatchSnapshot('qr-code--hello-world.png');
-});
+  await expect.soft(await qrCode.screenshot()).toMatchSnapshot('qr-code--hello-world.png')
+})
 
 test('svg render visual test', async ({ page, expect }) => {
-  await page.goto('./build/docs/test-page.html');
+  await page.goto('./build/docs/test-page.html')
   const qrCode = page.locator('.qr-code--svg')
-  await expect(qrCode.locator("svg")).toBeVisible() 
-  await expect.soft(await qrCode.screenshot()).toMatchSnapshot('qr-code--hello-world.png');
-});
+  await expect(qrCode.locator('svg')).toBeVisible()
+  await expect.soft(await qrCode.screenshot()).toMatchSnapshot('qr-code--hello-world.png')
+})
 
 
 test('error correction level reaction visual test', async ({ page, expect }) => {
-  await page.goto('./build/docs/test-page.html');
+  await page.goto('./build/docs/test-page.html')
   const qrCode = page.locator('.qr-code--error-correction-level')
-  await expect.soft(await qrCode.screenshot()).toMatchSnapshot('qr-code--ec-level-L.png');
+  await expect.soft(await qrCode.screenshot()).toMatchSnapshot('qr-code--ec-level-L.png')
 
-  await qrCode.evaluate(node => node.setAttribute('data-error-correction-level', 'M'));
-  await expect.soft(await qrCode.screenshot()).toMatchSnapshot('qr-code--ec-level-M.png');
+  await qrCode.evaluate(node => node.setAttribute('data-error-correction-level', 'M'))
+  await expect.soft(await qrCode.screenshot()).toMatchSnapshot('qr-code--ec-level-M.png')
 
-  await qrCode.evaluate(node => node.setAttribute('data-error-correction-level', 'Q'));
-  await expect.soft(await qrCode.screenshot()).toMatchSnapshot('qr-code--ec-level-Q.png');
+  await qrCode.evaluate(node => node.setAttribute('data-error-correction-level', 'Q'))
+  await expect.soft(await qrCode.screenshot()).toMatchSnapshot('qr-code--ec-level-Q.png')
 
-  await qrCode.evaluate(node => node.setAttribute('data-error-correction-level', 'H'));
-  await expect.soft(await qrCode.screenshot()).toMatchSnapshot('qr-code--ec-level-H.png');
+  await qrCode.evaluate(node => node.setAttribute('data-error-correction-level', 'H'))
+  await expect.soft(await qrCode.screenshot()).toMatchSnapshot('qr-code--ec-level-H.png')
 
-  await qrCode.evaluate(node => node.errorCorrectionLevel = 'Q');
-  await expect.soft(await qrCode.screenshot()).toMatchSnapshot('qr-code--ec-level-Q.png');
-});
+  await qrCode.evaluate(node => node.errorCorrectionLevel = 'Q')
+  await expect.soft(await qrCode.screenshot()).toMatchSnapshot('qr-code--ec-level-Q.png')
+})
 
 test('text content react testing', async ({ page, expect }) => {
-  await page.goto('./build/docs/test-page.html');
+  await page.goto('./build/docs/test-page.html')
   const qrCode = page.locator('.qr-code--content')
-  await expect.soft(await qrCode.screenshot()).toMatchSnapshot('qr-code--content-12345.png');
+  await expect.soft(await qrCode.screenshot()).toMatchSnapshot('qr-code--content-12345.png')
 
-  await qrCode.evaluate(node => node.childNodes[0].nodeValue = "text node updated");
-  await expect.soft(await qrCode.screenshot()).toMatchSnapshot('qr-code--content-text-node-updated.png');
+  await qrCode.evaluate(node => node.childNodes[0].nodeValue = 'text node updated')
+  await expect.soft(await qrCode.screenshot()).toMatchSnapshot('qr-code--content-text-node-updated.png')
 
-  await qrCode.evaluate(node => node.textContent = "text content changed");
-  await expect.soft(await qrCode.screenshot()).toMatchSnapshot('qr-code--content-text-content-changed.png');
-});
+  await qrCode.evaluate(node => node.textContent = 'text content changed')
+  await expect.soft(await qrCode.screenshot()).toMatchSnapshot('qr-code--content-text-content-changed.png')
+})
 
 test('style image test', async ({ page, expect }) => {
-  await page.goto('./build/docs/test-page.html');
+  await page.goto('./build/docs/test-page.html')
   const qrCodeFullDotStyle = page.locator('.qr-code--dot-style')
-  await expect.soft(await qrCodeFullDotStyle.screenshot()).toMatchSnapshot('qr-code--dot-style-12345.png');
+  await expect.soft(await qrCodeFullDotStyle.screenshot()).toMatchSnapshot('qr-code--dot-style-12345.png')
 
   const qrCodeRoundedStyle = page.locator('.qr-code--rounded-style')
-  await expect.soft(await qrCodeRoundedStyle.screenshot()).toMatchSnapshot('qr-code--rounded-style-12345.png');
+  await expect.soft(await qrCodeRoundedStyle.screenshot()).toMatchSnapshot('qr-code--rounded-style-12345.png')
 
   const qrCodeBodyDotStyle = page.locator('.qr-code--body-dot-style')
-  await expect.soft(await qrCodeBodyDotStyle.screenshot()).toMatchSnapshot('qr-code--body-dot-style-12345.png');
-});
+  await expect.soft(await qrCodeBodyDotStyle.screenshot()).toMatchSnapshot('qr-code--body-dot-style-12345.png')
+})
