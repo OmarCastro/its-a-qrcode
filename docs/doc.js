@@ -190,7 +190,7 @@ function reactElementNameChange (event) {
   const componentName = event.target.closest('.component-name-edit')
   if (componentName == null) { return }
   const newText = componentName.textContent
-  document.body.querySelectorAll('.component-name-edit').forEach(ref => { if (componentName !== ref) {ref.textContent = newText} })
+  document.body.querySelectorAll('.component-name-edit').forEach(ref => { if (componentName !== ref) { ref.textContent = newText } })
   document.body.querySelectorAll('.component-name-ref').forEach(ref => { ref.textContent = newText })
 }
 
