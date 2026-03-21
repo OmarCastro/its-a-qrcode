@@ -43,7 +43,6 @@ export default [
       '@stylistic/js/new-parens': ['error', 'always'],
       '@stylistic/js/no-confusing-arrow': 'error',
       '@stylistic/js/no-extra-parens': ['error', 'functions'],
-      '@stylistic/js/no-multi-spaces': ['error', { ignoreEOLComments: true }],
       '@stylistic/js/no-multiple-empty-lines': ['error', { max: 2, maxEOF: 0, maxBOF: 0 }],
       '@stylistic/js/no-tabs': 'error',
       '@stylistic/js/no-trailing-spaces': 'error',
