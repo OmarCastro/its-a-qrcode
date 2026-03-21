@@ -38,7 +38,7 @@ if ('Deno' in globalThis || globalThis.window == null) {
   domResetFunction = () => {
     const { documentElement } = windowObj.document
     documentElement.innerHTML = '<head></head><body></body>'
-    Array.from(documentElement.attributes).forEach((attr) => documentElement.removeAttribute(attr.name))
+    Array.from(documentElement.attributes).forEach(attr => documentElement.removeAttribute(attr.name))
     documentElement.setAttribute('lang', 'en')
   }
 } else {

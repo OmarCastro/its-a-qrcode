@@ -92,7 +92,7 @@ globalThis[Symbol.for('custom-unit-test-setup')] = async function setupUnitTests
             },
           })
         } finally {
-          postTestCallbacks.forEach((callback) => callback())
+          postTestCallbacks.forEach(callback => callback())
         }
 
       },

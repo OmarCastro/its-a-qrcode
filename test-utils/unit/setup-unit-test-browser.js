@@ -107,7 +107,7 @@ globalThis[Symbol.for('custom-unit-test-setup')] = async function setupUnitTests
             },
           }, { skip })
         } finally {
-          postTestCallbacks.forEach((callback) => callback())
+          postTestCallbacks.forEach(callback => callback())
           postTestCallbacks.clear()
         }
 
@@ -147,7 +147,7 @@ async function reportLogs (report) {
     const svg = await svgPromise
     body.innerHTML = svg
   } else {
-    body.replaceChildren(...report.logs.split('\n').map((log) => {
+    body.replaceChildren(...report.logs.split('\n').map(log => {
       const div = document.createElement('div')
       div.textContent = log
       return div
@@ -171,7 +171,7 @@ const createSVGResponse = async (report) => {
   const label = `${report.passed} / ${report.tested}`
   const color = report.failed > 0 ? badgeColors.red : badgeColors.green
   const { badgeUrl } = globalThis[Symbol.for('unit-test-info')]
-  badgeFetch ??= fetch(badgeUrl).then((response) => response.text())
+  badgeFetch ??= fetch(badgeUrl).then(response => response.text())
   const badgeSvg = await badgeFetch
   console.log(badgeSvg)
 

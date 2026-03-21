@@ -2,7 +2,7 @@ import inspect from 'object-inspect'
 
 const formatted = (strings, ...values) => () => String.raw(
   { raw: strings },
-  ...values.map((value) => inspect(value)),
+  ...values.map(value => inspect(value)),
 )
 
 const invariant = (check, errorMessageThunk) => {
@@ -29,7 +29,7 @@ function checkDeepEquals (a, b, stack) {
     return false
   }
 
-  const circularReference = stack.find((record) => record[0] === a)
+  const circularReference = stack.find(record => record[0] === a)
   if (circularReference) {
     // only check if the reference is the same, if it isn't, fail even it is equal.
     return circularReference[1] === b

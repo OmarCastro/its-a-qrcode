@@ -16,7 +16,7 @@ if ('Deno' in globalThis || globalThis.window == null) {
       contentType: 'text/html',
       storageQuota: 10000000,
       pretendToBeVisual: true,
-    }
+    },
   )
 
   windowObj = jsdom.window
