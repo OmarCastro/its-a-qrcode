@@ -1,4 +1,3 @@
-
 const encoder = new TextEncoder()
 const decoder = new TextDecoder()
 
@@ -54,9 +53,9 @@ export const base64ToHex = (base64) => bytesToHex(base64ToBytes(base64))
  * @param {string} hex - hex string
  * @returns {Uint8Array} byte array
  */
-export const hexToBytes = (hex) => Uint8Array.from({ length: hex.length >> 1 }, (_, i) => Number.parseInt(hex.slice(i, i + 2), 16));
+export const hexToBytes = (hex) => Uint8Array.from({ length: hex.length >> 1 }, (_, i) => Number.parseInt(hex.slice(i, i + 2), 16))
 
-const byteToHex = Array.from({ length: 0xff }, (_, i) => i.toString(16).padStart(2, "0"));
+const byteToHex = Array.from({ length: 0xff }, (_, i) => i.toString(16).padStart(2, '0'))
 /**
  * @param {Uint8Array} bytes - byte array
  * @returns {string} hex string

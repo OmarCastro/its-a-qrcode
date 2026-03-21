@@ -13,5 +13,5 @@ const xmlEscapeMap = {
  * @returns {string} escaped xml
  */
 export function escapeXml (xml) {
-  return xml.replace(/[<>&'"]/g, c => xmlEscapeMap[c])
+  return xml.replace(/[<>&'"]/g, (c) => xmlEscapeMap[c])
 };

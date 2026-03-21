@@ -7,6 +7,8 @@ export default [
       '**/build',
       '**/node_modules',
       '**/dist',
+      // project specific
+      '**/qr-math.util.unit.spec.js'
     ],
   },
   {

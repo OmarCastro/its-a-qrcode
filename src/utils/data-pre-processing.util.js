@@ -131,7 +131,7 @@ const useCrflLineBreak = (data) => data.replaceAll('\r\n', '\n').replaceAll('\n'
  */
 const preProcessMap = {
   none,
-  pre: none,
+  'pre': none,
   trim,
   dedent,
   'dedent-from-first-line': dedentFromFirstLine,

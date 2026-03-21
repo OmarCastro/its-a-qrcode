@@ -2,9 +2,9 @@ import { base64ToHex } from './text-decode-encode.util.js'
 import UTF8_TO_JIS_TABLE from './utf8-to-jis-table.constants.js'
 
 /** @param {string} x - hex string */
-const xInt = x => parseInt(x, 16)
+const xInt = (x) => parseInt(x, 16)
 /** @param {string} x - base64 string */
-const b64Int = x => xInt(base64ToHex(x))
+const b64Int = (x) => xInt(base64ToHex(x))
 
 /** @typedef {{[key: string]: string}} CompressedTable */
 /** @typedef {{[utf8Value: number]: number}} Utf8ToJisTable */
@@ -44,13 +44,13 @@ function decompressUtf8ToJisTable (compressedTable) {
  */
 function decompressUtf8ValsStr (compressedVals) {
   /** @type {(amount: number) => (str: string) => string} */
-  const join = amount => str => str.slice(1, -1).split('').reduce((val, ch, i) => val + (i % amount ? '' : ',') + ch)
+  const join = (amount) => (str) => str.slice(1, -1).split('').reduce((val, ch, i) => val + (i % amount ? '' : ',') + ch)
 
   const commaSeparatedVals = [
     [/{/g, '[;'],
     [/}/g, ';]'],
     [/]([^\]])/g, '],$1'], // @ts-ignore
-    [/[a-zA-z0-9+/]{2,3}\[/g, match => match.split('').join('[').slice(0, -1)], // @ts-ignore
+    [/[a-zA-z0-9+/]{2,3}\[/g, (match) => match.split('').join('[').slice(0, -1)], // @ts-ignore
     [/_[^_]+_/g, join(3)], // @ts-ignore
     [/#[^#]+#/g, join(2)], // @ts-ignore
     [/;[^;]+;/g, join(1)],    // @ts-ignore

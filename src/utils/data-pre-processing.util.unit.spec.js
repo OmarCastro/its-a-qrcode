@@ -5,9 +5,9 @@ test('QR Code data pre process - trims by default on basic text', ({ expect }) =
   expect(
     preProcess(`
      https://omarcastro.github.io/its-a-qrcode
-     `)
+     `),
   ).toEqual(
-    'https://omarcastro.github.io/its-a-qrcode'
+    'https://omarcastro.github.io/its-a-qrcode',
   )
 })
 test('QR Code data pre process - use vcard process if starts with BEGIN:VCARD', ({ expect }) => {
@@ -24,7 +24,7 @@ test('QR Code data pre process - use vcard process if starts with BEGIN:VCARD', 
     EMAIL;TYPE=work:simon.perreault@viagenie.ca
     END:VCARD
         
-    `)
+    `),
   ).toEqual(
     `BEGIN:VCARD\r
 VERSION:4.0\r
@@ -33,7 +33,7 @@ N:Perreault;Simon;;;ing. jr,M.Sc.\r
 BDAY:--0203\r
 GENDER:M\r
 EMAIL;TYPE=work:simon.perreault@viagenie.ca\r
-END:VCARD`
+END:VCARD`,
   )
 })
 
@@ -51,9 +51,9 @@ test('QR Code data pre process - use vevent process if starts with BEGIN:VEVENT'
     CATEGORIES:IPSUM,LOREM
     END:VEVENT
         
-    `)
+    `),
   ).toEqual(
-  `BEGIN:VEVENT\r
+    `BEGIN:VEVENT\r
 UID:19970901T130000Z-123401@example.com\r
 DTSTAMP:19970901T130000Z\r
 DTSTART:19970903T163000Z\r
@@ -62,7 +62,7 @@ SUMMARY:Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiu\r
  smod tempor incididunt ut labore et dolore magna aliqua. Semper eget duis \r
  at tellus at urna condimentum mattis. Ultrices vitae auctor eu augue.\r
 CATEGORIES:IPSUM,LOREM\r
-END:VEVENT`
+END:VEVENT`,
   )
 })
 
@@ -71,9 +71,9 @@ test('QR Code data pre process - empty attribute value trims by default', ({ exp
   expect(
     preProcess(`
      https://omarcastro.github.io/its-a-qrcode
-     `, "  ")
+     `, '  '),
   ).toEqual(
-    'https://omarcastro.github.io/its-a-qrcode'
+    'https://omarcastro.github.io/its-a-qrcode',
   )
 })
 
@@ -81,8 +81,8 @@ test('QR Code data pre process - do not process on none or pre', ({ expect }) =>
   const input = `
   https://omarcastro.github.io/its-a-qrcode
   `
-  expect(preProcess(input, " none ")).toEqual(input)
-  expect(preProcess(input, "pre ")).toEqual(input)
+  expect(preProcess(input, ' none ')).toEqual(input)
+  expect(preProcess(input, 'pre ')).toEqual(input)
 })
 
 
@@ -95,8 +95,8 @@ test('QR Code data pre process - correct preprocess will apply the correct proce
 
   fffff  
   `
-  expect(preProcess(input, " none ")).toEqual(input)
-  expect(preProcess(input, "trim-lines ")).toEqual(`
+  expect(preProcess(input, ' none ')).toEqual(input)
+  expect(preProcess(input, 'trim-lines ')).toEqual(`
 https://omarcastro.github.io/its-a-qrcode
 
 dasdasd
@@ -104,7 +104,7 @@ dasdasd
 fffff
 `)
 
-expect(preProcess(input, "no-blank-lines")).toEqual(`  https://omarcastro.github.io/its-a-qrcode  
+  expect(preProcess(input, 'no-blank-lines')).toEqual(`  https://omarcastro.github.io/its-a-qrcode  
   dasdasd  
   fffff  `)
 
@@ -121,7 +121,7 @@ test('QR Code data pre process - multiple preprocess will call them from left to
   `
 
 
-expect(preProcess(input, "trim-lines no-empty-lines")).toEqual(`https://omarcastro.github.io/its-a-qrcode
+  expect(preProcess(input, 'trim-lines no-empty-lines')).toEqual(`https://omarcastro.github.io/its-a-qrcode
 dasdasd
 fffff`)
 
@@ -136,7 +136,7 @@ test('QR Code data pre process - dedent-from-first-line will dedent by the ident
 
     fffff  
   `
-expect(preProcess(input, "dedent-from-first-line")).toEqual(` 
+  expect(preProcess(input, 'dedent-from-first-line')).toEqual(` 
 https://omarcastro.github.io/its-a-qrcode  
 
   dasdasd  
@@ -154,7 +154,7 @@ test('QR Code data pre process - dedent-from-first-line with only blank lines wi
 
       
   `
-expect(preProcess(input, "dedent-from-first-line")).toEqual(input)
+  expect(preProcess(input, 'dedent-from-first-line')).toEqual(input)
 })
 
 test('QR Code data pre process - dedent will detent by the identation of the smallest idented non blank line', ({ expect }) => {
@@ -166,7 +166,7 @@ test('QR Code data pre process - dedent will detent by the identation of the sma
 
     fffff  
   `
-expect(preProcess(input, "dedent")).toEqual(` 
+  expect(preProcess(input, 'dedent')).toEqual(` 
   https://omarcastro.github.io/its-a-qrcode  
 
 dasdasd  
@@ -185,7 +185,7 @@ test('QR Code data pre process - dedent with only blank lines will do nothing', 
 
       
   `
-expect(preProcess(input, "dedent")).toEqual(input)
+  expect(preProcess(input, 'dedent')).toEqual(input)
 })
 
 test('QR Code data pre process - dedent with an non blank lines with no identation will also do nothing', ({ expect }) => {
@@ -196,7 +196,7 @@ dasdasd
 
   fffff  
   `
-expect(preProcess(input, "dedent")).toEqual(input)
+  expect(preProcess(input, 'dedent')).toEqual(input)
 })
 
 test('QR Code data pre process - vcard preproccess wraps line content when bypasses 75 octets', ({ expect }) => {
@@ -210,12 +210,12 @@ test('QR Code data pre process - vcard preproccess wraps line content when bypas
   NOTE:Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Semper eget duis at tellus at urna condimentum mattis. Ultrices vitae auctor eu augue. Vulputate enim nulla aliquet porttitor lacus luctus accumsan. Sit amet nisl suscipit adipiscing bibendum est ultricies integer. Tellus in metus vulputate eu. Dui ut ornare lectus sit. Nibh sed pulvinar proin gravida hendrerit lectus a. Aliquet nibh praesent tristique magna sit amet purus gravida. Et malesuada fames ac turpis egestas sed. Pellentesque adipiscing commodo elit at imperdiet dui accumsan sit. Id neque aliquam vestibulum morbi blandit cursus risus. Tortor at risus viverra adipiscing at.
   END:VCARD
       
-  `, "vcard")
+  `, 'vcard')
 
-  expect(result.split("\r\n").every(line => line.length <= 75)).toBe(true)
+  expect(result.split('\r\n').every(line => line.length <= 75)).toBe(true)
 
   expect(result).toEqual(
-`BEGIN:VCARD\r
+    `BEGIN:VCARD\r
 VERSION:4.0\r
 FN:Lorem Ipsum\r
 N:Ipsum;Lorem;;;ing. jr,M.Sc.\r
@@ -230,9 +230,7 @@ NOTE:Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmo\r
  lesuada fames ac turpis egestas sed. Pellentesque adipiscing commodo elit \r
  at imperdiet dui accumsan sit. Id neque aliquam vestibulum morbi blandit c\r
  ursus risus. Tortor at risus viverra adipiscing at.\r
-END:VCARD`
+END:VCARD`,
   )
 
 })
-
-
