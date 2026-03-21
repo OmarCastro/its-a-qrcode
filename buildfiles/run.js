@@ -191,7 +191,7 @@ async function execDevEnvironment ({ openBrowser = false } = {}) {
     const { filenames } = change
     console.log(`\n[watcher] files changed: ${JSON.stringify(filenames, null, 2)}\n\n`)
     let tasks = []
-    if (Object.keys(filenames).some((name) => name.endsWith('test-page.html') || name.startsWith(srcPath))) {
+    if (Object.keys(filenames).some(name => name.endsWith('test-page.html') || name.startsWith(srcPath))) {
       tasks = [execlintCodeOnChanged, buildTest, testTask, buildDocs]
     } else {
       tasks = [execlintCodeOnChanged, buildTest, buildDocs]
@@ -286,8 +286,8 @@ async function runTestProcedure ({ updateSnapshots = false }) {
 
   logStage('fix report styles')
   const files = await getFilesAsArray('reports/coverage/final')
-  const cpBase = files.filter((path) => basename(path) === 'base.css').map((path) => fs.cp('buildfiles/assets/coverage-report-base.css', path))
-  const cpPrettify = files.filter((path) => basename(path) === 'prettify.css').map((path) => fs.cp('buildfiles/assets/coverage-report-prettify.css', path))
+  const cpBase = files.filter(path => basename(path) === 'base.css').map(path => fs.cp('buildfiles/assets/coverage-report-base.css', path))
+  const cpPrettify = files.filter(path => basename(path) === 'prettify.css').map(path => fs.cp('buildfiles/assets/coverage-report-prettify.css', path))
   await Promise.allSettled([...cpBase, ...cpPrettify])
 
   logStage('copy reports to documentation')
@@ -520,7 +520,7 @@ async function buildUnitTests ({ includeBrowser = false } = {}) {
     await mkdir_p(outputPathFolder)
 
     const testSetupCode = toImportCode(outputPathFolder, setupPath)
-    const testFileImports = unitTestFiles.map((file) => toImportCode(outputPathFolder, file)).join('')
+    const testFileImports = unitTestFiles.map(file => toImportCode(outputPathFolder, file)).join('')
     const code = testSetupCode + testFileImports
     await writeFile(outputPath, code)
     if (!isBrowser) {
@@ -673,8 +673,8 @@ async function prepareRelease () {
   await cp_R('dist', 'package/content/dist')
   await cp_R('README.md', 'package/content/README.md')
   await cp_R('LICENSE', 'package/content/LICENSE')
-  const files = (await getFilesAsArray('src')).map((path) => relative(pathFromProject('.'), path))
-  await Promise.all(files.filter((path) => !path.includes('.spec.')).map((path) => fs.cp(path, `package/content/${path}`)))
+  const files = (await getFilesAsArray('src')).map(path => relative(pathFromProject('.'), path))
+  await Promise.all(files.filter(path => !path.includes('.spec.')).map(path => fs.cp(path, `package/content/${path}`)))
   const releasePackageJson = { ...packageJson, devDependencies: undefined, scripts: undefined, directories: undefined, imports: undefined }
   await writeFile('package/content/package.json', JSON.stringify(releasePackageJson, null, 2))
   await cmdSpawn('npm pack --pack-destination "' + pathFromProject('package') + '"', { cwd: pathFromProject('package/content') })
@@ -714,7 +714,7 @@ function helpText () {
   const fromNPM = isRunningFromNPMScript()
 
   const helpArgs = fromNPM ? 'help' : 'help, --help, -h'
-  const maxTaskLength = Math.max(...[helpArgs, ...Object.keys(tasks)].map((text) => text.length))
+  const maxTaskLength = Math.max(...[helpArgs, ...Object.keys(tasks)].map(text => text.length))
   const tasksToShow = Object.entries(tasks).filter(([, value]) => value !== helpTask)
   const usageLine = fromNPM ? 'npm run <task>' : 'run <task>'
   return `Usage: ${usageLine}
@@ -726,12 +726,12 @@ Tasks:
 
 /** @param {string[]} paths - paths to remove recursively */
 async function rm_rf (...paths) {
-  await Promise.all(paths.map((path) => fs.rm(path, { recursive: true, force: true })))
+  await Promise.all(paths.map(path => fs.rm(path, { recursive: true, force: true })))
 }
 
 /** @param {string[]} paths - paths to recursively create directories */
 async function mkdir_p (...paths) {
-  await Promise.all(paths.map((path) => fs.mkdir(path, { recursive: true })))
+  await Promise.all(paths.map(path => fs.mkdir(path, { recursive: true })))
 }
 
 /**
@@ -794,7 +794,7 @@ async function openTestServer () {
 }
 
 function wait (ms) {
-  return new Promise((resolve) => {
+  return new Promise(resolve => {
     setTimeout(resolve, ms)
   })
 }
@@ -921,7 +921,7 @@ async function validateYaml ({ onlyChanged, changedFiles }) {
 
 async function typecheckSrc ({ onlyChanged, changedFiles }) {
   if (onlyChanged) {
-    const changedInSrc = [...changedFiles].some((changedFile) => changedFile.startsWith('src/'))
+    const changedInSrc = [...changedFiles].some(changedFile => changedFile.startsWith('src/'))
     if (!changedInSrc) {
       process.stdout.write('no files to check...')
       return 0
@@ -1113,7 +1113,7 @@ async function minifyDOM (domElement) {
  */
 function cmdSpawn (command, options = {}) {
   const p = spawn('/bin/sh', ['-c', command], { stdio: 'inherit', ...options })
-  return new Promise((resolve) => { p.on('exit', resolve) })
+  return new Promise(resolve => { p.on('exit', resolve) })
 }
 
 async function execCmd (command, args) {
@@ -1178,7 +1178,7 @@ async function * watchDirs (...dirs) {
   }
 
   while (true) {
-    yield new Promise((resolve) => {
+    yield new Promise(resolve => {
       if (batch.length > 0) {
         resolve({ filenames: batch })
         batch = {}
@@ -1195,11 +1195,11 @@ async function listNonIgnoredFiles ({ ignorePath = '.gitignore', patterns, ignor
     const { join } = await import('node:path')
     const { statSync, readdirSync } = await import('node:fs')
     const allIgnorePatterns = await getIgnorePatternsFromFile(ignorePath)
-    const ignoreMatchers = allIgnorePatterns.map((pattern) => minimatch.filter(pattern, { matchBase: true, dot: true }))
+    const ignoreMatchers = allIgnorePatterns.map(pattern => minimatch.filter(pattern, { matchBase: true, dot: true }))
     /** @type {(dir: string) => string[]} */
     const listFiles = (dir) => readdirSync(dir).flatMap(function (file) {
       const name = join(dir, file)
-      if (file === '.git' || ignoreMatchers.some((match) => match(name))) { return [] }
+      if (file === '.git' || ignoreMatchers.some(match => match(name))) { return [] }
       const isDirectory = statSync(name).isDirectory()
       return isDirectory ? listFiles(name) : [name]
     })
@@ -1212,10 +1212,10 @@ async function listNonIgnoredFiles ({ ignorePath = '.gitignore', patterns, ignor
 
 async function getIgnorePatternsFromFile (filePath) {
   return await readFile(filePath)
-    .then((content) => content.split('\n'))
-    .then((lines) => lines.filter((line) => !line.startsWith('#') && line.trim() !== ''))
-    .then((lines) => lines.map(gitignoreToGlob))
-    .then((lines) => [...new Set(lines)])
+    .then(content => content.split('\n'))
+    .then(lines => lines.filter(line => !line.startsWith('#') && line.trim() !== ''))
+    .then(lines => lines.map(gitignoreToGlob))
+    .then(lines => [...new Set(lines)])
 }
 
 function gitignoreToGlob (pattern) {
@@ -1262,11 +1262,11 @@ async function filterFilePathsByPatterns (filePaths, patterns = [], ignorePatter
   const hasIgnorePatterns = ignorePatterns.length > 0
   if (!hasPatterns && !hasIgnorePatterns) { return paths }
   const { minimatch } = await import('minimatch')
-  const matchers = patterns.map((pattern) => minimatch.filter(pattern, { matchBase: true, dot: true }))
-  const matchedPaths = hasPatterns ? paths.filter((path) => matchers.some((match) => match(path))) : paths
+  const matchers = patterns.map(pattern => minimatch.filter(pattern, { matchBase: true, dot: true }))
+  const matchedPaths = hasPatterns ? paths.filter(path => matchers.some(match => match(path))) : paths
   if (!hasIgnorePatterns) { return matchedPaths }
-  const ignoreMatchers = ignorePatterns.map((pattern) => minimatch.filter(pattern, { matchBase: true, dot: true }))
-  const filteredPaths = matchedPaths.filter((path) => ignoreMatchers.every((match) => !match(path)))
+  const ignoreMatchers = ignorePatterns.map(pattern => minimatch.filter(pattern, { matchBase: true, dot: true }))
+  const filteredPaths = matchedPaths.filter(path => ignoreMatchers.every(match => !match(path)))
   return filteredPaths
 }
 
@@ -1275,7 +1275,7 @@ async function listChangedFiles () {
   const mergeBase = await git('merge-base', 'HEAD', currentBranchName)
   const diffExec = git('diff', '--name-only', '--diff-filter=ACMRTUB', mergeBase)
   const lsFilesExec = git('ls-files', '--others', '--exclude-standard')
-  return new Set([...(await diffExec), ...(await lsFilesExec)].filter((filename) => filename.trim().length > 0))
+  return new Set([...(await diffExec), ...(await lsFilesExec)].filter(filename => filename.trim().length > 0))
 }
 
 // @section 10 npm utilities
@@ -1313,13 +1313,13 @@ function getPackageJson () {
 async function getLatestReleasedVersion () {
   const changelogContent = await readFile(pathFromProject('CHANGELOG'))
   const versions = changelogContent.split('\n')
-    .map((line) => {
+    .map(line => {
       const match = line.match(/^## \[([0-9]+\.[[0-9]+\.[[0-9]+)]\s+-\s+([^\s]+)/)
       if (!match) {
         return null
       }
       return { version: match[1], releaseDate: match[2] }
-    }).filter((version) => !!version)
+    }).filter(version => !!version)
   return versions.find(({ releaseDate }) => releaseDate.match(/[0-9]{4}-[0-9]{2}-[0-9]{2}/))
 }
 
@@ -1409,7 +1409,7 @@ async function applyA11yTheme (svgContent, options = {}) {
   body.innerHTML = svgContent
   const svg = body.querySelector('svg')
   if (!svg) { return svgContent }
-  svg.querySelectorAll('text').forEach((el) => el.removeAttribute('fill'))
+  svg.querySelectorAll('text').forEach(el => el.removeAttribute('fill'))
   if (options.replaceIconToText) {
     const img = svg.querySelector('image')
     if (img) {
@@ -1423,13 +1423,13 @@ async function applyA11yTheme (svgContent, options = {}) {
     }
   }
   const rects = Array.from(svg.querySelectorAll('rect'))
-  rects.slice(0, 1).forEach((el) => {
+  rects.slice(0, 1).forEach(el => {
     el.classList.add('label')
     el.removeAttribute('fill')
   })
   const colors = getBadgeColors()
   let color = colors.red
-  rects.slice(1).forEach((el) => {
+  rects.slice(1).forEach(el => {
     color = el.getAttribute('fill') || colors.red
     el.removeAttribute('fill')
     el.classList.add('body')
@@ -1442,7 +1442,7 @@ async function applyA11yTheme (svgContent, options = {}) {
 }
 
 async function makeBadgeForCoverages (path) {
-  const json = await readFile(`${path}/coverage-summary.json`).then((str) => JSON.parse(str))
+  const json = await readFile(`${path}/coverage-summary.json`).then(str => JSON.parse(str))
   const svg = await makeBadge({
     label: 'coverage',
     message: `${json.total.lines.pct}%`,
@@ -1456,9 +1456,9 @@ async function makeBadgeForCoverages (path) {
 }
 
 async function makeBadgeForTestResult (path) {
-  const json = await readFile(`${path}/test-results.json`).then((str) => JSON.parse(str))
-  const tests = (json?.suites ?? []).flatMap((suite) => suite.specs)
-  const passedTests = tests.filter((test) => test.ok)
+  const json = await readFile(`${path}/test-results.json`).then(str => JSON.parse(str))
+  const tests = (json?.suites ?? []).flatMap(suite => suite.specs)
+  const passedTests = tests.filter(test => test.ok)
   const testAmount = tests.length
   const passedAmount = passedTests.length
   const passed = passedAmount === testAmount
@@ -1602,7 +1602,7 @@ async function createModuleGraphSvg (moduleGrapnJson) {
   const marker = graph.edgeCount() > 0 ? lineArrowMarker : ''
   const defs = marker ? `<defs>${marker}</defs>` : ''
 
-  const inputsLinesSvg = graph.edges().map((e) => {
+  const inputsLinesSvg = graph.edges().map(e => {
     const allPoints = [graph.node(e.v), ...graph.edge(e).points]
     const points = allPoints.map(({ x, y }) => `${x},${y}`).join(' ')
     return `<polyline class="outer" stroke-width="3" points="${points}"/><polyline points="${points}" marker-end="url(#arrowhead)"/><polyline points="${points}"/>`
@@ -1640,8 +1640,8 @@ async function isDockerRunning () {
 
 async function isInsideDockerContainer () {
   isInsideDockerContainer.cachedResult ??= existsSync('/.dockerenv') ||
-    (await readFile('/proc/self/cgroup').then((text) => text.includes('docker')).catch(() => false)) ||
-    (await readFile('/proc/self/mountinfo').then((text) => text.includes('/docker/containers/')).catch(() => false))
+    (await readFile('/proc/self/cgroup').then(text => text.includes('docker')).catch(() => false)) ||
+    (await readFile('/proc/self/mountinfo').then(text => text.includes('/docker/containers/')).catch(() => false))
   return isInsideDockerContainer.cachedResult
 }
 
@@ -1677,7 +1677,7 @@ async function checkGitHooks () {
 
 async function listStashedFiles () {
   const diffExec = git('diff', '--name-only', '--staged')
-  return new Set([...(await diffExec)].filter((filename) => filename.trim().length > 0))
+  return new Set([...(await diffExec)].filter(filename => filename.trim().length > 0))
 }
 
 async function executeOnStagedOnly (callback, { stageChanges = true } = {}) {

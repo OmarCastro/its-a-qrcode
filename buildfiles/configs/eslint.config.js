@@ -35,7 +35,7 @@ export default [
         'error',
         {
           ignoreRestSiblings: true,
-          argsIgnorePattern: "^_",
+          argsIgnorePattern: '^_',
         },
       ],
       'unicorn/prefer-code-point': ['warn'],
