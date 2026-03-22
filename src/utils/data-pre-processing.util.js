@@ -186,3 +186,29 @@ export function preProcess (data, preprocessAttr) {
   const preprocesses = preprocessAttr ? getPreprocessesFromAttribute(preprocessAttr, data) : getPreprocessesFromContent(data)
   return preprocesses.reduce((acc, name) => preProcessMap[name](acc), data)
 }
+
+const DATA_WHITESPACE_ATTR = 'data-whitespace'
+/**
+ * QR Code can have multiple data inside it, for that reason there are 2 structures this element supports:
+ *
+ * 1. Using textContent - gets the element text content, processes the whitespace and converts to a QR Code image
+ * 2. Using <data> child elements - each child element will be processed the join together before converting to a QR Code image
+ *
+ * It is possible to have both, but when it happens, <data> will take priority, and the text content in the element is to be ignored
+ * @param {HTMLElement} element - target qr code element
+ * @returns {string[] | null} QR code contents
+ */
+export function queryQrContentFromElement (element) {
+  const dataChildElements = element.querySelectorAll(':scope > data')
+  if (dataChildElements.length > 0) {
+    const contentArray = Array.from(dataChildElements).map(dataChild => {
+      const { textContent } = dataChild
+      if (!textContent) { return '' }
+      const preProcessAttr = dataChild.hasAttribute(DATA_WHITESPACE_ATTR) ? dataChild.getAttribute(DATA_WHITESPACE_ATTR) : element.getAttribute(DATA_WHITESPACE_ATTR)
+      return preProcess(textContent, preProcessAttr || '')
+    }).filter(content => content !== '')
+    return contentArray.length > 0 ? contentArray : null
+  }
+  const { textContent } = element
+  return textContent ? [preProcess(textContent, element.getAttribute(DATA_WHITESPACE_ATTR) || '')] : null
+}

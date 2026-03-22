@@ -1,10 +1,7 @@
 /** @import { QrCode } from '../qr-code.js' */
-import { preProcess } from '../utils/data-pre-processing.util.js'
-
-/** @type {WeakMap<QRCodeElement, QrCode>} */
+/** @type {WeakMap<QRCodeElement, {qrcode?: QrCode, content: string[] | null}>} */
 const qrCodeData = new WeakMap()
 const EC_LEVEL_ATTR = 'data-error-correction-level'
-const DATA_WHITESPACE_ATTR = 'data-whitespace'
 
 export class QRCodeElement extends HTMLElement {
   constructor () {
@@ -32,7 +29,7 @@ export class QRCodeElement extends HTMLElement {
   }
 
   get qrCodeContent () {
-    const content = queryQrContent(this)
+    const content = qrCodeData.get(this)?.content ?? null
     return content && content.length === 1 ? content[0] : content
   }
 
@@ -54,7 +51,7 @@ const observerOptions = {
   characterDataOldValue: true,
   childList: true,
   attributes: true,
-  attributeFilter: [EC_LEVEL_ATTR, DATA_WHITESPACE_ATTR],
+  attributeFilter: [EC_LEVEL_ATTR, 'data-whitespace'],
   subtree: true,
 }
 const observer = new MutationObserver(records => {
@@ -82,7 +79,7 @@ const observer = new MutationObserver(records => {
  * @param {QRCodeElement} element - target QRCodeElement component element
  */
 async function applyQrCode (element) {
-  const { QrCode, parseQrCodeColorsFromElement, parseQrCodeStylesFromElement, createSvgTag, createImgTag } = await import('./qr-code.async-loader.js')
+  const { QrCode, parseQrCodeColorsFromElement, parseQrCodeStylesFromElement, createSvgTag, createImgTag, queryQrContentFromElement } = await import('./qr-code.async-loader.js')
   const typeNumber = 0
 
   const { shadowRoot } = element
@@ -90,18 +87,24 @@ async function applyQrCode (element) {
     return
   }
 
-  const { qrCodeContent } = element
+  const oldQr = qrCodeData.get(element)?.qrcode
+  const qrCodeContent = queryQrContentFromElement(element)
+  const newQrCodeData = {
+    qrcode: oldQr,
+    content: qrCodeContent
+  }
+  qrCodeData.set(element, newQrCodeData)
   if (!qrCodeContent) {
+    Object.freeze(newQrCodeData)
     return
   }
-
-  const oldQr = qrCodeData.get(element)
   const qr = new QrCode(typeNumber, element.errorCorrectionLevel)
-  for (const content of [qrCodeContent].flat()) {
+  for (const content of qrCodeContent) {
     qr.addData(content)
   }
   qr.make()
-  qrCodeData.set(element, qr)
+  newQrCodeData.qrcode = qr
+  Object.freeze(newQrCodeData)
 
   const colors = parseQrCodeColorsFromElement(element)
   const style = parseQrCodeStylesFromElement(element)
@@ -139,31 +142,6 @@ const correctionLevelNames = new Set(['Medium', 'Low', 'High', 'Quartile'].flatM
  */
 function isValidECLevel (ecLevel) {
   return correctionLevelNames.has(ecLevel.toUpperCase())
-}
-
-/**
- * QR Code can have multiple data inside it, for that reason there are 2 structures this element supports:
- *
- * 1. Using textContent - gets the element text content, processes the whitespace and converts to a QR Code image
- * 2. Using <data> child elements - each child element will be processed the join together before converting to a QR Code image
- *
- * It is possible to have both, but when it happens, <data> will take priority, and the text content in the element is to be ignored
- * @param {QRCodeElement} element - target qr code element
- * @returns {string[] | null} QR code contents
- */
-function queryQrContent (element) {
-  const dataChildElements = element.querySelectorAll(':scope > data')
-  if (dataChildElements.length > 0) {
-    const contentArray = Array.from(dataChildElements).map(dataChild => {
-      const { textContent } = dataChild
-      if (!textContent) { return '' }
-      const preProcessAttr = dataChild.hasAttribute(DATA_WHITESPACE_ATTR) ? dataChild.getAttribute(DATA_WHITESPACE_ATTR) : element.getAttribute(DATA_WHITESPACE_ATTR)
-      return preProcess(textContent, preProcessAttr || '')
-    }).filter(content => content !== '')
-    return contentArray.length > 0 ? contentArray : null
-  }
-  const { textContent } = element
-  return textContent ? [preProcess(textContent, element.getAttribute(DATA_WHITESPACE_ATTR) || '')] : null
 }
 
 /**

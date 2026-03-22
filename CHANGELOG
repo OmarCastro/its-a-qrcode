@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- QR Code lazy loading improvements
+
 ### Fixed
 
 - Add missing padding when converting bytes to hex string
@@ -19,7 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - auto load qrcode on style change
-
+- QR Code lazy loading
 
 ## [0.5.0] - 2024-10-10
 

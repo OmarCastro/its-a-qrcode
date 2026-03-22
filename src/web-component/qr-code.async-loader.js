@@ -6,6 +6,7 @@ export { createSvgTag } from '../render/svg.render.js'
 export { isValid } from '../error-correction/ec-level.js'
 export { parseQrCodeColorsFromElement } from '../utils/css-colors.util.js'
 export { parseQrCodeStylesFromElement } from '../utils/css-qrcode-style.util.js'
+export { queryQrContentFromElement } from '../utils/data-pre-processing.util.js'
 
 let styleSheetLoad = () => {
   registerCSSProperties()
