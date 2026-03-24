@@ -17,13 +17,22 @@ export const bytesToText = (bytes) => decoder.decode(bytes)
  * @param {string} base64 - input base64 text
  * @returns {Uint8Array} byte array
  */
-export const base64ToBytes = (base64) => Uint8Array.from(atob(base64), (m) => /** @type {number} */(m.codePointAt(0)))
-
+export const base64ToBytes = (() => {
+  if(typeof Uint8Array.fromBase64 === "function"){
+    return Uint8Array.fromBase64
+  }
+  return (/** @type {string} */ base64) => Uint8Array.from(atob(base64), (m) => /** @type {number} */(m.codePointAt(0)))
+})()
 /**
  * @param {Uint8Array} bytes - byte array
  * @returns {string} base64 text
  */
-export const bytesToBase64 = (bytes) => btoa(Array.from(bytes, (x) => String.fromCodePoint(x)).join(''))
+export const bytesToBase64 = (() => {
+  if(typeof Uint8Array.prototype.toBase64 === "function"){
+    return (/** @type {Uint8Array} */ bytes) => bytes.toBase64()
+  }
+  return (/** @type {Uint8Array} */ bytes) => btoa(Array.from(bytes, (x) => String.fromCodePoint(x)).join(''))
+})()
 
 /**
  * @param {string} str - input text
@@ -53,11 +62,21 @@ export const base64ToHex = (base64) => bytesToHex(base64ToBytes(base64))
  * @param {string} hex - hex string
  * @returns {Uint8Array} byte array
  */
-export const hexToBytes = (hex) => Uint8Array.from({ length: hex.length >> 1 }, (_, i) => Number.parseInt(hex.slice(i, i + 2), 16))
+export const hexToBytes = (() => {
+  if(typeof Uint8Array.fromHex === "function"){
+    return Uint8Array.fromHex
+  }
+  return (/** @type {string} */ hex) => Uint8Array.from({ length: hex.length >> 1 }, (_, i) => Number.parseInt(hex.slice(i, i + 2), 16))
+})()
 
-const byteToHex = Array.from({ length: 0xff }, (_, i) => i.toString(16).padStart(2, '0'))
 /**
  * @param {Uint8Array} bytes - byte array
  * @returns {string} hex string
  */
-export const bytesToHex = (bytes) => bytes.reduce((result, byte) => result + byteToHex[byte], '')
+export const bytesToHex = (() => {
+  if(typeof Uint8Array.prototype.toHex === "function"){
+    return (/** @type {Uint8Array} */ bytes) => bytes.toHex()
+  }
+  const byteToHex = Array.from({ length: 0xff }, (_, i) => i.toString(16).padStart(2, '0'))
+  return (/** @type {Uint8Array} */ bytes) => bytes.reduce((result, byte) => result + byteToHex[byte], '')
+})()
