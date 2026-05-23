@@ -32,10 +32,9 @@
     "cspell": "^10.0.0",
     "deep-diff": "^1.0.2",
     "esbuild": "^0.28.0",
-    "eslint": "^9.39.2",
-    "eslint-plugin-import": "^2.32.0",
-    "eslint-plugin-jsdoc": "^62.5.0",
-    "eslint-plugin-unicorn": "^62.0.0",
+    "eslint": "^10.4.0",
+    "eslint-plugin-jsdoc": "^63.0.0",
+    "eslint-plugin-unicorn": "^64.0.0",
     "expect": "^30.4.1",
     "image-size": "^2.0.2",
     "js-yaml": "^4.1.1",
@@ -48,5 +47,8 @@
     "stylelint": "^17.12.0",
     "stylelint-config-standard": "^40.0.0",
     "typescript": "^6.0.3"
+  },
+  "dependencies": {
+    "eslint-plugin-import-x": "^4.16.2"
   }
 }

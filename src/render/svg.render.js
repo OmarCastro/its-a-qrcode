@@ -271,7 +271,7 @@ const a11yAttributes = (title, alt) => (title.text || alt.text) ? ' role="img" a
  */
 const normalizeAlt = (alt) => {
   const result = (typeof alt === 'string') ? { text: alt, id: '' } : { text: '', id: '', ...alt }
-  result.id = result.id || 'qrcode-description'
+  result.id ||= 'qrcode-description'
   return result
 }
 
@@ -282,7 +282,7 @@ const normalizeAlt = (alt) => {
  */
 const normalizeTitle = (title) => {
   const result = (typeof title === 'string') ? { text: title, id: '' } : { text: '', id: '', ...title }
-  result.id = result.id || 'qrcode-title'
+  result.id ||= 'qrcode-title'
   return result
 }
 
