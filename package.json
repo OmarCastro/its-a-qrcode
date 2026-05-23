@@ -33,6 +33,7 @@
     "deep-diff": "^1.0.2",
     "esbuild": "^0.28.0",
     "eslint": "^10.4.0",
+    "eslint-plugin-import-x": "^4.16.2",
     "eslint-plugin-jsdoc": "^63.0.0",
     "eslint-plugin-unicorn": "^64.0.0",
     "expect": "^30.4.1",
@@ -47,8 +48,5 @@
     "stylelint": "^17.12.0",
     "stylelint-config-standard": "^40.0.0",
     "typescript": "^6.0.3"
-  },
-  "dependencies": {
-    "eslint-plugin-import-x": "^4.16.2"
   }
 }
