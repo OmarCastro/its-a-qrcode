@@ -10,7 +10,7 @@ const memoECPolynomials = [
 
 /**
  * @param {number} errorCorrectLength - error correction codeword count
- * @returns {ReturnType<QrPolynomial>} error correction polynomial
+ * @returns {ReturnType<typeof QrPolynomial>} error correction polynomial
  */
 export function getErrorCorrectPolynomial (errorCorrectLength) {
   if (memoECPolynomials.length > errorCorrectLength) {

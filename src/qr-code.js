@@ -34,7 +34,7 @@ export class QrCode {
   modules
   /** @type {number[] | null} */
   #dataCache
-  /** @type {ReturnType<QrKanji | Qr8BitByte | QrNumber | QrAlphaNum>[] } */
+  /** @type {ReturnType<typeof QrKanji | typeof Qr8BitByte | typeof QrNumber | typeof QrAlphaNum>[] } */
   dataList
 
   /**
